@@ -117,8 +117,8 @@ public class BindingSiteAnnotatedCoreNetwork {
 		Network mouseNetwork = getUnifiedNetwork(mouseRoot,service);
 
 		CroCoLogger.getLogger().info("Transfer mouse network");
-		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, new Species("Human",9606), new Species("Mouse",10090));
-		orthologMappings.addAll(service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, new Species("Human",9606), new Species("Mouse",10090)));
+		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, Species.Human, Species.Mouse);
+		orthologMappings.addAll(service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse));
 		
 
 		CroCoLogger.getLogger().info("Transfer using:" + orthologMappings);

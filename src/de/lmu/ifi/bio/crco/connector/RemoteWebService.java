@@ -206,15 +206,7 @@ public class RemoteWebService implements QueryService{
 		return (List)performceOperation(baseUrl,"getChildren",node);
 	}
 
-	@Override
-<<<<<<< .mine
-	public IdMapping getIdMapping(Species species, IdentifierType id1,IdentifierType id2) throws Exception {
-		return (IdMapping)performceOperation(baseUrl,"getIdMapping",species,id1,id2);
-	}
 
-	@Override
-=======
->>>>>>> .r201
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
 		return (ContextTreeNode)performceOperation(baseUrl,"getSpecies",sourceId);
 	}

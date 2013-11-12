@@ -129,7 +129,7 @@ public class ChIPNetwork {
 		}
 	//	System.out.println(textMiningNetwork.containsEdge(new Entity("ENSG00000102974"), new Entity("ENSG00000163346")));
 		
-		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, new Species("Human",9606), new Species("Mouse",10090));
+		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid,Species.Human, Species.Mouse);
 		//orthologMappings.addAll(service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, new Species("Human",9606), new Species("Mouse",10090)));
 		
 		CroCoLogger.getLogger().info(String.format("Read human networks (root group id: %s)" , humanIds.toString()));

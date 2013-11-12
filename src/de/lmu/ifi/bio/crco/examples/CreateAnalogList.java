@@ -62,8 +62,8 @@ public class CreateAnalogList {
 		NetworkHierachyNode hierachy = service.getNetworkHierachy(null);
 		NetworkHierachyNode humanRoot = filter(hierachy,humanId);
 		NetworkHierachyNode mouseRoot =  filter(hierachy,mouseId);
-		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, new Species("Human",9606), new Species("Mouse",10090));
-		orthologMappings.addAll(service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, new Species("Human",9606), new Species("Mouse",10090)));
+		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, Species.Human, Species.Mouse);
+		orthologMappings.addAll(service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human,Species.Mouse));
 		
 		Stack<NetworkHierachyNode> stack = new Stack<NetworkHierachyNode>();
 		stack.add(humanRoot);
