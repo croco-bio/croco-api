@@ -1,0 +1,230 @@
+package de.lmu.ifi.bio.crco.connector;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.StreamException;
+
+import de.lmu.ifi.bio.crco.data.ContextTreeNode;
+import de.lmu.ifi.bio.crco.data.Entity;
+import de.lmu.ifi.bio.crco.data.IdMapping;
+import de.lmu.ifi.bio.crco.data.IdentifierType;
+import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.crco.data.Option;
+import de.lmu.ifi.bio.crco.data.Species;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.network.DirectedNetwork;
+import de.lmu.ifi.bio.crco.network.Network;
+import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
+import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
+import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
+import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.Pair;
+
+public class RemoteWebService implements QueryService{
+	private String baseUrl;
+	public RemoteWebService(String baseUrl){
+		this.baseUrl = baseUrl;
+	
+	}
+	public static InputStream getStreamedData(String baseUrl, String method, Object...parameters) throws Exception{
+		URL url = new URL(String.format("%s/%s",baseUrl  , method));
+		
+		CroCoLogger.getLogger().debug(String.format("Query remote method %s",method));
+		
+		URLConnection conn = url.openConnection();
+		conn.setDoOutput(true);
+		
+		XStream xstream = new XStream();
+		
+		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
+		for(Object parameter: parameters){
+			out.writeObject(parameter);
+		}
+		out.close();
+		
+		return conn.getInputStream();
+	}
+	
+	public static List<Object> performceOperation(String baseUrl, String method, Object...parameters) throws IOException{
+		URL url = new URL(String.format("%s/%s",baseUrl  , method));
+		
+		CroCoLogger.getLogger().debug(String.format("Query remote method %s",method));
+		
+		URLConnection conn = url.openConnection();
+		conn.setDoOutput(true);
+		
+		XStream xstream = new XStream();
+		
+		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
+		for(Object parameter: parameters){
+			out.writeObject(parameter);
+		}
+		out.close();
+		
+		ObjectInputStream in = null;
+		try{
+			 in = xstream.createObjectInputStream(conn.getInputStream());
+		}catch(StreamException e){
+			CroCoLogger.getLogger().fatal("Cannot create object:" + e.getMessage());
+			return null;
+		}
+		List<Object> objects = new ArrayList<Object>();
+		int k = 0;
+		CroCoLogger.getLogger().debug(String.format("Reading results"));
+		
+		while (true) {
+			try {
+				objects.add( in.readObject() );
+			} catch (Exception e) {
+				CroCoLogger.getLogger().fatal("Cannnot read result from web service\n" + e.getMessage());
+				break;
+			} 
+		}
+		CroCoLogger.getLogger().debug(String.format("Read:%d objects",k));
+		return objects;
+	}
+	@Override
+	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation)throws Exception {
+		return (OrthologMapping)performceOperation(baseUrl,"getOrthologMapping",orthologMappingInformation).get(0);
+	}
+	@Override
+	public Network readNetwork(Integer groupId, Integer contextId,boolean globalRepository) throws Exception {
+		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+
+		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),networkNode.getIdentifiers().get(0),globalRepository);
+		
+		InputStream is = getStreamedData(baseUrl,"readNetwork",groupId,contextId,globalRepository);
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(is)));
+		String line = null;
+		while (( line = br.readLine())!=null){
+			String[] tokens = line.split("\t");
+			Entity factor = new Entity(tokens[0]);
+			Entity target = new Entity(tokens[1]);
+			network.add(factor, target, groupId);
+		}
+		br.close();
+		
+		is.close();
+		
+		return network;
+	}
+	@Override
+	public List<TFBSPeak> getTFBSBindings(int groupId, Integer contextId)throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	@Override
+	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
+		return (NetworkHierachyNode)performceOperation(baseUrl,"getNetworkHierachy",path).get(0);
+	}
+
+
+	@Override
+	public List<NetworkHierachyNode> findNetwork(List<Pair<Option, String>> options) throws Exception {
+		return (List)performceOperation(baseUrl,"findNetwork",options);
+	}
+
+	@Override
+	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
+		return (NetworkHierachyNode)performceOperation(baseUrl,"getNetworkHierachyNode",groupId).get(0);
+	}
+
+	@Override
+	public List<Pair<Option, String>> getNetworkInfo(Integer groupId) throws Exception {
+		return (List)performceOperation(baseUrl,"getNetworkInfo",groupId);
+	}
+
+	@Override
+	public List<Entity> getEntities(Species species, String annotation, ContextTreeNode context) throws Exception {
+		return (List)performceOperation(baseUrl,"getEntities",annotation,context);
+	}
+
+
+
+	@Override
+	public Integer getNumberOfEdges(Integer groupId) throws Exception {
+		return (Integer)performceOperation(baseUrl,"getNumberOfEdges",groupId).get(0);
+	}
+
+
+
+
+	@Override
+	public List<OrthologMappingInformation> getTransferTargetSpecies(int taxId)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public List<OrthologMappingInformation> getOrthologMappingInformation(
+			OrthologDatabaseType database, Species species1, Species species2)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Species> getPossibleTransferSpecies() throws Exception {
+		return (List)performceOperation(baseUrl,"getPossibleTransferSpecies");
+	}
+
+	@Override
+	public List<Pair<IdentifierType, IdentifierType>> getIdMapping(Species species) throws Exception {
+		return (List)performceOperation(baseUrl,"getIdMapping",species);
+	}
+
+	@Override
+	public List<Pair<IdentifierType, IdentifierType>> getIdMappingList( Species species) throws Exception {
+		return (List)performceOperation(baseUrl,"getIdMappingList",species);
+	}
+
+	@Override
+	public List<ContextTreeNode> getContextTreeNodes(String name) throws Exception {
+		return (List)performceOperation(baseUrl,"getContextTreeNodes",name);
+	}
+
+	@Override
+	public List<ContextTreeNode> getChildren(ContextTreeNode node)throws Exception {
+		return (List)performceOperation(baseUrl,"getChildren",node);
+	}
+
+	@Override
+	public IdMapping getIdMapping(Species species, IdentifierType id1,IdentifierType id2) throws Exception {
+		return (IdMapping)performceOperation(baseUrl,"getIdMapping",species,id1,id2).get(0);
+	}
+
+	@Override
+	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
+		return (ContextTreeNode)performceOperation(baseUrl,"getSpecies",sourceId).get(0);
+	}
+
+	@Override
+	public List<Species> getSpecies(String prefix) throws Exception {
+		return (List)performceOperation(baseUrl,"getSpecies",prefix).get(0);
+	}
+
+	@Override
+	public Species getSpecies(Integer taxId) throws Exception {
+		return (Species)performceOperation(baseUrl,"getSpecies",taxId).get(0);
+	}
+	
+
+}

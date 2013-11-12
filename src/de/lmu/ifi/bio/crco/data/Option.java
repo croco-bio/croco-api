@@ -1,0 +1,61 @@
+package de.lmu.ifi.bio.crco.data;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public enum Option {
+
+	 project(OptionType.Experiment,"Project"),
+	 lab(OptionType.Experiment,"Laboratory where the experiment was conducted"),
+	 composite(OptionType.Experiment,"Composite"),
+	 cellLine(OptionType.Experiment,"Cell line","cell"),
+	 treatment(OptionType.Experiment,"Treatment"),
+	 strain(OptionType.Experiment,"Strain"),
+	 age(OptionType.Experiment,"Age"),
+	 replicate(OptionType.Experiment,"Replicate"),
+	 TaxId(OptionType.Experiment,"Tax ID"),
+	 NetworkName(OptionType.Experiment,"Network name"),
+	 NetworkType(OptionType.Experiment,"Network type"),
+	 EdgeType(OptionType.Experiment,"Edge type"),
+	 developmentStage(OptionType.Experiment,"Developmental-Stage","developmental-stage"),
+	 reference(OptionType.Experiment,"Reference"),
+	 MotifSet(OptionType.Experiment,"PWM motif collection name"),
+	 
+	 AntibodyTargetMapped(OptionType.Experiment,"Antibody target (mapped to ensembl)","targetMapped"),
+	 AntibodyTarget(OptionType.Experiment,"Antibody target","antibody"),
+	 
+	 Upstream(OptionType.Experiment,"TSS upstream"),
+	 Downstream(OptionType.Experiment,"TSS downstream"),
+	 DatabaseName(OptionType.Experiment,"Database name"),
+	 DNaseMotifPVal(OptionType.Experiment,"DNase motif match p-value"),
+	 DNaseMotifSet(OptionType.Experiment,"DNase motif set"),
+	 
+	 ConfidenceThreshold(OptionType.Experiment,"Confidence threshold"),
+	 
+	 numNodes(OptionType.NetworkFeature,"The number of nodes"),
+	 numInteraction(OptionType.NetworkFeature,"The number of regulatory interactions"),
+	 
+	 networkOverlap(OptionType.NetworkSimilarity,"Network Jaccard index"),
+	 explainability(OptionType.NetworkSimilarity,"Fraction of explainable source interactions"),
+	 networkDegreeOverlap(OptionType.NetworkSimilarity,"Network degree overlap");
+	 
+	 public OptionType optionType;
+	 public String description;
+	 public List<String> alias;
+	 
+	 public enum OptionType{
+		 Experiment,NetworkFeature,NetworkSimilarity;
+	 }
+	 
+	 Option(OptionType optionType,String description,String...alias){
+		 this.optionType = optionType;
+		 this.description = description;
+		 this.alias = new ArrayList<String>();
+		 this.alias.add(this.name());
+		 if ( alias.length > 0) this.alias.addAll(Arrays.asList(alias));
+	 }
+	 Option(OptionType optionType){
+		 this.optionType = optionType;
+	 }
+}
