@@ -50,7 +50,7 @@ public class Engine {
 			for(Method method : operation.getMethods()){
 				if ( method.isAnnotationPresent(ParameterWrapper.class))  {
 					ParameterWrapper annotations = method.getAnnotation(ParameterWrapper.class);
-					Pair<Class<? extends GeneralOperation>,Parameter> parameter = new Pair<Class<? extends GeneralOperation>,Parameter(operation,annotations.annotationType());
+				//	Pair<Class<? extends GeneralOperation>,Parameter> parameter = new Pair<Class<? extends GeneralOperation>,Parameter(operation,annotations.annotationType());
 					
 					for(String alias : annotations.alias() ) {
 						
