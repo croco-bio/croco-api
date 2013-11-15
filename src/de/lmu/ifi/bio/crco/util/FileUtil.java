@@ -68,6 +68,7 @@ public class FileUtil {
 		return entries;
 	}
 	
+	
 	/**
 	 * Reads a mapping file and creates a look-up for the from column to the to column  
 	 * @param file - mapping file

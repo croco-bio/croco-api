@@ -22,6 +22,7 @@ public enum Option {
 	 reference(OptionType.Experiment,"Reference"),
 	 MotifSet(OptionType.Experiment,"PWM motif collection name"),
 	 
+	 
 	 AntibodyTargetMapped(OptionType.Experiment,"Antibody target (mapped to ensembl)","targetMapped"),
 	 AntibodyTarget(OptionType.Experiment,"Antibody target","antibody"),
 	 
@@ -30,11 +31,11 @@ public enum Option {
 	 DatabaseName(OptionType.Experiment,"Database name"),
 	 DNaseMotifPVal(OptionType.Experiment,"DNase motif match p-value"),
 	 DNaseMotifSet(OptionType.Experiment,"DNase motif set"),
-	 
 	 ConfidenceThreshold(OptionType.Experiment,"Confidence threshold"),
+
+	 networkFile(OptionType.Experiment,"Underlying network file"),
 	 
-	 numNodes(OptionType.NetworkFeature,"The number of nodes"),
-	 numInteraction(OptionType.NetworkFeature,"The number of regulatory interactions"),
+	 FactorList(OptionType.Experiment,"List of transcription factors"),
 	 
 	 networkOverlap(OptionType.NetworkSimilarity,"Network Jaccard index"),
 	 explainability(OptionType.NetworkSimilarity,"Fraction of explainable source interactions"),
@@ -45,7 +46,7 @@ public enum Option {
 	 public List<String> alias;
 	 
 	 public enum OptionType{
-		 Experiment,NetworkFeature,NetworkSimilarity;
+		 Experiment,NetworkSimilarity;
 	 }
 	 
 	 Option(OptionType optionType,String description,String...alias){
