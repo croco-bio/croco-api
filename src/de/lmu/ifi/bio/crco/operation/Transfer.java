@@ -53,7 +53,7 @@ public class Transfer extends GeneralOperation{
 		
 		Network ret =Network.getEmptyNetwork(network.getClass(), "Transferred", targetSpecies.getTaxId(),false );
 		
-		CroCoLogger.getLogger().debug(String.format("Transfer %s to %d (%s)", network, ret.getTaxId(),ret.getClass().getSimpleName()));
+		CroCoLogger.getLogger().debug(String.format("Transfer %s (%d) to %d", network.toString(),network.getTaxId(), ret.getTaxId()));
 		for(int edgeId  : network.getEdgeIds()){
 			Tuple<Entity, Entity> edge = network.getEdge(edgeId);
 			

@@ -11,9 +11,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.zip.GZIPInputStream;
@@ -67,6 +70,7 @@ public class NetworkHierachy  {
 		stat.execute("DELETE FROM NetworkHierachy");
 		stat.execute("DELETE FROM Network");
 		stat.execute("DELETE FROM NetworkOption");
+		stat.execute("DELETE FROM NetworkSimilarity");
 		stat.close();
 		
 		File repositoryDir = new File(line.getOptionValue("repositoryDir"));
@@ -81,16 +85,7 @@ public class NetworkHierachy  {
 		
 		PreparedStatement hierachyPrepStat = connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location) values(?,?,?,?,?,?,?)");
 		
-		hierachy.processHierachy(repositoryDir, hierachy.new NetworkProcessor(connection, networkFile,hierachyPrepStat), hierachy.new SubFolderProcess(hierachyPrepStat));
-		
-		System.out.println("Sleeping for 5sec");
-		Thread.sleep(5000);
-		
-		System.out.println("Loading network into database");
-		stat = connection.createStatement();
-		stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network (group_id,gene1,gene2)",networkFile.toString()) );
-		stat.close();
-		
+		hierachy.processHierachy(repositoryDir, hierachy.new NetworkProcessor(repositoryDir,connection, networkFile,hierachyPrepStat), hierachy.new SubFolderProcess(hierachyPrepStat));
 		
 		connection.close();
 		
@@ -212,13 +207,23 @@ public class NetworkHierachy  {
 	class NetworkProcessor implements CroCoRepositoryProcessor{
 		private PreparedStatement hierachy;
 		private PreparedStatement networkOptions;
+		
+		private List<File> statFiles;
 		private BufferedWriter bwNetwork;
 		private int counter = 0;
 		
-		public NetworkProcessor(Connection connection, File networkFile,PreparedStatement hierachy) throws Exception{
+		private Connection connection;
+		private File repository;
+		private File networkFile;
+		
+		public NetworkProcessor(File repository,Connection connection, File networkFile,PreparedStatement hierachy) throws Exception{
 			this.hierachy = hierachy;
+			this.repository = repository;
+			this.networkFile = networkFile;
+			this.statFiles = new ArrayList<File>();
 			bwNetwork = new BufferedWriter(new FileWriter(networkFile));
 			
+			this.connection = connection;
 			networkOptions = connection.prepareStatement("INSERT INTO NetworkOption(option_id,group_id,value) values(?,?,?)");
 
 		}
@@ -238,7 +243,7 @@ public class NetworkHierachy  {
 				hierachy.executeBatch();
 				networkOptions.executeBatch();
 			}
-			
+			this.statFiles.add(statFile);
 			
 			//Integer newRootId = groupIdCounter++;
 			HashMap<Option, String> infoAnnotations = readInfoFile(infoFile);
@@ -260,7 +265,6 @@ public class NetworkHierachy  {
 				networkOptions.setString(3, e.getValue());
 				networkOptions.addBatch();
 			}
-		//	addtoNetwork(bwNetwork,networkId,networkFile);
 			bwNetwork.flush();
 			hierachy.addBatch();
 			
@@ -287,6 +291,68 @@ public class NetworkHierachy  {
 			hierachy.close();
 			bwNetwork.flush();
 			bwNetwork.close();
+			
+			HashMap<String,Integer> fileIdMapping =  new HashMap<String,Integer>();
+			Statement stat = connection.createStatement();
+			stat.execute("SELECT group_id, network_file_location FROM NetworkHierachy where has_network = 1" );
+			ResultSet res = stat.getResultSet();
+			while(res.next()){
+				Integer groupId = res.getInt(1);
+				File file = new File(res.getString(2));
+				
+				fileIdMapping.put(file.toString().replace(repository.toString(), ""), groupId);
+			}
+			res.close();
+			stat.close();
+			
+			PreparedStatement simStat = connection.prepareStatement("INSERT INTO NetworkSimilarity (group_id_1,group_id_2,option_id,value) values(?,?,?,?)");
+			
+			for(File file : statFiles){
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				String line = null;
+				while ((line=br.readLine())!=null){
+					if ( line.startsWith("#")) continue;
+					String[] tokens = line.split("\t");
+					Option option = Option.valueOf(tokens[0]) ;
+					String file1 = tokens[1];
+					String file2 = tokens[2];
+					Float value = Float.valueOf(tokens[3]);
+					Integer groupId1 = fileIdMapping.get(file1);
+					Integer groupId2 = fileIdMapping.get(file2);
+					if ( groupId1 == null || groupId2 == null) {
+						CroCoLogger.getLogger().warn(String.format("No id mapping for %s or %s",file1,file2));
+						continue;
+					}
+					simStat.setInt(1, groupId1);
+					simStat.setInt(2, groupId2);
+					simStat.setInt(3, option.ordinal());
+					simStat.setFloat(4, value);
+					simStat.addBatch();
+					
+					if (!groupId1.equals(groupId2) && !option.equals(Option.explainability)){ //TODO: solve that!
+						simStat.setInt(2, groupId1);
+						simStat.setInt(1, groupId2);
+						simStat.setInt(3, option.ordinal());
+						simStat.setFloat(4, value);
+						simStat.addBatch();
+					}
+				}
+				br.close();
+				simStat.executeBatch();
+			}
+			simStat.executeBatch();
+			simStat.close();
+			
+
+			
+			System.out.println("Sleeping for 5sec");
+			Thread.sleep(5000);
+			
+			System.out.println("Loading network into database");
+			stat = connection.createStatement();
+			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network (group_id,gene1,gene2)",networkFile.toString()) );
+			stat.close();
+			
 		}
 		
 	}
@@ -321,6 +387,7 @@ public class NetworkHierachy  {
 	private static Network getNetwork(File networkFile,HashMap<Option,String> infos, boolean gloablRepository) throws Exception{
 		Integer taxId = Integer.valueOf(infos.get(Option.TaxId));
 		String name = infos.get(infos.get(Option.NetworkName));
+		if ( name == null) name = infos.get(Option.networkFile);
 		Network network = new DirectedNetwork(name,taxId,gloablRepository);
 		network.setNetworkInfo(infos);
 		

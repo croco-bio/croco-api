@@ -68,7 +68,7 @@ public class PairwiseFeatures {
 	private File repositoryDir;
 	private NetworkCollector collector;
 	private HashMap<Option, PairwiseStatGenerator> generators;
-	private int bufferSize = 50;
+	private int bufferSize = 20;
 	private Network sourceNetwork;
 	private HashMap<Pair<Integer,Integer>,OrthologMappingInformation> possibleMappings;
 	private QueryService service;
@@ -110,6 +110,7 @@ public class PairwiseFeatures {
 			BufferedReader br = new BufferedReader(new FileReader(outputFile));
 			String line = null;
 			while ((line=br.readLine())!=null){
+				if ( line.startsWith("#")) continue;
 				String[] tokens = line.split("\t");
 				Option option = Option.valueOf(tokens[0]) ;
 				String file1 = tokens[1];
@@ -124,7 +125,6 @@ public class PairwiseFeatures {
 		}
 		bw = new BufferedWriter(new FileWriter(outputFile,true));
 			
-		
 		List<Species> speciesOfInterest = new ArrayList<Species>();
 		speciesOfInterest.add(Species.Human);
 		speciesOfInterest.add(Species.Fly);
@@ -143,7 +143,7 @@ public class PairwiseFeatures {
 				}
 			}	
 		}
-		
+
 		CroCoLogger.getLogger().info(String.format("Ortholog mappings: %d",possibleMappings.size()));
 		
 		Reflections reflections = new Reflections("de.lmu.ifi.bio.crco.stat.generator");
@@ -167,14 +167,17 @@ public class PairwiseFeatures {
 		bw.flush();
 		bw.close();
 	}
+
+	
 	public boolean doOverlap(Integer taxId1, Set<String> factorList1, Integer taxId2, Set<String> factorList2){
 		
-		 if ( taxId1.equals(taxId2)){
+		 if (! taxId1.equals(taxId2)){
 			 Set<String> transferredList2 = new HashSet<String>();
 			 OrthologMappingInformation mapping = possibleMappings.get(new Pair<Integer,Integer>(taxId1,taxId2));
-			 
+			 if ( mapping == null) throw new RuntimeException("No ortholog mapping for" + taxId1 + " " + taxId2);
 			 for(String factor :factorList2 ){
 				 Set<Entity> mappedTargets = OrthologRepository.getInstance(service).getOrthologMapping(mapping).getOrthologs(new Entity(factor));
+				 if (mappedTargets == null ) continue;
 				 for(Entity mappedTarget: mappedTargets){
 					 transferredList2.add(mappedTarget.getIdentifier());
 				 }
@@ -197,48 +200,17 @@ public class PairwiseFeatures {
 		CroCoLogger.getLogger().info("Number of networks: " + networks.size());
 		String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
 		for(int i = 0 ; i< networks.size() ; i+=bufferSize){
+			CroCoLogger.getLogger().info(String.format("State: %d of %d",i,networks.size()));
 			CroCoLogger.getLogger().debug("Buffer networks");
 			List<Network> bufferedNetworks = new ArrayList<Network>();
 			for(int j = i ; j <i+bufferSize && j < networks.size();j++){
 
 				Network network = networks.get(j);
-				
-				String factorList1 = sourceNetwork.getOptionValue(Option.FactorList);
-				String factorList2 = network.getOptionValue(Option.FactorList);
-				
-				if ( factorList1 != null && factorList2 != null){
-					if ( doOverlap(sourceNetwork.getTaxId(),new HashSet<String>(Arrays.asList(factorList1.split("\\s+"))),network.getTaxId(),new HashSet<String>(Arrays.asList(factorList2.split("\\s+")))) == false) 
-					continue;
-				}
-				
-				if (sourceNetwork.getOptionValue(Option.NetworkType).equals(NetworkType.ChIP.name()) && network.getOptionValue(Option.NetworkType).equals(NetworkType.ChIP.name())){
-					String sourceFactor =  sourceNetwork.getOptionValue(Option.AntibodyTargetMapped).toUpperCase();
-					String targetFactor = network.getOptionValue(Option.AntibodyTargetMapped).toUpperCase();
-					
-					if ( sourceNetwork.getTaxId().equals(network.getTaxId())){
-						if (! ( sourceFactor.equals(targetFactor))) {
-							continue;
-						}else{
-							 OrthologMappingInformation mapping = possibleMappings.get(new Pair<Integer,Integer>(network.getTaxId(),sourceNetwork.getTaxId()));
-							 Set<Entity> mappedTargets = OrthologRepository.getInstance(service).getOrthologMapping(mapping).getOrthologs(new Entity(targetFactor));
-							 boolean ortholog = false;
-							 for(Entity mappedTarget: mappedTargets ){
-								 if ( mappedTarget.getIdentifier().equals(sourceFactor)){
-									 ortholog =true;
-									 break;
-								 }
-							 }
-							 if ( ortholog == false) continue;
-						}
-					}
-				
-				}
-				
 				String targetNetworkName = network.getOptionValue(Option.networkFile).replace(repositoryDir.toString(),"").replace("//", "/");
-				
 
 				boolean skip = true;
 				for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
+			
 					if ( !computations.containsKey(e.getKey()) || !computations.get(e.getKey()).contains(targetNetworkName)) {                    //when not yet computed
 						if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
 							skip = false;																										  // than can not skip
@@ -246,7 +218,25 @@ public class PairwiseFeatures {
 						}
 					}
 				}
-				if ( skip) continue;
+				if ( skip){
+					CroCoLogger.getLogger().debug(String.format("Skip network %s, because of ASYMMETRIC (and or already computed) metric",networks.get(i)));
+					continue;
+				}
+				
+				Set<String> factorList1 = getFactorList(sourceNetwork.getOptionValue(Option.FactorList));
+				Set<String> factorList2 = getFactorList(network.getOptionValue(Option.FactorList));
+				
+				
+				if ( factorList1.size() > 0 && factorList2.size() >0){ //check only if factor list as provided 
+					CroCoLogger.getLogger().debug(String.format("Check factor list of  %s and %s",sourceNetwork.toString(),networks.get(i).toString()));
+					if ( doOverlap(sourceNetwork.getTaxId(),factorList1,network.getTaxId(),factorList2) == false) {
+						CroCoLogger.getLogger().debug(String.format("Skip network %s, because of none-factor overlap",networks.get(i)));
+						continue;
+					}else{
+						CroCoLogger.getLogger().debug(String.format("Network %s and %s have factor overlap",sourceNetwork.toString(),networks.get(i).toString()));
+					}
+				}
+
 				File file = new File(networks.get(j).getOptionValue(Option.networkFile).toString());
 				Network tmpNetwork = new DirectedNetwork(network);
 				NetworkHierachy.readNetwork(tmpNetwork,file);
@@ -267,8 +257,12 @@ public class PairwiseFeatures {
 			for(Network network : bufferedNetworks){
 				String targetNetworkName = network.getOptionValue(Option.networkFile).replace(repositoryDir.toString(),"").replace("//", "/");
 				for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
-					float sim = e.getValue().compute(sourceNetwork,network);
-					bw.write(e.getKey().name() + "\t" + sourceNetworkName + "\t" + targetNetworkName + "\t" + sim+ "\n");
+					if ( !computations.containsKey(e.getKey()) || !computations.get(e.getKey()).contains(targetNetworkName)) {                    //when not yet computed
+						if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
+							float sim = e.getValue().compute(sourceNetwork,network);
+							bw.write(e.getKey().name() + "\t" + sourceNetworkName + "\t" + targetNetworkName + "\t" + sim+ "\n");
+						}
+					}
 				}
 			}
 			bw.flush();
@@ -278,6 +272,18 @@ public class PairwiseFeatures {
 		
 	}
 	
+
+
+	private Set<String> getFactorList(String factorList) {
+		Set<String> ret = new HashSet<String>();
+		if ( factorList != null){
+			for(String factor : factorList.split("\\s+")){
+				ret.add(factor.toUpperCase().trim());
+			}
+		}
+		return ret;
+	}
+
 	public static void main(String[] args) throws Exception {
 		
 		HelpFormatter lvFormater = new HelpFormatter();
@@ -318,6 +324,7 @@ public class PairwiseFeatures {
 		featureGenerator.init();
 		featureGenerator.compute();
 		featureGenerator.finish();
+		CroCoLogger.getLogger().info("Finished");
 	}
 
 }
