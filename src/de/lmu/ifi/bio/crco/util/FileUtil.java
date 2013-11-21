@@ -12,67 +12,88 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Collection of commonly used methods to read files
- * @author pesch
+ * Collection of commonly used methods to read files (including mapping files)
+ * @author rpesch
  *
  */
 public class FileUtil {
+	
+	public static ColumnLookUp fileLookUp(File inputFile, String seperator,List<String> columnNames) {
+		return new ColumnLookUp(inputFile,seperator,columnNames);
+	}
+	public static ColumnLookUp fileLookUp(File inputFile, String seperator) throws IOException{
+		return new ColumnLookUp(inputFile,seperator);
+	}
+	public static MappingFileReader mappingFileReader(String seperator, Integer fromIndex, Integer toIndex,File... inputFiles){
+		return new MappingFileReader(seperator,fromIndex,toIndex,inputFiles);
+	}
+	
 	/**
 	 * Creates a column look-up for a file with a given header. Allows to access each column of each line with its defined column name.
 	 * For example:
 	 * <pre>
 	 * FileUtil.createLookupBasedOnHeader(inFile,"\t").get(0).get("cName")
 	 * </pre>
-	 * returns the value for the column with the name cName for the first row in the file inFile.
-	 * @param file
-	 * @param the column separator e.g. \t
-	 * @return list of look-ups for each line
-	 * @throws IOException
-	 */
-	public static List<HashMap<String,String>> createLookupBasedOnHeader(File file, String seperator) throws IOException{
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		String currentLine = br.readLine();
-		br.close();
+	*/
+	public static class ColumnLookUp{
+		private File inputFile;
+		private String seperator;
+		private boolean skipFirstLine = true;
+		private List<String> columnNames;
 		
-		return readSeperatedFile(Arrays.asList(currentLine.split(seperator)),file,seperator,true);
-	}
-	/**
-	 *  Creates a column look-up based on the defined column names for each line in a file.
-	 * @param columnNames
-	 * @param file
-	 * @param seperator
-	 * @return
-	 * @throws IOException
-	 */
-	public static List<HashMap<String,String>> createLookup(List<String> columnNames, File file, String seperator) throws IOException{
-		return readSeperatedFile(columnNames,file,seperator,false);
-	}
 	
-	private static List<HashMap<String,String>> readSeperatedFile(List<String> columnNames, File file, String seperator, boolean skipFirstLine) throws IOException{
-		List<HashMap<String,String>> entries = new ArrayList<HashMap<String,String>> ();
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		String currentLine = null;
-		if (skipFirstLine ) currentLine = br.readLine();
-		while (( currentLine = br.readLine())!=null){
-			if ( currentLine.startsWith("#")) continue;
-			String[] tokens = currentLine.split(seperator);
-			if ( tokens.length != columnNames.size()) {
-				br.close();
-				throw new IOException("Unexpected number of columns");
-			}
+		private static List<String> headerLookUp(File file, String seperator) throws IOException{
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String currentLine = br.readLine();
+			br.close();
 			
-			HashMap<String,String> information = new HashMap<String,String>();
-			for(int i = 0 ; i< columnNames.size();i++){
-				information.put(columnNames.get(i), tokens[i]);
-			}
-			entries.add(information);
+			return Arrays.asList(currentLine.split(seperator));
 		}
-		br.close();
+
 		
-		return entries;
+		public List<HashMap<String,String>> getLookUp() throws IOException{
+			List<HashMap<String,String>> entries = new ArrayList<HashMap<String,String>> ();
+			BufferedReader br = new BufferedReader(new FileReader(inputFile));
+			String currentLine = null;
+			if (skipFirstLine ) currentLine = br.readLine();
+			while (( currentLine = br.readLine())!=null){
+				if ( currentLine.startsWith("#")) continue;
+				String[] tokens = currentLine.split(seperator);
+				if ( tokens.length != columnNames.size()) {
+					br.close();
+					throw new IOException("Unexpected number of columns");
+				}
+				
+				HashMap<String,String> information = new HashMap<String,String>();
+				for(int i = 0 ; i< columnNames.size();i++){
+					information.put(columnNames.get(i), tokens[i]);
+				}
+				entries.add(information);
+			}
+			br.close();
+			
+			return entries;
+		}
+		public ColumnLookUp headerColumns(List<String> columnNames){
+			this.columnNames = columnNames;
+			return this;
+		}
+		public ColumnLookUp skipFirstLine(boolean skipFirstLine){
+			this.skipFirstLine = skipFirstLine;
+			return this;
+		}
+		public ColumnLookUp(File inputFile,String seperator) throws IOException{
+			this(inputFile,seperator,headerLookUp(inputFile,seperator));
+		}
+		public ColumnLookUp(File inputFile,String seperator,List<String> columnNames){
+			this.inputFile = inputFile;
+			this.seperator = seperator;
+			this.columnNames = columnNames;
+		}
+		
 	}
-	
-	
+
+
 	/**
 	 * MappingFileReader implements the Build pattern. 
 	 * @author rpesch
@@ -80,14 +101,20 @@ public class FileUtil {
 	 */
 	public static class MappingFileReader {
 		private File[] inputFiles;
-		private String seperator;
-		private boolean caseSensitve;
-		private boolean header;
-		private Integer fromIndex;
-		private Integer toIndex;
-		private boolean allColumns;
+		private String seperator = "\t";
+		private boolean caseSensitve = true;
+		private boolean header = false;
+		private Integer fromIndex = 0;
+		private Integer toIndex = 1;
+		private boolean allColumns = false;
 		
 		
+		/**
+		 * Reads a mapping file and creates a look-up for the from column to the to column. 
+		 * Ambiguous mappings are <b>included<b> e.g. i->j and i->k.
+		 * @return n:n mapping
+		 * @throws IOException
+		 */
 		public HashMap<String,Set<String>> readNNMappingFile() throws IOException{
 			HashMap<String,Set<String>> ret = new HashMap<String,Set<String>>();
 			for(File inputFile : inputFiles){
@@ -114,14 +141,8 @@ public class FileUtil {
 			return ret;
 		}
 		/**
-		 * Reads a mapping file and creates a look-up for the from column to the to column  
-		 * @param file - mapping file
-		 * @param seperator - column separator
-		 * @param fromIndex - column index used as key in the look-up
-		 * @param toIndex - column index used as value in the look-up (null indicates to take all indices expect the fromIndex)
-		 * @param header - indicator whether the first line the mapping file is a just a header
-		 * @param caseSensitve 
-		 * @param allColumns - when true creates mapping between fromIndex - > toIndex; ... ; fromIndex -> <number of columns>
+		 * Reads a mapping file and creates a look-up for the from column to the to column. 
+		 * Ambiguous mapping are <b>not included</b> e.g. i->j and i->k.  
 		 * @return n:1 mapping
 		 * @throws IOException
 		 */
@@ -163,28 +184,46 @@ public class FileUtil {
 			
 			return ret;
 		}
-		/*
-		public MappingFileReader setSeperator(String seperator){
-			this.seperator = seperator;
-			return this;
-		}
-		*/
+
+		/**
+		 * Do a case sensitive mapping (converts entries to upper case)
+		 * @param caseSensitve
+		 * @return
+		 */
 		public MappingFileReader caseSensetive(boolean caseSensitve){
 			this.caseSensitve = caseSensitve;
 			return this;
 		}
 		
+		/**
+		 * Skip header
+		 * @param header
+		 * @return MappingFileReader
+		 */
 		public MappingFileReader hasHeader(boolean header){
 			this.header = header;
 			return this;
 		}
+		/**
+		 * Includes also all columns after the toIndex into the mapping
+		 * @param allColumns
+		 * @return
+		 */
 		public MappingFileReader includeAllColumnsAfterToIndex(boolean allColumns){
 			this.allColumns = allColumns;
 			return this;
 		}
 		
-
+		/**
+		 * Constructs a MappingFileReader for a list of input files.  
+		 * @param seperator -- the seperator between columns
+		 * @param fromIndex -- the from column
+		 * @param toIndex -- the two column
+		 * @param inputFiles -- a list of input files.
+		 */
 		public MappingFileReader(String seperator, Integer fromIndex, Integer toIndex,File... inputFiles){
+			if ( inputFiles.length == 0) throw new IllegalArgumentException("At least one input mapping file is required");
+			
 			this.fromIndex = fromIndex;
 			this.toIndex = toIndex;
 			this.seperator = seperator;
