@@ -191,7 +191,7 @@ public class FIMOHandler extends TFBSHandler{
 				System.exit(1);
 			}
 			
-			motifMappingFiles[i]  = mappingFile;	
+			motifMappingFiles[i++]  = mappingFile;	
 		}
 		
 		
@@ -243,12 +243,6 @@ public class FIMOHandler extends TFBSHandler{
 		bwInfo.write(String.format("%s: %s\n",Option.Upstream.name(), upstream + ""));
 		bwInfo.write(String.format("%s: %s\n",Option.Downstream.name(), downstream +""));
 	
-	
-		bwInfo.flush();
-		bwInfo.close();
-		
-		
-		
 		File annotationFile = new File(baseFile + ".annotation.gz");
 		BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
 		DirectedNetwork network = new DirectedNetwork(motifSetName,taxId,false);
@@ -267,6 +261,15 @@ public class FIMOHandler extends TFBSHandler{
 			}
 			bwAnnotation.flush();
 		}
+		
+		StringBuffer factorStr = new StringBuffer();
+		for(Entity factor: network.getTargets()){
+			factorStr.append(factor.getIdentifier() + " ");
+		}
+		bwInfo.write(String.format("%s: %s\n",Option.FactorList,factorStr.toString().trim()));
+		bwInfo.flush();
+		bwInfo.close();
+		
 		CroCoLogger.getLogger().info(String.format("%s network size: %d",motifSetName,network.getSize()));
 		bwAnnotation.close();
 		File networkFile = new File(baseFile + ".network.gz");
