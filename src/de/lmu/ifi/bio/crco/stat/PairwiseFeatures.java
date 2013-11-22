@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +23,6 @@ import org.reflections.Reflections;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.Entity;
-import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
@@ -41,7 +39,7 @@ import de.lmu.ifi.bio.crco.util.NetworkHierachy.CroCoRepositoryProcessor;
 import de.lmu.ifi.bio.crco.util.Pair;
 
 public class PairwiseFeatures {
-	class NetworkCollector implements CroCoRepositoryProcessor {
+	public class NetworkCollector implements CroCoRepositoryProcessor {
 		private List<Network> networks;
 		
 		public NetworkCollector(){
@@ -65,29 +63,98 @@ public class PairwiseFeatures {
 		public void finish() throws Exception {}
 		
 	}
-	private File repositoryDir;
-	private NetworkCollector collector;
-	private HashMap<Option, PairwiseStatGenerator> generators;
-	private int bufferSize = 20;
-	private Network sourceNetwork;
-	private HashMap<Pair<Integer,Integer>,OrthologMappingInformation> possibleMappings;
-	private QueryService service;
-	private BufferedWriter bw = null;
-	private File outputFile = null;
-	private HashMap<Option,HashSet<String>> computations = null;
-	
-	public PairwiseFeatures(File networkFile, File networkInfo, File outputFile, File repositoryDir ) throws Exception{
-		this.repositoryDir = repositoryDir;
-		this.collector = new NetworkCollector(); 
-		sourceNetwork =  NetworkHierachy.getNetwork(networkInfo, networkFile, false);
-		CroCoLogger.getLogger().info(String.format("Source network: %d", sourceNetwork.getSize()));
-		this.possibleMappings = new HashMap<Pair<Integer,Integer>,OrthologMappingInformation> ();
-		service = new LocalService();
-		this.outputFile = outputFile;
-		this.computations = new HashMap<Option,HashSet<String>>();
+	public static class Check{
+		public static void main(String[] args) throws Exception{
+			HelpFormatter lvFormater = new HelpFormatter();
+			CommandLineParser parser = new BasicParser();
+		
+			Options options = new Options();
+			options.addOption(OptionBuilder.withLongOpt("repositoryDir").withArgName("DIR").withDescription("Location of the croco Repository").isRequired().hasArgs(1).create("repositoryDir"));
+			
+			CommandLine line = null;
+			try{
+				line = parser.parse( options, args );
+			}catch(Exception e){
+				System.err.println( e.getMessage());
+				lvFormater.printHelp(120, "java " + PairwiseFeatures.class.getName(), "", options, "", true);
+				System.exit(1);
+			}
+			File repositoryDir = new File(line.getOptionValue("repositoryDir"));
+
+			PairwiseFeatures features = new PairwiseFeatures(repositoryDir);
+			
+			NetworkCollector collector = features.new NetworkCollector(); 
+			NetworkHierachy hierachy = new NetworkHierachy();
+			hierachy.processHierachy(repositoryDir, collector, null);
+			
+			List<Network> networks = collector.getNetworks();
+			
+			
+			for(Network sourceNetwork : networks){
+				File networkFile = new File(sourceNetwork.getOptionValue(Option.networkFile));
+				
+				File statFile =new File(networkFile.toString().replace(".network.gz", ".stat"));
+				//sourceNetwork.getTaxId()
+				sourceNetwork.addNetworkInfo( Option.networkFile, networkFile.toString());
+				if ( !Species.isKnownSpecies(sourceNetwork.getTaxId())) continue;
+				
+				String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
+				
+				HashMap<Option,HashSet<String>> computations = PairwiseFeatures.readCurrentOutputFile(repositoryDir, statFile);
+				for(int i = 0 ; i< networks.size() ; i++){
+					Network network = networks.get(i);
+					if ( !Species.isKnownSpecies(network.getTaxId())) continue;
+					
+					String targetNetworkName = network.getOptionValue(Option.networkFile).replace(repositoryDir.toString(),"").replace("//", "/");
+
+					if ( ! features.canSkip(computations, sourceNetwork, sourceNetworkName, network, targetNetworkName) ) {
+						System.out.printf("Missing %s in %s\n", targetNetworkName,sourceNetworkName );
+						break;
+					}
+					
+					
+				}
+			}
+		}
+
 	}
 	
-	private Network transfer(Network network)  throws Exception{
+	private QueryService service;
+	private File repositoryDir;
+	private HashMap<Option, PairwiseStatGenerator> generators;
+	private int bufferSize = 20;
+	private HashMap<Pair<Integer,Integer>,OrthologMappingInformation> possibleMappings;
+	//private HashMap<Option,HashSet<String>> computations = null;
+	public PairwiseFeatures( File repositoryDir ) throws Exception{
+		this.repositoryDir = repositoryDir;
+		this.service = new LocalService();
+		
+		this.possibleMappings = new HashMap<Pair<Integer,Integer>,OrthologMappingInformation> ();
+	
+		this.generators =new HashMap<Option, PairwiseStatGenerator> ();
+		//this.computations = new HashMap<Option,HashSet<String>>();
+		
+
+		for(int i = 0 ; i< Species.knownSpecies.size(); i++){
+			for(int j = i+1 ; j< Species.knownSpecies.size(); j++){
+				List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.knownSpecies.get(i),Species.knownSpecies.get(j));
+				for(OrthologMappingInformation orthologMapping: orthologMappings){
+					Integer tId1 = orthologMapping.getSpecies1().getTaxId();
+					Integer tId2 = orthologMapping.getSpecies2().getTaxId();
+					
+					CroCoLogger.getLogger().info(String.format("Added ortholog mapping: %d to %d",tId1,tId2));
+					possibleMappings.put(new Pair<Integer,Integer>(tId1,tId2),orthologMapping);
+				}
+			}	
+		}
+
+		CroCoLogger.getLogger().info(String.format("Ortholog mappings: %d",possibleMappings.size()));
+		
+		
+		findGenerators();
+	}
+	
+	private Network transfer(Network sourceNetwork,Network network)  throws Exception{
 		
 		Transfer transfer = new Transfer();
 		ArrayList<OrthologMappingInformation> orthologMappings = new ArrayList<OrthologMappingInformation>();
@@ -105,7 +172,9 @@ public class PairwiseFeatures {
 		return transferred;
 		
 	}
-	public void init() throws Exception{
+
+	public static HashMap<Option,HashSet<String>>  readCurrentOutputFile(File repositoryDir,File outputFile) throws Exception{
+		HashMap<Option,HashSet<String>>computations = new HashMap<Option,HashSet<String>>();
 		if ( outputFile.exists()){
 			BufferedReader br = new BufferedReader(new FileReader(outputFile));
 			String line = null;
@@ -123,33 +192,12 @@ public class PairwiseFeatures {
 			br.close();
 			//computations = FileUtil.readN1MappingFile(outputFile, "\t", 0,1, false, true, false);
 		}
-		bw = new BufferedWriter(new FileWriter(outputFile,true));
-			
-		List<Species> speciesOfInterest = new ArrayList<Species>();
-		speciesOfInterest.add(Species.Human);
-		speciesOfInterest.add(Species.Fly);
-		speciesOfInterest.add(Species.Mouse);
-		speciesOfInterest.add(Species.Worm);
-		
-		for(int i = 0 ; i< speciesOfInterest.size(); i++){
-			for(int j = i+1 ; j< speciesOfInterest.size(); j++){
-				List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, speciesOfInterest.get(i),speciesOfInterest.get(j));
-				for(OrthologMappingInformation orthologMapping: orthologMappings){
-					Integer tId1 = orthologMapping.getSpecies1().getTaxId();
-					Integer tId2 = orthologMapping.getSpecies2().getTaxId();
-					
-					CroCoLogger.getLogger().info(String.format("Added ortholog mapping: %d to %d",tId1,tId2));
-					possibleMappings.put(new Pair<Integer,Integer>(tId1,tId2),orthologMapping);
-				}
-			}	
-		}
-
-		CroCoLogger.getLogger().info(String.format("Ortholog mappings: %d",possibleMappings.size()));
-		
+		return computations;
+	}
+	public void  findGenerators() throws Exception{
 		Reflections reflections = new Reflections("de.lmu.ifi.bio.crco.stat.generator");
 		Set<Class<? extends PairwiseStatGenerator>> subTypes = reflections.getSubTypesOf(PairwiseStatGenerator.class);
 
-		generators = new HashMap<Option, PairwiseStatGenerator>();
 		
 		for (Class<? extends PairwiseStatGenerator> c : subTypes) {
 			PairwiseStatGenerator generator = c.getConstructor().newInstance();
@@ -161,15 +209,13 @@ public class PairwiseFeatures {
 				generators.put(generator.getOption(), generator);
 			}
 		}
+	}
 	
-	}
-	private void finish() throws Exception {
-		bw.flush();
-		bw.close();
-	}
+
+
 
 	
-	public boolean doOverlap(Integer taxId1, Set<String> factorList1, Integer taxId2, Set<String> factorList2){
+	public boolean doOverlap( Integer taxId1, Set<String> factorList1, Integer taxId2, Set<String> factorList2){
 		
 		 if (! taxId1.equals(taxId2)){
 			 Set<String> transferredList2 = new HashSet<String>();
@@ -190,15 +236,55 @@ public class PairwiseFeatures {
 		}
 		return false;
 	}
+	public boolean canSkip(HashMap<Option,HashSet<String>> computations, Network sourceNetwork,String sourceNetworkName, Network network, String targetNetworkName ){
+		boolean skip = true;
+		for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
 	
-	public void compute() throws Exception{
+			if ( !computations.containsKey(e.getKey()) || !computations.get(e.getKey()).contains(targetNetworkName)) {                    //when not yet computed
+				if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
+					skip = false;																										  // than can not skip
+					break;
+				}
+			}
+		}
+		if ( skip){
+			CroCoLogger.getLogger().debug(String.format("Skip network %s, because of ASYMMETRIC (and or already computed) metric",network));
+			return true;
+		}
+		
+		Set<String> factorList1 = getFactorList(sourceNetwork.getOptionValue(Option.FactorList));
+		Set<String> factorList2 = getFactorList(network.getOptionValue(Option.FactorList));
+		
+		
+		if ( factorList1.size() > 0 && factorList2.size() >0){ //check only if factor list as provided 
+			CroCoLogger.getLogger().debug(String.format("Check factor list of  %s and %s",sourceNetwork.toString(),network.toString()));
+			if ( doOverlap( sourceNetwork.getTaxId(),factorList1,network.getTaxId(),factorList2) == false) {
+				CroCoLogger.getLogger().debug(String.format("Skip network %s, because of none-factor overlap",network));
+				return true;
+			}
+			CroCoLogger.getLogger().debug(String.format("Network %s and %s have factor overlap",sourceNetwork.toString(),network.toString()));
+		}
+		return false;
+	}
+	
+	public void compute(File networkFile, File networkInfo, File outputFile) throws Exception{
+		
+		HashMap<Option,HashSet<String>> computations = readCurrentOutputFile(repositoryDir,outputFile);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile,true));
+			
+		NetworkCollector collector = new NetworkCollector(); 
+		
+		Network sourceNetwork =  NetworkHierachy.getNetwork(networkInfo, networkFile, false);
+		String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
+		
+		CroCoLogger.getLogger().info(String.format("Source network: %d", sourceNetwork.getSize()));
+		
 		NetworkHierachy hierachy = new NetworkHierachy();
 	
 		hierachy.processHierachy(repositoryDir, collector, null);
 		List<Network> networks = collector.getNetworks();
 
 		CroCoLogger.getLogger().info("Number of networks: " + networks.size());
-		String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
 		for(int i = 0 ; i< networks.size() ; i+=bufferSize){
 			CroCoLogger.getLogger().info(String.format("State: %d of %d",i,networks.size()));
 			CroCoLogger.getLogger().debug("Buffer networks");
@@ -208,46 +294,18 @@ public class PairwiseFeatures {
 				Network network = networks.get(j);
 				String targetNetworkName = network.getOptionValue(Option.networkFile).replace(repositoryDir.toString(),"").replace("//", "/");
 
-				boolean skip = true;
-				for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
-			
-					if ( !computations.containsKey(e.getKey()) || !computations.get(e.getKey()).contains(targetNetworkName)) {                    //when not yet computed
-						if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
-							skip = false;																										  // than can not skip
-							break;
-						}
-					}
-				}
-				if ( skip){
-					CroCoLogger.getLogger().debug(String.format("Skip network %s, because of ASYMMETRIC (and or already computed) metric",networks.get(i)));
-					continue;
-				}
+				if ( canSkip( computations, sourceNetwork,sourceNetworkName,network,targetNetworkName)) continue;
 				
-				Set<String> factorList1 = getFactorList(sourceNetwork.getOptionValue(Option.FactorList));
-				Set<String> factorList2 = getFactorList(network.getOptionValue(Option.FactorList));
-				
-				
-				if ( factorList1.size() > 0 && factorList2.size() >0){ //check only if factor list as provided 
-					CroCoLogger.getLogger().debug(String.format("Check factor list of  %s and %s",sourceNetwork.toString(),networks.get(i).toString()));
-					if ( doOverlap(sourceNetwork.getTaxId(),factorList1,network.getTaxId(),factorList2) == false) {
-						CroCoLogger.getLogger().debug(String.format("Skip network %s, because of none-factor overlap",networks.get(i)));
-						continue;
-					}else{
-						CroCoLogger.getLogger().debug(String.format("Network %s and %s have factor overlap",sourceNetwork.toString(),networks.get(i).toString()));
-					}
-				}
-
 				File file = new File(networks.get(j).getOptionValue(Option.networkFile).toString());
 				Network tmpNetwork = new DirectedNetwork(network);
+			
 				NetworkHierachy.readNetwork(tmpNetwork,file);
 				if (! tmpNetwork.getTaxId().equals(sourceNetwork.getTaxId())){
-					tmpNetwork = transfer(tmpNetwork);
+					tmpNetwork = transfer( sourceNetwork,tmpNetwork);
 					tmpNetwork.setNetworkInfo(network.getNetworkInfo());
 				}
 				if ( tmpNetwork.size() == 0){
-					CroCoLogger.getLogger().debug("No edges:" + tmpNetwork.getOptionValues());
-					System.exit(1);
-					continue;
+					CroCoLogger.getLogger().warn("No edges in network" + tmpNetwork.getOptionValues() + "\t" + file);
 				}
 				bufferedNetworks.add(tmpNetwork);
 				
@@ -261,14 +319,16 @@ public class PairwiseFeatures {
 						if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
 							float sim = e.getValue().compute(sourceNetwork,network);
 							bw.write(e.getKey().name() + "\t" + sourceNetworkName + "\t" + targetNetworkName + "\t" + sim+ "\n");
+							bw.flush();
 						}
 					}
 				}
 			}
-			bw.flush();
+			
 			bufferedNetworks = null;
 		}
-		
+		bw.flush();
+		bw.close();
 		
 	}
 	
@@ -295,6 +355,7 @@ public class PairwiseFeatures {
 		options.addOption(OptionBuilder.withLongOpt("infoFile").withArgName("FILE").withDescription("Valid croco network info file used to compute metrics").isRequired().hasArgs(1).create("infoFile"));
 		options.addOption(OptionBuilder.withLongOpt("networkFile").withArgName("FILE").withDescription("Valid croco network network file used to compute metrics").isRequired().hasArgs(1).create("networkFile"));
 		options.addOption(OptionBuilder.withLongOpt("output").withArgName("DIR").withDescription("Output dir").isRequired().hasArgs(1).create("output"));
+		
 		CommandLine line = null;
 		try{
 			line = parser.parse( options, args );
@@ -320,10 +381,9 @@ public class PairwiseFeatures {
 		CroCoLogger.getLogger().info(String.format("Output file: %s",output.toString()));
 		
 		
-		PairwiseFeatures featureGenerator = new PairwiseFeatures(networkFile,infoFile, output, repositoryDir);
-		featureGenerator.init();
-		featureGenerator.compute();
-		featureGenerator.finish();
+		PairwiseFeatures featureGenerator = new PairwiseFeatures(repositoryDir);
+		
+		featureGenerator.compute(networkFile,infoFile, output);
 		CroCoLogger.getLogger().info("Finished");
 	}
 
