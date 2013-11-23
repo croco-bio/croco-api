@@ -15,8 +15,8 @@ public class EdgeRepository {
 		return instance;
 	}
 	
-	TIntObjectHashMap<Tuple<Entity, Entity>> edgeIdToTuple = new TIntObjectHashMap<Tuple<Entity, Entity>>();
-	TObjectIntHashMap<Tuple<Entity, Entity>> tuplesToEdgeId = new TObjectIntHashMap<Tuple<Entity, Entity>>();
+	private TIntObjectHashMap<Tuple<Entity, Entity>> edgeIdToTuple = new TIntObjectHashMap<Tuple<Entity, Entity>>();
+	private TObjectIntHashMap<Tuple<Entity, Entity>> tuplesToEdgeId = new TObjectIntHashMap<Tuple<Entity, Entity>>();
 	int currentNewEdgeId= 1;
 	
 	public Tuple<Entity, Entity> getEdge(int id) {

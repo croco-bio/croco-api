@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -143,10 +144,10 @@ public class FIMOHandler extends TFBSHandler{
 		
 		Options options = new Options();
 		options.addOption(OptionBuilder.withLongOpt("taxId").withDescription("Tax id").isRequired().hasArgs(1).create("taxId"));
-		options.addOption(OptionBuilder.withLongOpt("tfbsFile").withDescription("tfbsFile").isRequired().hasArgs(1).create("tfbsFils"));
+		options.addOption(OptionBuilder.withLongOpt("tfbsFiles").withDescription("tfbsFiles").isRequired().hasArgs().create("tfbsFilss"));
 		options.addOption(OptionBuilder.withLongOpt("tfbsRegion").withDescription("tfbsRegion").isRequired().hasArgs(1).create("tfbsRegion"));
 		options.addOption(OptionBuilder.withLongOpt("pValueCutOf").withDescription("pValue cut-off (with promoter option)").isRequired().hasArgs(1).create("pValueCutOf"));
-		options.addOption(OptionBuilder.withLongOpt("motifMappingFile").withDescription("motifMappingFile ").hasArgs(1).create("motifMappingFile"));
+		options.addOption(OptionBuilder.withLongOpt("motifMappingFiles").withDescription("motifMappingFiles ").hasArgs().create("motifMappingFiles"));
 		options.addOption(OptionBuilder.withLongOpt("repositoryDir").withDescription("Repository directory").isRequired().hasArgs().create("repositoryDir"));
 		options.addOption(OptionBuilder.withLongOpt("compositeName").withDescription("Composite name").isRequired().hasArgs().create("compositeName"));
 		options.addOption(OptionBuilder.withLongOpt("motifSetName").withDescription("Motif Set Name").isRequired().hasArgs(1).create("motifSetName"));
@@ -163,22 +164,37 @@ public class FIMOHandler extends TFBSHandler{
 		}
 		
 		Integer taxId = Integer.valueOf(line.getOptionValue("taxId"));
-		File tfbsFile = new File(line.getOptionValue("tfbsFile"));
-		if(!tfbsFile.exists() ){
-			CroCoLogger.getLogger().fatal(String.format("Can not find tbfs region  file %s",tfbsFile.getName()));
-		}
 		
+		
+		List<File> tfbsFiles = new ArrayList<File>();
+		for(String file : line.getOptionValues("tfbsFiles") ){
+			File tfbsFile = new File(file);
+			
+			if (! tfbsFile.exists()){
+				CroCoLogger.getLogger().fatal(String.format("Can not find tbfs region  file %s",tfbsFile.getName()));
+				System.exit(1);
+			}
+			
+			tfbsFiles.add(tfbsFile);
+		}
 		File tfbsRegion = new File(line.getOptionValue("tfbsRegion"));
-		if(!tfbsRegion.exists() ){
-			CroCoLogger.getLogger().fatal(String.format("Can not find tbfs region  file %s",tfbsRegion.getName()));
-		}
 		Float pValueCutOf = Float.valueOf(line.getOptionValue("pValueCutOf"));
-		File motifMappingFile = new File(line.getOptionValue("motifMappingFile"));
-		if(!motifMappingFile.exists() ){
-			CroCoLogger.getLogger().fatal(String.format("Can not find motif mapping file %s",motifMappingFile.getName()));
+		
+	
+		String motifSetName = line.getOptionValue("motifSetName");
+		File[] motifMappingFiles = new File[line.getOptionValues("motifMappingFiles").length];
+		int i = 0;
+		for(String file : line.getOptionValues("motifMappingFiles") ){
+			File mappingFile = new File(file);
+			if (! mappingFile.exists()){
+				CroCoLogger.getLogger().fatal(String.format("Can not find motif mapping file %s",mappingFile.getName()));
+				System.exit(1);
+			}
+			
+			motifMappingFiles[i++]  = mappingFile;	
 		}
 		
-		String motifSetName = line.getOptionValue("motifSetName");
+		
 		Integer downstream  = Integer.valueOf(line.getOptionValue("downstream"));
 		Integer upstream = Integer.valueOf(line.getOptionValue("upstream"));
 		
@@ -189,8 +205,9 @@ public class FIMOHandler extends TFBSHandler{
 		}
 		String composite = line.getOptionValue("compositeName");
 		
-		System.out.println("TFBS file:\t" + tfbsFile);
-		System.out.println("Mapping file:\t" +motifMappingFile );
+		System.out.println("TFBS region file:\t" + tfbsRegion);
+		System.out.println("TFBS files:\t" + tfbsFiles);
+		System.out.println("Mapping files:\t" +Arrays.asList(motifMappingFiles) );
 		System.out.println("TaxId:\t" + taxId);
 		System.out.println("PValue:\t" + pValueCutOf);
 		System.out.println("Composite name:\t"  +composite );
@@ -206,9 +223,9 @@ public class FIMOHandler extends TFBSHandler{
 			}
 		}
 		
+		HashMap<String, String> mapping = new FileUtil.MappingFileReader("\t",0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readN1MappingFile();
 		
-		HashMap<String, String> mapping = FileUtil.readN1MappingFile(motifMappingFile, "\t", 0, 2, false, false,true);
-		HashMap<String, List<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf).readHits(tfbsFile);
+		HashMap<String, List<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf).readHits(tfbsFiles);
 		
 		
 		File baseFile =  new File(outputDir + "/" + motifSetName);
@@ -226,12 +243,6 @@ public class FIMOHandler extends TFBSHandler{
 		bwInfo.write(String.format("%s: %s\n",Option.Upstream.name(), upstream + ""));
 		bwInfo.write(String.format("%s: %s\n",Option.Downstream.name(), downstream +""));
 	
-	
-		bwInfo.flush();
-		bwInfo.close();
-		
-		
-		
 		File annotationFile = new File(baseFile + ".annotation.gz");
 		BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
 		DirectedNetwork network = new DirectedNetwork(motifSetName,taxId,false);
@@ -250,6 +261,15 @@ public class FIMOHandler extends TFBSHandler{
 			}
 			bwAnnotation.flush();
 		}
+		
+		StringBuffer factorStr = new StringBuffer();
+		for(Entity factor: network.getTargets()){
+			factorStr.append(factor.getIdentifier() + " ");
+		}
+		bwInfo.write(String.format("%s: %s\n",Option.FactorList,factorStr.toString().trim()));
+		bwInfo.flush();
+		bwInfo.close();
+		
 		CroCoLogger.getLogger().info(String.format("%s network size: %d",motifSetName,network.getSize()));
 		bwAnnotation.close();
 		File networkFile = new File(baseFile + ".network.gz");

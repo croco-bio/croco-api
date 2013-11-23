@@ -52,8 +52,8 @@ public class Transfer extends GeneralOperation{
 		Species targetSpecies = getSourceAndTargetSpeciesRepresentation(orthologMappingInformations.get(0),taxId).getSecond();
 		
 		Network ret =Network.getEmptyNetwork(network.getClass(), "Transferred", targetSpecies.getTaxId(),false );
-
-		CroCoLogger.getLogger().debug(String.format("Transfer %s to %d (%s)", network, ret.getTaxId(),ret.getClass().getSimpleName()));
+		
+		CroCoLogger.getLogger().debug(String.format("Transfer %s (%d) to %d", network.toString(),network.getTaxId(), ret.getTaxId()));
 		for(int edgeId  : network.getEdgeIds()){
 			Tuple<Entity, Entity> edge = network.getEdge(edgeId);
 			
@@ -95,6 +95,10 @@ public class Transfer extends GeneralOperation{
 		}
 	
 		List<OrthologMappingInformation> orthologs = (List)this.getParameter(OrthologMappingInformation,List.class);
+		if ( orthologs == null || orthologs.size() == 0){
+			throw new OperationNotPossibleException("No ortholog mapping given");
+		}
+		
 		for(OrthologMappingInformation ortholog : orthologs){
 			if ( !ortholog.getSpecies1().getTaxId().equals(sourceTaxId) && !ortholog.getSpecies2().getTaxId().equals(sourceTaxId) ){
 				throw new OperationNotPossibleException("Can not map network" + network.getTaxId());

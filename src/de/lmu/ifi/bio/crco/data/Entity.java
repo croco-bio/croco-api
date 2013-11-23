@@ -11,15 +11,19 @@ public class Entity {
 	public String getName() {
 		return name;
 	}
+
+	public String getIdentifier() {
+		return identifier;
+	}
 	public Entity(){}
 	
 	public Entity(String identifier){
+		this.identifier = identifier.toUpperCase();
 		this.name = identifier;
-		this.identifier = identifier;
 	}
 	
 	public Entity(String identifier, String name){
-		this.identifier = identifier;
+		this.identifier = identifier.toUpperCase();
 		this.name = name;
 	}
 	
@@ -27,15 +31,11 @@ public class Entity {
 		this.name = name;
 	}
 	public Entity(String identifier, String name, String type){
-		this.identifier = identifier;
+		this.identifier = identifier.toUpperCase();
 		this.name = name;
 		this.type = type;
 	}
 
-	public String getIdentifier() {
-		return identifier;
-	}
-	
 	@Override
 	public int hashCode() {
 		return identifier.toUpperCase().hashCode();

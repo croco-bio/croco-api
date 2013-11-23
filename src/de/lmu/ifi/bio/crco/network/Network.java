@@ -13,9 +13,9 @@ import java.util.Set;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TransferredPeak;
-
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.TIntHashSetInteratorableWrapper;
 import de.lmu.ifi.bio.crco.util.Tuple;
@@ -29,11 +29,23 @@ public abstract class Network {
 			this.type = type;
 		}
 	}
-	
+	private boolean edgeRepository;
 	private String name;
 	private NetworkSummary networkSummary;
+	
+	//todo
+	private HashMap<Option,String> networkInfo = new HashMap<Option,String>();
 	protected TIntHashSet edges;
 
+	public HashMap<Option,String> getOptionValues(){
+		return networkInfo;
+	}
+	public String getOptionValue(Option option){
+		return networkInfo.get(option);
+	}
+	public void addNetworkInfo(Option option, String value){
+		networkInfo.put(option, value);
+	}
 	public HashMap<Entity,Set<Entity>> createFactorTargetNetwork(){
 		HashMap<Entity,Set<Entity>> ret = new HashMap<Entity,Set<Entity>>();
 		for(int edgeId : this.getEdgeIds()){
@@ -45,12 +57,11 @@ public abstract class Network {
 		}
 		return ret;
 	}
-	
 	// edgeId -> EdgeOption (ordinal) -> value 
 	//number of elements |n| * |options| * |values|
 	protected TIntObjectHashMap<TIntObjectHashMap<List<Object>>> annotation;
 	
-	protected EdgeRepository repositoyInstance;
+	private EdgeRepository repositoyInstance;
 	private Integer taxId;
 	
 
@@ -106,7 +117,20 @@ public abstract class Network {
 
 	@Override
 	public String toString(){
-		return this.name;
+		String ret = this.name;
+		if ( ret == null && this.networkInfo != null){
+			ret = "";
+			if ( networkInfo.containsKey(Option.NetworkType)){
+				ret += networkInfo.get(Option.NetworkType) + "/";
+			}
+			if ( networkInfo.containsKey(Option.TaxId)){
+				ret += networkInfo.get(Option.TaxId) + "/";
+			}
+			if ( networkInfo.containsKey(Option.networkFile)){
+				ret += networkInfo.get(Option.networkFile).substring(networkInfo.get(Option.networkFile).lastIndexOf("/"));
+			}
+		}
+		return ret;
 	}
 	public TIntHashSetInteratorableWrapper getEdgeIds(){
 		
@@ -125,46 +149,41 @@ public abstract class Network {
 	public List<Object> getAnnotation(int edge, EdgeOption edgeOption){
 		return this.annotation.get(edge).get(edgeOption.ordinal());
 	}
-	
-	
+	private void initEdgeRepository(){
+		if (edgeRepository ){
+			CroCoLogger.getLogger().trace("Use global edge repository");
+			repositoyInstance = EdgeRepository.getInstance(); //global instance
+		}else{
+			CroCoLogger.getLogger().trace("Use local edge repository");
+			repositoyInstance = new EdgeRepository(); //local instance
+		}
+	}
 	public Network(Network network){
 		this.edges = new TIntHashSet();
 		this.annotation = new TIntObjectHashMap<TIntObjectHashMap<List<Object>>>();
 		this.taxId = network.taxId;
 		this.name = network.name;
-		this.repositoyInstance = network.repositoyInstance;
-		//this.networkSummary = network.networkSummary;
+		this.networkInfo = network.networkInfo;
+		this.edgeRepository = network.edgeRepository;
+		this.initEdgeRepository();
 	}
 	
 	public Network(String name, Integer taxId,  boolean useEdgeRepository) {
-		
 		this.taxId = taxId;
 		this.name = name;
 		this.edges = new TIntHashSet();
 		this.annotation = new TIntObjectHashMap<TIntObjectHashMap<List<Object>>>();
-		if (useEdgeRepository ){
-			CroCoLogger.getLogger().debug("Using global repository");
-			repositoyInstance = EdgeRepository.getInstance(); //global instance
-		}else{
-			CroCoLogger.getLogger().debug("Using local repository");
-			repositoyInstance = new EdgeRepository(); //local instance
-		}
-		
+		this.edgeRepository = useEdgeRepository;
+		this.initEdgeRepository();
 	}
 	
 	public Network(NetworkHierachyNode node,boolean useEdgeRepository) {
-
 		this.name = node.getName();
 		this.taxId = node.getTaxId();
 		this.edges = new TIntHashSet();
 		this.annotation = new TIntObjectHashMap<TIntObjectHashMap<List<Object>>>();
-		if (useEdgeRepository ){
-			CroCoLogger.getLogger().debug("Using global repository");
-			repositoyInstance = EdgeRepository.getInstance(); //global instance
-		}else{
-			CroCoLogger.getLogger().debug("Using local repository");
-			repositoyInstance = new EdgeRepository(); //local instance
-		}
+		this.edgeRepository = useEdgeRepository;
+		this.initEdgeRepository();
 	}
 
 	public int getSize() {
@@ -186,9 +205,7 @@ public abstract class Network {
 	}
 	public void add(Entity e1, Entity e2){
 		
-		TIntObjectHashMap<List<Object>> edgeAnnotation = new TIntObjectHashMap<List<Object>> ();
-		
-		this.add(e1,e2,edgeAnnotation);
+		this.add(e1,e2,new TIntObjectHashMap<List<Object>>());
 		
 	}
 	public void add(Entity e1, Entity e2, Integer groupId){
@@ -214,7 +231,7 @@ public abstract class Network {
 		if ( !this.edges.contains(edgeId)){
 			this.edges.add(edgeId);
 		}
-		if ( edgeAnnotation != null){
+		if ( edgeAnnotation != null && edgeAnnotation.size() > 0){
 			if (! annotation.contains(edgeId)){
 				annotation.put(edgeId, edgeAnnotation);
 			}else{
@@ -313,5 +330,11 @@ public abstract class Network {
 	public void setName(String name) {
 		this.name = name;
 		
+	}
+	public void setNetworkInfo(HashMap<Option, String> infos) {
+		this.networkInfo = infos;
+	}
+	public HashMap<Option, String> getNetworkInfo() {
+		return networkInfo;
 	}
 }

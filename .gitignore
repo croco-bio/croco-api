@@ -2,3 +2,9 @@
 /.project
 /.classpath
 /target
+<<<<<<< HEAD
+=======
+*~
+/bin
+/dependency-reduced-pom.xml
+>>>>>>> a32460bf54468700334533b5e2c1fbc58ffff63b

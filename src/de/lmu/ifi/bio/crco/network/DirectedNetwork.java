@@ -12,13 +12,11 @@ public class DirectedNetwork extends Network{
 
 	public DirectedNetwork(String name,Integer taxId, boolean globalRepository){
 		super(name, taxId,globalRepository);
-		CroCoLogger.getLogger().debug("Create new directed network");
 	}
 	
 	
 	public DirectedNetwork(String name,Integer taxId){
 		super(name, taxId,false);
-		CroCoLogger.getLogger().debug("Create new directed network");
 	}
 	
 	public DirectedNetwork(Network network) {

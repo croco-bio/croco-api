@@ -1,12 +1,30 @@
 package de.lmu.ifi.bio.crco.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Species {
+	
 	public static Species Human = new Species(9606,"H. sapiens");
 	public static Species Mouse = new Species(10090,"M. musculus");
 	public static Species Worm = new Species(6239,"C. elegans");
 	public static Species Fly =  new Species(7227,"D. melanogaster");
 	
-	
+	public static List<Species> knownSpecies;
+
+	static{
+		knownSpecies = new ArrayList<Species> ();
+		knownSpecies.add(Human);
+		knownSpecies.add(Mouse);
+		knownSpecies.add(Worm);
+		knownSpecies.add(Fly);
+	}
+	public static boolean isKnownSpecies(Integer taxId){
+		for(Species species : knownSpecies ){
+			if ( species.getTaxId().equals(taxId)) return true;
+		}
+		return false;
+	}
 	public Integer getTaxId(){
 		return taxId;
 	}
