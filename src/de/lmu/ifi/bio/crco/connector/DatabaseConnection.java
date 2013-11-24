@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.CroCoProperties;
 
 
 public class DatabaseConnection {
@@ -24,6 +25,10 @@ public class DatabaseConnection {
 	
 	private DatabaseConnection(){}
 	
+	public static Connection getConnection() {
+		return getConnection(CroCoProperties.getInstance().getProperties());
+	}
+	/**
 	public static Connection getConnection(String mysqlDriver, String username, String password, String connectionString) {
 		Properties props = new Properties();
 		
@@ -35,6 +40,7 @@ public class DatabaseConnection {
 		
 		return getConnection(props);
 	}
+	*/
 	public static Connection getConnection(Properties props) {
 		
 		long current = (new java.util.Date()).getTime();
@@ -46,6 +52,12 @@ public class DatabaseConnection {
 		
 			if ( connection == null || connection.isClosed()  ){
 				
+				
+				props.put("driver", props.get("util.DatabaseConnection.dbdriver"));
+				props.put("user", props.get("util.DatabaseConnection.user"));
+				props.put("password", props.get("util.DatabaseConnection.password"));
+				props.put("autoReconnect", props.get("util.DatabaseConnection.autoReconnect"));
+				props.put("connectionStr", props.get("util.DatabaseConnection.dbconstr"));
 				
 				try{
 					CroCoLogger.getLogger().debug(String.format("Loading driver:%s",props.getProperty("driver")));
@@ -69,7 +81,7 @@ public class DatabaseConnection {
 		
 		return connection;
 	}
-	
+	/**
 	public static Connection getConnection(InputStream configFile) {
 		Properties props = new Properties();
 		try {
@@ -95,6 +107,7 @@ public class DatabaseConnection {
 	 * @return a database connection
 	 * @throws SQLException
 	 */
+	/**
 	public static Connection getConnection() {
 		String file = "connet.config";
 		InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream(file);
@@ -107,4 +120,5 @@ public class DatabaseConnection {
 		return getConnection(stream);
 		
 	}
+	*/
 }
