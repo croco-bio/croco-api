@@ -100,7 +100,7 @@ public class PairwiseFeatures {
 				
 				String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
 				
-				HashMap<Option,HashSet<String>> computations = PairwiseFeatures.readCurrentOutputFile(repositoryDir, statFile);
+				HashMap<Pair<String, Option>, Float> computations = PairwiseFeatures.readStatFile(repositoryDir, statFile);
 				for(int i = 0 ; i< networks.size() ; i++){
 					Network network = networks.get(i);
 					if ( !Species.isKnownSpecies(network.getTaxId())) continue;
@@ -172,9 +172,8 @@ public class PairwiseFeatures {
 		return transferred;
 		
 	}
-
-	public static HashMap<Option,HashSet<String>>  readCurrentOutputFile(File repositoryDir,File outputFile) throws Exception{
-		HashMap<Option,HashSet<String>>computations = new HashMap<Option,HashSet<String>>();
+	public static HashMap<Pair<String,Option>,Float>  readStatFile(File repositoryDir,File outputFile) throws Exception{
+		HashMap<Pair<String,Option>,Float> computations = new HashMap<Pair<String,Option>,Float>();
 		if ( outputFile.exists()){
 			BufferedReader br = new BufferedReader(new FileReader(outputFile));
 			String line = null;
@@ -182,12 +181,12 @@ public class PairwiseFeatures {
 				if ( line.startsWith("#")) continue;
 				String[] tokens = line.split("\t");
 				Option option = Option.valueOf(tokens[0]) ;
-				String file1 = tokens[1];
-				String file2 = tokens[2];
-				if ( !computations.containsKey(option)){
-					computations.put(option, new HashSet<String>());
-				}
-				computations.get(option).add(file2.replace(repositoryDir.getName(), ""));
+				//String file1 = tokens[1];
+				String file2 = tokens[2].replace(repositoryDir.getName(), "");
+				Float value = Float.valueOf(tokens[3]);
+				
+				Pair<String,Option> pair = new Pair<String,Option>(file2,option);
+				computations.put(pair, value);
 			}
 			br.close();
 			//computations = FileUtil.readN1MappingFile(outputFile, "\t", 0,1, false, true, false);
@@ -236,11 +235,11 @@ public class PairwiseFeatures {
 		}
 		return false;
 	}
-	public boolean canSkip(HashMap<Option,HashSet<String>> computations, Network sourceNetwork,String sourceNetworkName, Network network, String targetNetworkName ){
+	public boolean canSkip(HashMap<Pair<String, Option>, Float> computations, Network sourceNetwork,String sourceNetworkName, Network network, String targetNetworkName ){
 		boolean skip = true;
 		for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
 	
-			if ( !computations.containsKey(e.getKey()) || !computations.get(e.getKey()).contains(targetNetworkName)) {                    //when not yet computed
+			if ( !computations.containsKey(new Pair<String,Option>(targetNetworkName,e.getKey())))  {                    //when not yet computed
 				if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
 					skip = false;																										  // than can not skip
 					break;
@@ -269,7 +268,7 @@ public class PairwiseFeatures {
 	
 	public void compute(File networkFile, File networkInfo, File outputFile) throws Exception{
 		
-		HashMap<Option,HashSet<String>> computations = readCurrentOutputFile(repositoryDir,outputFile);
+		HashMap<Pair<String, Option>, Float> computations = readStatFile(repositoryDir,outputFile);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile,true));
 			
 		NetworkCollector collector = new NetworkCollector(); 
@@ -315,7 +314,7 @@ public class PairwiseFeatures {
 			for(Network network : bufferedNetworks){
 				String targetNetworkName = network.getOptionValue(Option.networkFile).replace(repositoryDir.toString(),"").replace("//", "/");
 				for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
-					if ( !computations.containsKey(e.getKey()) || !computations.get(e.getKey()).contains(targetNetworkName)) {                    //when not yet computed
+					if ( !computations.containsKey(new Pair<String,Option>(targetNetworkName,e.getKey()))) {                    //when not yet computed
 						if ( e.getValue().getFeatureType().equals(FeatureType.ASYMMETRIC) || sourceNetworkName.compareTo(targetNetworkName) <= 0) {// and metric is asymmetric, or sourceNetworkName precedes targetNetworkName lexicographically
 							float sim = e.getValue().compute(sourceNetwork,network);
 							bw.write(e.getKey().name() + "\t" + sourceNetworkName + "\t" + targetNetworkName + "\t" + sim+ "\n");
