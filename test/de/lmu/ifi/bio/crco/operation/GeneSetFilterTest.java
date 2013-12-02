@@ -3,6 +3,8 @@ package de.lmu.ifi.bio.crco.operation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,7 +75,7 @@ public class GeneSetFilterTest {
 	}
 	
 	@Test
-	public void test() throws CroCoException {
+	public void test() throws CroCoException, SQLException, IOException {
 		QueryService service = new LocalService(DatabaseConnection.getConnection());
 		
 		ReadNetwork readNetwork = new ReadNetwork();

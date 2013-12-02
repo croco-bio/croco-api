@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.lmu.ifi.bio.crco.data.Gene;
 import de.lmu.ifi.bio.crco.data.IdentifierType;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
