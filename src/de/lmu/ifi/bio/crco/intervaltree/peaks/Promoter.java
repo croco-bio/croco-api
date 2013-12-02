@@ -1,10 +1,10 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
-import de.lmu.ifi.bio.crco.data.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
 
 
 
-public class Promoter extends Gene {
+public class Promoter extends GeneInterval {
 
 
 	private int geneStart;
@@ -18,11 +18,7 @@ public class Promoter extends Gene {
 		return geneEnd;
 	}
 
-
-
 	private int geneEnd;
-
-
 
 	public Promoter(String geneId,String transcriptId, int promoterStart, int promoterEnd, int geneStart, int geneEnd,Strand strand) {
 		super(geneId,transcriptId,promoterStart, promoterEnd,strand);

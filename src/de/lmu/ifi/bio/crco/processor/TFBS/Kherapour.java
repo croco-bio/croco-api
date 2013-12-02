@@ -22,9 +22,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
-import de.lmu.ifi.bio.crco.data.Strand;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;

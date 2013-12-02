@@ -48,13 +48,13 @@ public class ReadBindingNetwork extends GeneralOperation {
 			else
 				bindings = service.getTFBSBindings(node.getGroupId(),contextTreeNode.getId());
 			 for(TFBSPeak binding : bindings){
-				 String factor = binding.getFactor(); 
-				 String target = binding.getTarget();
-				 Tuple<Entity, Entity> edge = net.createEdgeCore(new Entity(factor),  new Entity(target));
+				 Entity factor = binding.getFactor(); 
+				 Entity target = binding.getTarget();
+				 Tuple<Entity, Entity> edge = net.createEdgeCore(factor,  target);
 				 if ( net.containsEdge(edge)){
-					 net.addEdge(new Entity(factor), new Entity(target), null, binding);
+					 net.addEdge(factor,target, null, binding);
 				 }else
-					 net.addEdge(new Entity(factor), new Entity(target), node.getGroupId(), binding);
+					 net.addEdge(factor,target, node.getGroupId(), binding);
 			 	
 			 	}
 			 

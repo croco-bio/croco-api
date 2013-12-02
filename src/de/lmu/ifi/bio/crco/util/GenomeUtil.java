@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import de.lmu.ifi.bio.crco.data.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.GeneInterval;
@@ -55,15 +55,15 @@ public class GenomeUtil {
 			if ( promoter){
 				
 				if ( strand.equals("+")){
-					interval = new GeneInterval(id,transcript,start-spanUpstream,start+spanDownstream,Strand.Plus);
+					interval = new GeneInterval(id,transcript,start-spanUpstream,start+spanDownstream,Strand.PLUS);
 				}else{
-					interval = new GeneInterval(id,transcript,end-spanDownstream,end+spanUpstream,Strand.Minus);
+					interval = new GeneInterval(id,transcript,end-spanDownstream,end+spanUpstream,Strand.MINUS);
 				}
 			}else{
 				if ( strand.equals("+")){
-					interval = new GeneInterval(id,transcript,start,end,Strand.Plus);
+					interval = new GeneInterval(id,transcript,start,end,Strand.PLUS);
 				}else{
-					interval = new GeneInterval(id,transcript,start,end,Strand.Minus);
+					interval = new GeneInterval(id,transcript,start,end,Strand.MINUS);
 				}
 			}
 			if (! trees.containsKey(chrom)){

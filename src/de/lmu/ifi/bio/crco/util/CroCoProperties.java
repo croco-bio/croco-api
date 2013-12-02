@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.crco.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Properties;
@@ -14,50 +15,36 @@ public class CroCoProperties {
 		return props;
 	}
 	
-	private CroCoProperties(InputStream stream) throws Exception{
-	
-	
+	private CroCoProperties(InputStream stream) throws IOException{
 		props = new Properties();
-		try {
-			props.load(stream);
-		} catch (Exception e) {
-			CroCoLogger.getLogger().fatal(e.getMessage());
-			throw new RuntimeException(e);
-		} 
-			
-	};
+		props.load(stream);
+	}
 	
 	private static CroCoProperties instance;
 	
 	
-	public static void init(File file){
-		try{
-			instance = new CroCoProperties(new FileInputStream(file));
-		}catch(Exception e){
-			throw new RuntimeException(e);
-		}
+	public static void init(File file) throws IOException{
+		instance = new CroCoProperties(new FileInputStream(file));
+		
 	}
 	
-	public static CroCoProperties getInstance() {
+	public static CroCoProperties getInstance() throws IOException{
 		if ( instance == null){
-			try{
-				InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("connet.config");
-				
-				if ( stream == null){ //last try
-					File file = new File("conf/connet.config");
-					if ( file.exists()){
-						stream = new FileInputStream(file);
-					}
-					// stream = CroCoLogger.class.getClassLoader().getResourceAsStream("conf/connet.config");
+			InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("connet.config");
+
+			if ( stream == null){ //last try
+				File file = new File("conf/connet.config");
+				if ( file.exists()){
+					stream = new FileInputStream(file);
 				}
-				if ( stream == null){
-					throw new RuntimeException("Can not find:\t connet.config");
-				}
-				
-				instance = new CroCoProperties(stream);
-			}catch(Exception e){
-				throw new RuntimeException(e);
+				// stream = CroCoLogger.class.getClassLoader().getResourceAsStream("conf/connet.config");
 			}
+			if ( stream == null){
+				throw new IOException("Can not find:\t connet.config");
+			}
+
+			instance = new CroCoProperties(stream);
+
 		}
 		return instance;
 	}
@@ -65,15 +52,10 @@ public class CroCoProperties {
 	public String getValue(String option){
 		return props.getProperty(option);
 	}
-/**
-	public Set<String> getProperties(){
-		return (Set) props.keySet();
-	}
-*/
+
 	public Set<String> getProperties(String prefix) {
 		HashSet<String> ret = new HashSet<String>();
 		for(Object o : props.keySet()){
-			//System.out.println(o);
 			if ( ((String)o).startsWith(prefix)){
 				ret.add((String)o);
 			}

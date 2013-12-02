@@ -1,6 +1,6 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
-import de.lmu.ifi.bio.crco.data.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 
 

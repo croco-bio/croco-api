@@ -10,6 +10,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
+
 
 /**
  * Collection of commonly used methods to read files (including mapping files)
@@ -26,6 +33,85 @@ public class FileUtil {
 	}
 	public static MappingFileReader mappingFileReader(String seperator, Integer fromIndex, Integer toIndex,File... inputFiles){
 		return new MappingFileReader(seperator,fromIndex,toIndex,inputFiles);
+	}
+	
+	public static List<Gene> gtfReader(File file,List<String> chrosoms) throws Exception{
+		System.err.println("Reading GTF:\t" + file);
+		if ( !file.exists()){
+			throw new IOException(file.getAbsoluteFile().toString() + " does not exist");
+		}
+		Pattern pattern = Pattern.compile("\t");
+		Pattern annotation = Pattern.compile("([^\\s]+)\\s+\"([^;]+)\";");
+		
+		
+		Set<String> toConsider = null;
+		if (chrosoms != null) toConsider = new HashSet<String>(chrosoms);
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line = null;
+		List<Gene> genes = new ArrayList<Gene>();
+		Gene currentGene = null;
+		Transcript currentTranscript = null;
+		Protein currentProtein = null;
+		
+		while((line=br.readLine())!=null){
+			String[] tokens = pattern.split(line);
+			String chrom = tokens[0];
+			if ( chrosoms != null && !toConsider.contains(chrom)) continue;
+			String frame = tokens[7];
+			String geneType = tokens[1]; //e.g. protein coding
+			//if (! geneType.equals("protein_coding")) continue;
+			String annotationType = tokens[2]; // CDS, exon, start_codon, stop_codon
+			Integer start = Integer.valueOf(tokens[3]);
+			Integer end = Integer.valueOf(tokens[4]);
+			Strand strand = null;
+			if ( tokens[6].equals("+")){
+				strand = Strand.PLUS;
+			}else{
+				strand = Strand.MINUS;
+			}
+			
+			String geneId = null;
+			String transcriptId = null;
+			String geneName = null;
+			String proteinId = null;
+			Matcher matcher = annotation.matcher(tokens[8]);
+			String exonId = null;;
+			
+			while(matcher.find()){
+				String type = matcher.group(1);
+				if ( type.equals("gene_id")) geneId = matcher.group(2);
+				else if ( type.equals("transcript_name")) transcriptId = matcher.group(2);
+				else if ( type.equals("gene_name")) geneName = matcher.group(2);
+				else if ( type.equals("protein_id")) proteinId = matcher.group(2);
+				else if ( type.equals("exon_number")) exonId = "EXON" + Integer.valueOf(matcher.group(2));
+			}
+		
+			if ( currentGene == null || !currentGene.getGeneId().equals(geneId)){
+				if (currentGene != null ) genes.add(currentGene);
+				currentGene = new Gene(chrom,geneId,strand,start,end);
+			}
+			if ( currentTranscript == null || !currentTranscript.getTranscriptId().equals(transcriptId)){
+				currentTranscript = new Transcript(currentGene,transcriptId);
+				currentGene.addTranscript(currentTranscript);
+			}
+			if ( proteinId != null && (currentProtein == null || !currentProtein.getProteinId().equals(proteinId))){
+				currentProtein = new Protein(proteinId,currentTranscript);
+				currentTranscript.setProtein(currentProtein);
+			}
+			if ( annotationType.equals("exon")){
+				Exon currentExon = new Exon(exonId,start,end);
+				currentTranscript.addExon(currentExon);
+			}
+			if ( annotationType.equals("CDS")){
+				Exon currentExon = new Exon(exonId,start,end); 
+				currentExon.setCoding(Integer.valueOf(frame));
+				currentProtein.add(currentExon);
+			}
+		}
+		genes.add(currentGene);
+		br.close();
+		System.err.println("Number of genes in GTF:" + genes.size());
+		return genes;
 	}
 	
 	/**
