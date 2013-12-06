@@ -19,12 +19,13 @@ public class Species {
 		knownSpecies.add(Worm);
 		knownSpecies.add(Fly);
 	}
-	public static boolean isKnownSpecies(Integer taxId){
+	public static Species getSpecies(Integer taxId){
 		for(Species species : knownSpecies ){
-			if ( species.getTaxId().equals(taxId)) return true;
+			if ( species.getTaxId().equals(taxId)) return species;
 		}
-		return false;
+		return new Species(taxId);
 	}
+
 	public Integer getTaxId(){
 		return taxId;
 	}
@@ -44,7 +45,7 @@ public class Species {
 	
 	@Override
 	public String toString(){
-		return String.format("%d-%s",taxId,name);
+		return String.format("%d-%s",taxId,name==null?"N.A":name);
 	}
 	
 	@Override
@@ -58,5 +59,6 @@ public class Species {
 			return ( ((Species) o).getTaxId().equals(this.getTaxId()));
 		return super.equals(o);
 	}
+	
 }
 

@@ -1,10 +1,5 @@
 package de.lmu.ifi.bio.crco.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import de.lmu.ifi.bio.crco.operation.GeneralOperation;
@@ -12,19 +7,26 @@ import de.lmu.ifi.bio.crco.operation.GeneralOperation;
 
 public class NetworkOperationNode {
 	private  GeneralOperation operator = null;
-	private Integer taxId = null;
+	private Species species = null;
 	private Vector<NetworkOperationNode> children = new Vector<NetworkOperationNode>();
 	private NetworkOperationNode parent;
 	
+	public NetworkOperationNode(){}
+	
 	public NetworkOperationNode(NetworkOperationNode parent,Integer taxId,  GeneralOperation operator ){
 		this.operator = operator;
-		this.taxId = taxId;
+		this.species = Species.getSpecies(taxId);
+		this.parent = parent;
+	}
+	public NetworkOperationNode(NetworkOperationNode parent,Species species,  GeneralOperation operator ){
+		this.operator = operator;
+		this.species = species;
 		this.parent = parent;
 	}
 
 	
-	public Integer getTaxId(){
-		return taxId;
+	public Species getSpecies(){
+		return species;
 	}
 
 	
@@ -35,17 +37,13 @@ public class NetworkOperationNode {
 	public String toString(){
 		String ret = "";
 		if ( operator != null) ret = operator.getDescription(); //+ " (";
-		
-		ret += "(" + taxId + ") - ";
-		
-		
+		if( species != null) ret += "(" + species.getName() + ")";
 		
 		return ret;
 	}
 
-	public void setTaxId(Integer taxId) {
-		this.taxId = taxId;
-		
+	public void setSpecies(Species species) {
+		this.species = species;
 	}
 
 	public Vector<NetworkOperationNode> getChildren() {
@@ -74,5 +72,9 @@ public class NetworkOperationNode {
 	public void setParent(NetworkOperationNode parent) {
 		this.parent = parent;
 		
+	}
+	public Integer getTaxId() {
+		if ( species == null)return null;
+		return species.getTaxId();
 	}
 }

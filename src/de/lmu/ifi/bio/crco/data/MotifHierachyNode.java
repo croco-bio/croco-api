@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.crco.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.util.Pair;
 
 
