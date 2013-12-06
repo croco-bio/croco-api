@@ -145,7 +145,7 @@ public class Engine {
 			}
 		}
 		
-		NetworkOperationNode node = new NetworkOperationNode(null,null,generalOperation);
+		NetworkOperationNode node = new NetworkOperationNode(null,-1,generalOperation);
 		
 		
 		return node;
