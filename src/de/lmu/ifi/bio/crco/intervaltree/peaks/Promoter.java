@@ -2,10 +2,9 @@ package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
 import java.util.HashSet;
 import java.util.Set;
-import de.lmu.ifi.bio.crco.data.genome.Strand;
+
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
-
 
 public class Promoter extends Interval {
 
