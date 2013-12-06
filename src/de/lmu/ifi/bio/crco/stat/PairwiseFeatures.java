@@ -96,14 +96,14 @@ public class PairwiseFeatures {
 				File statFile =new File(networkFile.toString().replace(".network.gz", ".stat"));
 				//sourceNetwork.getTaxId()
 				sourceNetwork.addNetworkInfo( Option.networkFile, networkFile.toString());
-				if ( !Species.isKnownSpecies(sourceNetwork.getTaxId())) continue;
+				if ( !isKnownSpecies(sourceNetwork.getTaxId())) continue;
 				
 				String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
 				
 				HashMap<Pair<String, Option>, Float> computations = PairwiseFeatures.readStatFile(repositoryDir, statFile);
 				for(int i = 0 ; i< networks.size() ; i++){
 					Network network = networks.get(i);
-					if ( !Species.isKnownSpecies(network.getTaxId())) continue;
+					if ( !isKnownSpecies(network.getTaxId())) continue;
 					
 					String targetNetworkName = network.getOptionValue(Option.networkFile).replace(repositoryDir.toString(),"").replace("//", "/");
 
@@ -118,7 +118,13 @@ public class PairwiseFeatures {
 		}
 
 	}
-	
+	public static boolean isKnownSpecies(Integer taxId) {
+		for( Species species: Species.knownSpecies ) {
+			if ( species.getTaxId().equals(taxId)) return true;
+		}
+		
+		return false;
+	}
 	private QueryService service;
 	private File repositoryDir;
 	private HashMap<Option, PairwiseStatGenerator> generators;
