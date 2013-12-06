@@ -13,8 +13,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -29,6 +30,8 @@ import org.apache.commons.cli.Options;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.DNARegion;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
@@ -37,25 +40,37 @@ import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.NetworkHierachy;
 
 
-public class FIMOHandler extends TFBSHandler{
+public class FIMOHandler extends TFBSHandler {
 	private Pattern pattern = Pattern.compile(">(\\w+):(\\w+)\\s+(\\d+)-(\\d+)\\(([-+])\\)");
 	private File regionFile = null;
 	private Float pValueThreshold = null;
-	public FIMOHandler(File regionFile, Float pValueThreshold){
+	private HashMap<String,Gene> geneLookup;
+	private HashMap<String, String> motifIdMapping;
+	
+	public FIMOHandler(File regionFile, Float pValueThreshold, List<Gene> genes, HashMap<String, String> motifIdMapping){
 		this.regionFile = regionFile;
 		this.pValueThreshold = pValueThreshold; 
+		this.motifIdMapping = motifIdMapping;
+		geneLookup = new HashMap<String,Gene>();
+		for(Gene gene : genes){
+			geneLookup.put(gene.getIdentifier(), gene);
+		}
+		
 	}
 	
-	private HashMap<String,DNARegion> readRegions() throws IOException{
-		System.out.println("Reading:\t" + regionFile);
-		HashMap<String,DNARegion> regions = new HashMap<String,DNARegion>();
+	private HashMap<Entity,DNARegion> readRegions() throws IOException{
+		CroCoLogger.getLogger().info(String.format("Reading:\t%s" , regionFile));
+		HashMap<Entity,DNARegion> regions = new HashMap<Entity,DNARegion>();
 		BufferedReader br = new BufferedReader(new FileReader(regionFile));
 		String line = null;
 		while ( (line = br.readLine() )!= null) {
 			Matcher matcher = pattern.matcher(line);
 			if ( matcher.find() ) {
-				String geneId = matcher.group(1);
-				
+				Gene geneId = geneLookup.get(matcher.group(1));
+				if ( geneId == null){
+					CroCoLogger.getLogger().warn(String.format("Unknown gene id %s",matcher.group(1)));
+					continue;
+				}
 				String chrom = matcher.group(2);
 				
 				Integer start = Integer.valueOf(matcher.group(3));
@@ -69,7 +84,7 @@ public class FIMOHandler extends TFBSHandler{
 					throw new RuntimeException(geneId + " already in");
 				}
 			}else{
-				System.err.println("Unknown:\t" + line);
+				CroCoLogger.getLogger().fatal("Unknown:\t" + line);
 			}
 		}
 		
@@ -81,7 +96,7 @@ public class FIMOHandler extends TFBSHandler{
 	
 		
 		HashMap<String,List<TFBSPeak>> tfbsPeaks = new HashMap<String,List<TFBSPeak>>();
-		HashMap<String,DNARegion> dnaRegions = readRegions();
+		HashMap<Entity,DNARegion> dnaRegions = readRegions();
 		int k = 0;
 		BufferedReader br = new BufferedReader(new FileReader(tfbsFile));
 		String line = br.readLine();
@@ -115,18 +130,33 @@ public class FIMOHandler extends TFBSHandler{
 				throw new RuntimeException(targetEnsemblId +" not found");
 			}
 			DNARegion region = dnaRegions.get(targetEnsemblId);
+			Gene gene = region.getGene();
 			
 			Integer absolutStart= start+(int)region.getLow();
 			Integer absolutEnd= end+(int)region.getLow();
+			Integer absolutMiddle = (absolutStart+absolutEnd)/2;
+			
+			if (! motifIdMapping.containsKey(motifId)){
+				CroCoLogger.getLogger().warn(String.format("Cannot find id mapping for %s",motifId));
+				continue;
+			}
+			Entity mappedFactor = new Entity(this.motifIdMapping.get(motifId),motifId);
 			
 			if (!tfbsPeaks.containsKey(region.getChrom()) ){
 				tfbsPeaks.put(region.getChrom(), new ArrayList<TFBSPeak>());
 			}
+			Transcript bestTranscript = null;
+			Integer currentMinDistance = Integer.MAX_VALUE;
+			for(Transcript transcript :gene.getTranscripts()){
+				Integer distance = Math.abs(absolutMiddle-transcript.getStart());  // Peak to TSS start
+				if ( bestTranscript == null || distance < currentMinDistance ){
+					bestTranscript = transcript;
+					currentMinDistance = distance;
+				}
+			}
 			
-			TFBSPeak peak = new TFBSPeak(region.getChrom(),targetEnsemblId,motifId,pValue,absolutStart,absolutEnd);
+			TFBSPeak peak = new TFBSPeak(region.getChrom(),mappedFactor,(Transcript)bestTranscript,currentMinDistance,pValue,absolutStart,absolutEnd);
 			tfbsPeaks.get(region.getChrom()).add(peak);
-		
-
 		}
 		br.close();
 		CroCoLogger.getLogger().info("Number of mapped Motifs:\t" + processedMotifs.size() + "\tNumber of not mapped Motifs:\t" +skippedMotifs.size()  );
@@ -164,7 +194,7 @@ public class FIMOHandler extends TFBSHandler{
 		}
 		
 		Integer taxId = Integer.valueOf(line.getOptionValue("taxId"));
-		
+		Locale.setDefault(Locale.US);
 		
 		List<File> tfbsFiles = new ArrayList<File>();
 		for(String file : line.getOptionValues("tfbsFiles") ){
@@ -225,8 +255,8 @@ public class FIMOHandler extends TFBSHandler{
 		
 		HashMap<String, String> mapping = new FileUtil.MappingFileReader("\t",0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readN1MappingFile();
 		
-		HashMap<String, List<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf).readHits(tfbsFiles);
-		
+		//TODO:fix
+		HashMap<String, List<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf,null, null).readHits(tfbsFiles);
 		
 		File baseFile =  new File(outputDir + "/" + motifSetName);
 		
@@ -248,16 +278,11 @@ public class FIMOHandler extends TFBSHandler{
 		DirectedNetwork network = new DirectedNetwork(motifSetName,taxId,false);
 		for(Entry<String, List<TFBSPeak>> e : matchTree.entrySet()){
 			for(TFBSPeak peak : e.getValue()){
-				if (! mapping.containsKey(peak.getMotifName())) continue;
-				String mappedFactor = mapping.get(peak.getMotifName());
-				network.add(new Entity(mappedFactor),new Entity(peak.getTarget()));
 				
-				bwAnnotation.write("TFBS\t" +
-						mappedFactor + "\t" + peak.getTarget()+ "\t" +
-						peak.getChrom() + "\t" + (int)peak.getLow() + "\t" + (int)peak.getHigh() + "\t" + 
-						peak.getpValue() + "\t" + peak.getMotifName() + 
-						 "\n"
-					);
+				Transcript target = (Transcript) peak.getTarget();
+				network.add(peak.getFactor(),peak.getTarget());
+				
+				bwAnnotation.write(String.format("TBFS:\t%s\n",peak.toString()));
 			}
 			bwAnnotation.flush();
 		}

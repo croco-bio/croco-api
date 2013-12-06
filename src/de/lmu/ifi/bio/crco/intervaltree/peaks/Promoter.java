@@ -1,47 +1,45 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
-import de.lmu.ifi.bio.crco.data.Strand;
+import java.util.HashSet;
+import java.util.Set;
 
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
+import de.lmu.ifi.bio.crco.intervaltree.Interval;
 
+public class Promoter extends Interval {
 
-public class Promoter extends Gene {
-
-
-	private int geneStart;
-	public int getGeneStart() {
-		return geneStart;
+	private int start;
+	private int end;
+	private Set<Transcript> transcripts;
+	
+	public Promoter(int start, int end,  Set<Transcript> transcripts ) {
+		super(start,end);
+		this.start = start;
+		this.end = end;
+		this.transcripts = transcripts;
 	}
-
-
-
-	public int getGeneEnd() {
-		return geneEnd;
+	public Set<Transcript> getTranscripts(){
+		return transcripts;
 	}
-
-
-
-	private int geneEnd;
-
-
-
-	public Promoter(String geneId,String transcriptId, int promoterStart, int promoterEnd, int geneStart, int geneEnd,Strand strand) {
-		super(geneId,transcriptId,promoterStart, promoterEnd,strand);
-		if (promoterStart >  promoterEnd && promoterStart ==promoterEnd ){
-			System.err.println("Can not handle that");
-			System.exit(-1);
+	
+	public Promoter(int start, int end,  Transcript ...transcripts ) {
+		super(start,end);
+		this.start = start;
+		this.end = end;
+		this.transcripts = new HashSet<Transcript>(transcripts.length);
+		for(Transcript transcript : transcripts ){
+			this.transcripts.add(transcript);
 		}
-
-		this.geneStart = geneStart;
-		this.geneEnd = geneEnd;
-
 	}
 
-	
-	@Override
-	public String toString(){
-		return super.getTranscriptId();
+	public int getStart() {
+		return start;
 	}
-	
+
+	public int getEnd() {
+		return end;
+	}
+
 	@Override
 	public int hashCode(){
 		return this.toString().hashCode();

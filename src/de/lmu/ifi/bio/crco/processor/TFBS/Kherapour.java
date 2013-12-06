@@ -22,9 +22,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
-import de.lmu.ifi.bio.crco.data.Strand;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
@@ -100,7 +100,8 @@ public class Kherapour {
 			Integer end = Integer.valueOf(tokens[3]);
 			String direction = tokens[4];
 			String type = tokens[5];
-			Promoter promoter = new Promoter(ensembl,ensembl,start,end,-1,-1,Strand.getStand(direction));
+			//TODO:fix
+			Promoter promoter = null;//new Promoter(ensembl,ensembl,start,end,-1,-1,Strand.getStand(direction));
 			if (! interval.containsKey(chr)){
 				interval.put(chr, new IntervalTree());
 			}
@@ -139,7 +140,7 @@ public class Kherapour {
 				continue;
 			}
 			for(Promoter target : targets){
-				String gene = target.getGeneId();
+				String gene =null; //TODO:fix
 				if (! network.containsKey(factorEnsembl)){
 					network.put(factorEnsembl, new HashSet<String>());
 				}
