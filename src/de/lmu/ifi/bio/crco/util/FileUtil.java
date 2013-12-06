@@ -19,6 +19,12 @@ import de.lmu.ifi.bio.crco.data.genome.Protein;
 import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
 
 /**
  * Collection of commonly used methods to read files (including mapping files)

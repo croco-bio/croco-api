@@ -21,7 +21,6 @@ public class CroCoLogger {
 			}catch(IOException e){
 				error = true;
 			}
-			
 			logger = Logger.getRootLogger();
 			if ( error) logger.fatal("Cannot read croco config file");
 			logger.info("Logger started");

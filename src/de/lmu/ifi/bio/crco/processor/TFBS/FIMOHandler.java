@@ -32,6 +32,9 @@ import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.DNARegion;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
@@ -252,6 +255,7 @@ public class FIMOHandler extends TFBSHandler {
 				System.exit(1);
 			}
 		}
+		
 		
 		HashMap<String, String> mapping = new FileUtil.MappingFileReader("\t",0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readN1MappingFile();
 		

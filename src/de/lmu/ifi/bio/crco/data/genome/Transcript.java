@@ -34,7 +34,7 @@ public class Transcript extends Entity{
 	public Gene getParentGene() {
 		return parentGene;
 	}
-
+ 
 	public void setProtein(Protein currentProtein) {
 		this.protein = currentProtein;
 	}
