@@ -11,7 +11,7 @@ import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 
 
 public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
-
+	
 	public BindingEnrichedDirectedNetwork(Network network){
 		super(network);
 	}
@@ -28,7 +28,6 @@ public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
 	public List<TFBSPeak> getBindings(int edgeId){
 		return (List)super.getAnnotation(edgeId, EdgeOption.BindingSite);
 	}
-
 	public void addEdge(Entity entity1, Entity entity2, List<Integer> groupIds, List<TFBSPeak> possibleBinding){
 	
 		TIntObjectHashMap<List<Object>> annotation = new TIntObjectHashMap<List<Object>>();
