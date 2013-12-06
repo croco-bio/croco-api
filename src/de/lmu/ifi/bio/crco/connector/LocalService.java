@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.crco.connector;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +35,7 @@ public class LocalService implements QueryService{
 	public Connection getConnection(){
 		return connection;
 	}
-	public LocalService(){
+	public LocalService() throws SQLException, IOException{
 		this(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
 	}
 	
@@ -543,7 +544,7 @@ public class LocalService implements QueryService{
 			//Integer openChromStart = res.getInt(9);
 			//Integer openChromEnd = res.getInt(10);
 			
-			TFBSPeak tfbsPeak =new TFBSPeak(bindingChr, gene1, gene2, bindingMotifName, bindingPValue, bindingStart, bindingEnd);
+			TFBSPeak tfbsPeak =null;//new TFBSPeak(bindingChr, gene1, gene2, bindingMotifName, bindingPValue, bindingStart, bindingEnd);
 			//Peak openChrom = new Peak(openChromStart,openChromEnd);
 			
 			///DNaseTFBSPeak dPeak = new DNaseTFBSPeak(tfbsPeak,openChrom);

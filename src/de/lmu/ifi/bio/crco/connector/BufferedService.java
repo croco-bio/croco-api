@@ -78,7 +78,7 @@ public class BufferedService implements QueryService {
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
 		return readNetwork(networkFile,globalRepository);
 	}
-	private Network readNetwork(File file,boolean globalRepository) throws Exception{
+	private Network readNetwork(File file,boolean globalRepository)throws IOException {
 		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
 		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
 		String header = br.readLine().substring(1);
@@ -86,7 +86,12 @@ public class BufferedService implements QueryService {
 		String clazz = tokens[0];
 		String name = tokens[1];
 		Integer taxId = Integer.valueOf(tokens[2]);
-		Class<Network> networkClass = (Class<Network>)Class.forName(clazz);
+		Class<Network> networkClass = null;
+		try {
+			networkClass = (Class<Network>)Class.forName(clazz);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 		Network ret = Network.getEmptyNetwork(networkClass, name, taxId,globalRepository);
 		String line = null;
 		int k = 0;
@@ -145,34 +150,29 @@ public class BufferedService implements QueryService {
 	}
 	@Override
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return service.getNetworkHierachy(path);
 	}
 
 
 	@Override
 	public List<NetworkHierachyNode> findNetwork(
 			List<Pair<Option, String>> options) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return this.service.findNetwork(options);
 	}
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return this.service.getNetworkHierachyNode(groupId);
 	}
 	@Override
 	public List<Pair<Option, String>> getNetworkInfo(Integer groupId)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return this.service.getNetworkInfo(groupId);
 	}
 	@Override
 	public List<Entity> getEntities(Species species, String annotation,
 			ContextTreeNode context) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return this.service.getEntities(species,annotation,context);
 	}
 
 	@Override
