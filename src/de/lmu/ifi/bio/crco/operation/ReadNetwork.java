@@ -11,7 +11,7 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 /**
  * Reads a network from a CroCo-Repository.
- * @author Robert Pesch
+ * @author rpesch
  */
 public class ReadNetwork extends GeneralOperation {
 
@@ -56,7 +56,9 @@ public class ReadNetwork extends GeneralOperation {
 		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode, NetworkHierachyNode.class);
 		Network network = null;
 		try{
-			network = service.readNetwork(node.getGroupId(),contextTreeNode.getContextId(),globalRepository);
+			Integer contextId = null;
+			if ( contextTreeNode != null) contextId = contextTreeNode.getContextId();
+			network = service.readNetwork(node.getGroupId(),contextId,globalRepository);
 			
 		}catch(Exception e){
 			throw new OperationNotPossibleException("Could not read network",e);
