@@ -37,7 +37,7 @@ public enum Option {
 	 
 	 FactorList(OptionType.Experiment,"List of transcription factors"),
 	 
-	 networkOverlap(OptionType.NetworkSimilarity,"Network Jaccard index"),
+	 networkOverlap(OptionType.NetworkSimilarity,"Network Overlap"),
 	 explainability(OptionType.NetworkSimilarity,"Fraction of explainable source interactions"),
 	 networkDegreeOverlap(OptionType.NetworkSimilarity,"Network degree overlap");
 	 
