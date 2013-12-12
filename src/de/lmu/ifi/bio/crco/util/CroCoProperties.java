@@ -31,10 +31,9 @@ public class CroCoProperties {
 	
 	public static CroCoProperties getInstance() throws IOException{
 		if ( instance == null){
-			InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("connet.config");
-
+			InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("resources/connet.config");
 			if ( stream == null){ //last try
-				File file = new File("conf/connet.config");
+				File file = new File("connet.config");
 				if ( file.exists()){
 					stream = new FileInputStream(file);
 				}
