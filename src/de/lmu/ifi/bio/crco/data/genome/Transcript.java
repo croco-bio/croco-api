@@ -9,6 +9,7 @@ public class Transcript extends Entity{
 	
 	private List<Exon> exons = null;
 	private String transcriptName;
+	private String transcriptId;
 	private String type;
 	private Gene parentGene;
 	private Protein protein;
@@ -21,11 +22,12 @@ public class Transcript extends Entity{
 		
 	}
 	
-	public Transcript(Gene parentGene, String transcriptName,String type) {
+	public Transcript(Gene parentGene, String transcriptName,String transcriptId, String type) {
 		super(transcriptName);
 		this.transcriptName = transcriptName;
 		this.parentGene = parentGene;
 		this.type = type;
+		this.transcriptId = transcriptId;
 		this.exons = new ArrayList<Exon>();
 		
 	}
@@ -41,11 +43,33 @@ public class Transcript extends Entity{
 	public void addExon(Exon exon){
 		this.exons.add(exon);
 	}
+	public List<Exon> getExons(){
+		return exons;
+	}
+	/**
+	 * @return the start lower position on the PLUS strand for the first exons start
+	 */
+	public Integer getTSSStart(){
+		if ( exons != null)
+			return exons.get(0).getStart();
+		else
+			return null;
+	}
+	/**
+	 * @return the end higher position on the PLUS strand for the last exons end
+	 */
+	public Integer getTSSEnd(){
+		if ( exons != null)
+			return exons.get(exons.size()-1).getEnd();
+		else
+			return null;
+	}
+	
 	/**
 	 * Returns the TSS end position (strand corrected)
 	 * @return the TSS end position or null when no exon or parent gene annotations are available
 	 */
-	public Integer getTSSEnd(){
+	public Integer getTSSStrandCorredEnd(){
 		if ( exons != null && parentGene != null){
 			if ( parentGene.getStrand().equals(Strand.PLUS)) //exons are ordered
 				return exons.get(exons.size()-1).getEnd();  //last exon end => TSS end
@@ -59,7 +83,7 @@ public class Transcript extends Entity{
 	 * Returns the TSS start position (strand corrected)
 	 * @return the TSS start position or null when no exon or parent gene annotations are available
 	 */
-	public Integer getTSSStart(){
+	public Integer getTSSStrandCorredStart(){
 		if ( exons != null && parentGene != null){
 			if ( parentGene.getStrand().equals(Strand.PLUS)) //exons are ordered
 				return exons.get(0).getStart();  //first exon start => TSS start
