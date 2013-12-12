@@ -34,8 +34,8 @@ public class FileUtil {
 	public static ColumnLookUp fileLookUp(File inputFile, String seperator) throws IOException{
 		return new ColumnLookUp(inputFile,seperator);
 	}
-	public static MappingFileReader mappingFileReader(String seperator, Integer fromIndex, Integer toIndex,File... inputFiles){
-		return new MappingFileReader(seperator,fromIndex,toIndex,inputFiles);
+	public static MappingFileReader mappingFileReader( Integer fromIndex, Integer toIndex,File... inputFiles){
+		return new MappingFileReader(fromIndex,toIndex,inputFiles);
 	}
 	
 	public static List<Gene> getGenes(File gtfFile,String transcriptType, List<String> chrosoms) throws Exception{
@@ -64,7 +64,6 @@ public class FileUtil {
 			String tType = tokens[1]; //e.g. protein coding
 			//if (! geneType.equals("protein_coding")) continue;
 			if ( transcriptType != null && !tType.equals(transcriptType)) continue;
-			
 			String annotationType = tokens[2]; // CDS, exon, start_codon, stop_codon
 			Integer start = Integer.valueOf(tokens[3]);
 			Integer end = Integer.valueOf(tokens[4]);
@@ -96,7 +95,7 @@ public class FileUtil {
 				currentGene = new Gene(chrom,geneId,strand,start,end);
 			}
 			if ( currentTranscript == null || !currentTranscript.equals(transcriptId)){
-				currentTranscript = new Transcript(currentGene,transcriptId);
+				currentTranscript = new Transcript(currentGene,transcriptId,tType);
 				currentGene.addTranscript(currentTranscript);
 			}
 			if ( proteinId != null && (currentProtein == null || !currentProtein.getProteinId().equals(proteinId))){
@@ -117,7 +116,7 @@ public class FileUtil {
 		}
 		if ( currentGene != null) genes.add(currentGene);
 		br.close();
-		CroCoLogger.getLogger().debug(String.format("Number of genes in GTF:" ,genes.size()));
+		CroCoLogger.getLogger().debug(String.format("Number of genes in GTF: %d" ,genes.size()));
 		return genes;
 	}
 	
@@ -307,19 +306,23 @@ public class FileUtil {
 			return this;
 		}
 		
+		public MappingFileReader setColumnSeperator(String seperator){
+			this.seperator= seperator;
+			return this;
+		}
+		
 		/**
-		 * Constructs a MappingFileReader for a list of input files.  
-		 * @param seperator -- the seperator between columns
+		 * Constructs a MappingFileReader for a list of input files (Default: tab separated and with no header information).  
+		 * @param seperator -- the separator between columns
 		 * @param fromIndex -- the from column
 		 * @param toIndex -- the two column
 		 * @param inputFiles -- a list of input files.
 		 */
-		public MappingFileReader(String seperator, Integer fromIndex, Integer toIndex,File... inputFiles){
+		public MappingFileReader(Integer fromIndex, Integer toIndex,File... inputFiles){
 			if ( inputFiles.length == 0) throw new IllegalArgumentException("At least one input mapping file is required");
 			
 			this.fromIndex = fromIndex;
 			this.toIndex = toIndex;
-			this.seperator = seperator;
 			this.inputFiles = inputFiles;
 		}
 	}
