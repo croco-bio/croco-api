@@ -13,6 +13,10 @@ public class TIntHashSetInteratorableWrapper  implements Iterable<Integer>{
 		this.set = set;
 	}
 	
+	public TIntHashSet getInternalSet(){
+		return set;
+	}
+	
 	@Override
 	public Iterator<Integer> iterator() {
 		return new TIntHashSetInterator(set.iterator());
