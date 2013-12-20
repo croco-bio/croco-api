@@ -34,7 +34,6 @@ import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
-import de.lmu.ifi.bio.crco.examples.CreateAnalogList;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.stat.PairwiseFeatures;
