@@ -28,6 +28,7 @@ import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.GenomeSequenceExtractor;
+import de.lmu.ifi.bio.crco.util.GenomeUtil;
 
 /**
  * Extracts the promoter region from a genome so that it can be used with the TFBS scanner FIMO.
@@ -55,13 +56,13 @@ public class FIMOInputGenerator {
 	 * @throws IOException
 	 */
 	public void writeFIMOInputFile(File output,GenomeSequenceExtractor extractor, List<Gene> genes) throws IOException{
-		HashMap<String, IntervalTree> trees = createIntervalTree(genes);
+		HashMap<String, IntervalTree<Promoter>> trees =GenomeUtil.createPromoterIntervalTree(genes,upstream,downstream,true);
 		CroCoLogger.getLogger().debug(String.format("Writing %s",output.toString()));
 		BufferedWriter bw = new BufferedWriter(new FileWriter(output ));
 		int promoterId = 0;
 
-		for(Entry<String, IntervalTree> e: trees.entrySet()){
-			IntervalTree tree = e.getValue();
+		for(Entry<String, IntervalTree<Promoter>> e: trees.entrySet()){
+			IntervalTree<Promoter> tree = e.getValue();
 			Collection<Promoter> regions = tree.getObjects();
 			for(Promoter region: regions){
 				if ( region == null) continue;
@@ -84,71 +85,7 @@ public class FIMOInputGenerator {
 		bw.flush();
 		bw.close();
 	}
-	/**
-	 * Generates none-overlapping promoter regions. 
-	 * @param genes list of genes
-	 * @return HashMap<String,IntervalTree> for each chromsom an IntervalTree
-	 */
-	private HashMap<String,IntervalTree> createIntervalTree(List<Gene> genes){
-		HashMap<String,IntervalTree> intervalsTmp = new HashMap<String,IntervalTree> ();
-		int g = 0;
-		int t = 0;
-		for(Gene gene : genes){
-			if (! intervalsTmp.containsKey(gene.getChr())){
-				intervalsTmp.put(gene.getChr(), new IntervalTree());
-			}
-			g++;
-			IntervalTree chrTree = intervalsTmp.get(gene.getChr());
-			
-			for(Transcript transcript  : gene.getTranscripts()){
-				t++;
-				Promoter promoter = null;
-				if ( gene.getStrand().equals(Strand.PLUS))
-					promoter = new Promoter(Math.max(transcript.getStart()-upstream,0),transcript.getStart()+downstream,transcript);
-				else
-					promoter = new Promoter(Math.max(transcript.getStart()-downstream,0),transcript.getStart()+upstream,transcript);
-				chrTree.insert(promoter);
-			}
-		}
-		CroCoLogger.getLogger().debug(String.format("Number of genes: %d",g));
-		CroCoLogger.getLogger().debug(String.format("Number of transcript: %d",t));
-		
-		
-		HashMap<String,IntervalTree> intervals = new HashMap<String,IntervalTree> ();
-		for(Entry<String, IntervalTree>  e: intervalsTmp.entrySet()){
-			
-			IntervalTree newTree = new IntervalTree();
-			Iterator<Promoter> it = e.getValue().getObjects().iterator();
-			while(it.hasNext()){
-				Promoter currentPromoter = it.next();
-				
-				if ( currentPromoter == null || newTree.search(currentPromoter) != null){ //skip when already contained
-					continue;
-				}
-				Set<Transcript> transcripts = new HashSet<Transcript>();
-				transcripts.addAll(currentPromoter.getTranscripts());
-				while(true){
-					List<Promoter> promoters = e.getValue().searchAll(currentPromoter);
-				
-					int min= currentPromoter.getStart();
-					int max = currentPromoter.getEnd();
-					if ( promoters != null && promoters.size() > 0){
-						for(Promoter promoter : promoters){ 
-							transcripts.addAll(promoter.getTranscripts());
-							min = Math.min(min, promoter.getStart());
-							max = Math.max(max, promoter.getEnd());
-						}
-					}
-					if ( min == currentPromoter.getStart() && max == currentPromoter.getEnd()) break; //no more changes
-					currentPromoter = new Promoter(min,max,transcripts);
-				}
-				
-				newTree.insert(currentPromoter);
-			}
-			intervals.put(e.getKey(),newTree);
-		}
-		return intervals;
-	}
+
 	
 	public static void main(String[] args) throws Exception{
 		HelpFormatter lvFormater = new HelpFormatter();
@@ -158,8 +95,8 @@ public class FIMOInputGenerator {
 		options.addOption(OptionBuilder.withLongOpt("genomeDir").withDescription("Folde containing the genome").isRequired().hasArgs().create("genome"));
 		options.addOption(OptionBuilder.withLongOpt("gtf").withDescription("GTF annotations").isRequired().hasArgs(1).create("gtf"));
 		options.addOption(OptionBuilder.withLongOpt("output").withDescription("Promoter output file (base name)").isRequired().hasArgs(1).create("output"));
-		options.addOption(OptionBuilder.withLongOpt("upstream").withDescription("Downstream").hasArgs(1).create("upstream"));
-		options.addOption(OptionBuilder.withLongOpt("downstream").withDescription("Upstream").hasArgs(1).create("downstream"));
+		options.addOption(OptionBuilder.withLongOpt("upstream").withDescription("Upstream").hasArgs(1).create("upstream"));
+		options.addOption(OptionBuilder.withLongOpt("downstream").withDescription("Downstream").hasArgs(1).create("downstream"));
 		options.addOption(OptionBuilder.withLongOpt("chromosoms").withDescription("List of chromosoms").hasArgs().create("chromosoms"));
 		options.addOption(OptionBuilder.withLongOpt("type").withDescription("Transcript type").hasArgs(1).create("type"));
 			

@@ -148,7 +148,7 @@ public class FIMOHandler extends TFBSHandler {
 			Transcript bestTranscript = null;
 			Integer currentMinDistance = Integer.MAX_VALUE;
 			for(Transcript transcript :gene.getTranscripts()){
-				Integer distance = Math.abs(absolutMiddle-transcript.getStart());  // Peak to TSS start
+				Integer distance = Math.abs(absolutMiddle-transcript.getTSSStrandCorredEnd());  // Peak to TSS start
 				if ( bestTranscript == null || distance < currentMinDistance ){
 					bestTranscript = transcript;
 					currentMinDistance = distance;
@@ -253,7 +253,7 @@ public class FIMOHandler extends TFBSHandler {
 			}
 		}
 		
-		HashMap<String, String> mapping = new FileUtil.MappingFileReader("\t",0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readN1MappingFile();
+		HashMap<String, String> mapping = new FileUtil.MappingFileReader(0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readN1MappingFile();
 		
 		//TODO:fix
 		HashMap<String, List<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf,null, null).readHits(tfbsFiles);

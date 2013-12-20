@@ -58,7 +58,7 @@ public class Neph {
 				System.exit(1);
 			}
 		}
-		HashMap<String, String> mapping = new FileUtil.MappingFileReader("\t",0,1,new File(line.getOptionValue("mapping"))).readN1MappingFile();
+		HashMap<String, String> mapping = new FileUtil.MappingFileReader(0,1,new File(line.getOptionValue("mapping"))).readN1MappingFile();
 		
 		File NephResultDir = new File(line.getOptionValue("NephResultDir"));
 		for(File file : NephResultDir.listFiles()){
@@ -79,7 +79,7 @@ public class Neph {
 			
 				
 				File networkFile = new File(file  + "/genes.regulate.genes");
-				HashMap<String, Set<String>> network =new FileUtil.MappingFileReader("\t",0,1,networkFile).readNNMappingFile();
+				HashMap<String, Set<String>> network =new FileUtil.MappingFileReader(0,1,networkFile).readNNMappingFile();
 			
 			
 				BufferedWriter bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(outputDir + "/" + file.getName() + ".network.gz")) ));
