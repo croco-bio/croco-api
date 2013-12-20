@@ -42,11 +42,11 @@ public class FileUtilTest {
 		bw.flush();
 		bw.close();
 		
-		HashMap<String, Set<String>> mappingNN = new FileUtil.MappingFileReader("\t",0,1,tmpMappingFile).readNNMappingFile();
+		HashMap<String, Set<String>> mappingNN = new FileUtil.MappingFileReader(0,1,tmpMappingFile).readNNMappingFile();
 		System.out.println(mappingNN);
 		assertEquals(mappingNN.size(),2);
 		
-		HashMap<String, String> mappingN1 = new FileUtil.MappingFileReader("\t",0,1,tmpMappingFile).readN1MappingFile();
+		HashMap<String, String> mappingN1 = new FileUtil.MappingFileReader(0,1,tmpMappingFile).readN1MappingFile();
 		System.out.println(mappingN1);
 		assertEquals(mappingN1.size(),1);
 		
