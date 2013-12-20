@@ -18,6 +18,7 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
@@ -558,16 +559,24 @@ public class LocalService implements QueryService{
 	}
 
 	@Override
-	public List<Entity> getEntities(Species species,String annotation,ContextTreeNode context)  throws Exception{
+	public List<Entity> getEntities(Species species,String bioType,ContextTreeNode context)  throws Exception{
 		
 		
-		String sql ="SELECT gene.gene,gene.gene_name, type FROM Gene gene ";
+		String sql ="SELECT gene.gene,gene.gene_name type FROM Gene gene ";
 		if ( context != null){
 			sql += String.format("JOIN GeneContext context on context.gene = gene.gene and context_id=%d ",context.getContextId());
 		}
-		sql+=String.format("where tax_id=%d",species.getTaxId());
-		if ( annotation != null){
-			sql+=String.format(" and type like '%s'", annotation);
+		if ( bioType != null){
+			sql += String.format("JOIN Transcript transcript on gene.gene = transcript.gene ");
+		}
+		if ( species != null)
+			sql+=String.format("where tax_id=%d",species.getTaxId());
+		if ( bioType != null){
+			if ( species == null) 
+				sql+="where ";
+			else
+				sql+=" and ";
+			sql+=String.format("bio_type like '%s' GROUP by gene.gene", bioType);
 		}
 		
 		logger.debug(sql);
@@ -578,8 +587,7 @@ public class LocalService implements QueryService{
 		while(res.next()){
 			String gene = res.getString(1);
 			String name = res.getString(2);
-			String type = res.getString(3);
-			ret.add(new Entity(gene,name,type));
+			ret.add(new Gene(gene,name));
 		}
 		
 		stat.close();
