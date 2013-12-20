@@ -20,8 +20,8 @@ public class Gene extends Entity {
 	public Gene(String geneId) {
 		super(geneId,geneId);
 	}
-	public Gene( String chr, String geneId, Strand strand, Integer start, Integer end) {
-		super(geneId);
+	public Gene( String chr, String geneId, String geneName,Strand strand, Integer start, Integer end) {
+		super(geneId,geneName);
 		this.start = start;
 		this.end = end;
 		this.chr = chr;

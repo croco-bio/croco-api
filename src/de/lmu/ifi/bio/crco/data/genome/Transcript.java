@@ -40,34 +40,20 @@ public class Transcript extends Entity{
 	public void setProtein(Protein currentProtein) {
 		this.protein = currentProtein;
 	}
+	/**
+	 * Adds an exon (assume correct order)
+	 * @param exon 
+	 */
 	public void addExon(Exon exon){
 		this.exons.add(exon);
 	}
 	public List<Exon> getExons(){
 		return exons;
 	}
-	/**
-	 * @return the start lower position on the PLUS strand for the first exons start
-	 */
-	public Integer getTSSStart(){
-		if ( exons != null)
-			return exons.get(0).getStart();
-		else
-			return null;
-	}
-	/**
-	 * @return the end higher position on the PLUS strand for the last exons end
-	 */
-	public Integer getTSSEnd(){
-		if ( exons != null)
-			return exons.get(exons.size()-1).getEnd();
-		else
-			return null;
-	}
+
 	
 	/**
-	 * Returns the TSS end position (strand corrected)
-	 * @return the TSS end position or null when no exon or parent gene annotations are available
+	 * @return the <b>strand corrected<b> TSS end position or null when no exon or parent gene annotations are available
 	 */
 	public Integer getTSSStrandCorredEnd(){
 		if ( exons != null && parentGene != null){
@@ -80,8 +66,7 @@ public class Transcript extends Entity{
 	}
 	
 	/**
-	 * Returns the TSS start position (strand corrected)
-	 * @return the TSS start position or null when no exon or parent gene annotations are available
+	 * @return the <br>strand corrected<b> TSS start position or null when no exon or parent gene annotations are available
 	 */
 	public Integer getTSSStrandCorredStart(){
 		if ( exons != null && parentGene != null){
