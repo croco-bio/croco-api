@@ -166,6 +166,11 @@ public class NetworkHierachy  {
 		if ( folderHandler != null) folderHandler.finish();
 		
 	}
+	/**
+	 * Processor for networks and folders in the croco repository
+	 * @author pesch
+	 *
+	 */
 	public interface CroCoRepositoryProcessor {
 		
 		public void init(Integer rootId) throws Exception;

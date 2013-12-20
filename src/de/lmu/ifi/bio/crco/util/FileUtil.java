@@ -46,7 +46,7 @@ public class FileUtil {
 		Pattern pattern = Pattern.compile("\t");
 		Pattern annotation = Pattern.compile("([^\\s]+)\\s+\"([^;]+)\";");
 		
-		
+		Set<String> foundChrosoms = new HashSet<String>();
 		Set<String> toConsider = null;
 		if (chrosoms != null) toConsider = new HashSet<String>(chrosoms);
 		BufferedReader br = new BufferedReader(new FileReader(gtfFile));
@@ -59,6 +59,7 @@ public class FileUtil {
 		while((line=br.readLine())!=null){
 			String[] tokens = pattern.split(line);
 			String chrom = tokens[0];
+			foundChrosoms.add(chrom);
 			if ( chrosoms != null && !toConsider.contains(chrom)) continue;
 			String frame = tokens[7];
 			String tType = tokens[1]; //e.g. protein coding
@@ -76,6 +77,7 @@ public class FileUtil {
 			
 			String geneId = null;
 			String transcriptId = null;
+			String transcriptName = null;
 			String geneName = null;
 			String proteinId = null;
 			Matcher matcher = annotation.matcher(tokens[8]);
@@ -83,19 +85,19 @@ public class FileUtil {
 			
 			while(matcher.find()){
 				String type = matcher.group(1);
-				if ( type.equals("gene_id")) geneId = matcher.group(2);
+				if ( type.equals("gene_id")) geneId = matcher.group(2).toUpperCase(); //default for entity class (otherwise equals fails)
 				else if ( type.equals("transcript_name")) transcriptId = matcher.group(2);
+				else if ( type.equals("transcript_id")) transcriptId = matcher.group(2).toUpperCase(); 
 				else if ( type.equals("gene_name")) geneName = matcher.group(2);
-				else if ( type.equals("protein_id")) proteinId = matcher.group(2);
+				else if ( type.equals("protein_id")) proteinId = matcher.group(2).toUpperCase();
 				else if ( type.equals("exon_number")) exonId = "EXON" + Integer.valueOf(matcher.group(2));
 			}
-		
 			if ( currentGene == null || !currentGene.getIdentifier().equals(geneId)){
 				if (currentGene != null ) genes.add(currentGene);
-				currentGene = new Gene(chrom,geneId,strand,start,end);
+				currentGene = new Gene(chrom,geneId,geneName,strand,start,end);
 			}
 			if ( currentTranscript == null || !currentTranscript.equals(transcriptId)){
-				currentTranscript = new Transcript(currentGene,transcriptId,tType);
+				currentTranscript = new Transcript(currentGene,transcriptId,transcriptName,tType);
 				currentGene.addTranscript(currentTranscript);
 			}
 			if ( proteinId != null && (currentProtein == null || !currentProtein.getProteinId().equals(proteinId))){
@@ -117,6 +119,14 @@ public class FileUtil {
 		if ( currentGene != null) genes.add(currentGene);
 		br.close();
 		CroCoLogger.getLogger().debug(String.format("Number of genes in GTF: %d" ,genes.size()));
+		CroCoLogger.getLogger().debug(String.format("Found chroms:\t\t %s",foundChrosoms.toString()));
+		if ( toConsider != null){
+			CroCoLogger.getLogger().debug(String.format("Considered chroms:\t\t %s",toConsider.toString()));
+			foundChrosoms.retainAll(toConsider);
+			CroCoLogger.getLogger().debug(String.format("Found & Considered chroms: %s",foundChrosoms.toString()));
+		}
+		
+		
 		return genes;
 	}
 	
