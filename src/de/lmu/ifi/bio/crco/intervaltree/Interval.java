@@ -38,13 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 //Quick and dirty interval class
-@SuppressWarnings("unchecked")
-public class Interval implements Comparable {
+public class Interval implements Comparable<Interval> {
  private final double low;
  private final double high;
 
  public Interval(double low, double high) {
-	assert low <= high;
+	if (  low > high) throw new RuntimeException("Interval check failed (low > high)");
 	this.low = low;
 	this.high = high;
  }
@@ -67,8 +66,7 @@ public class Interval implements Comparable {
  }
 
 
- public int compareTo(Object o) {
-	Interval other = (Interval) o;
+ public int compareTo(Interval other) {
 	if (this.low < other.low)
 	    return -1;
 	if (this.low > other.low)
