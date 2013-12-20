@@ -11,7 +11,7 @@ import gnu.trove.list.array.TIntArrayList;
 public class JUNGConverter implements Convert<DirectedSparseGraph<String,Integer>>{
 
 	private Integer max = null;
-	public JUNGConverter(int max){
+	public JUNGConverter(Integer max){
 		this.max = max;
 	}
 	public JUNGConverter(){
