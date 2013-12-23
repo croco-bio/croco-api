@@ -437,9 +437,9 @@ public class NetworkHierachy  {
 		br.close();
 		return ret;
 	}
-	public static void writeNetworkHierachyFile(DirectedNetwork network, File networkFile) throws Exception{
-		BufferedWriter bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(networkFile)) ));
-		network.addNetworkInfo(Option.networkFile, networkFile.toString());
+	public static void writeNetworkHierachyFile(DirectedNetwork network, File outputNetworkFile) throws Exception{
+		BufferedWriter bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(outputNetworkFile)) ));
+		network.addNetworkInfo(Option.networkFile, outputNetworkFile.toString());
 		for(int edgeId : network.getEdgeIds()){
 			Tuple<Entity, Entity> edge = network.getEdge(edgeId);
 			bwNetwork.write(edge.getFirst().getIdentifier() + "\t" + edge.getSecond().getIdentifier() + "\n");
