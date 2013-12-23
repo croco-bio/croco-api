@@ -31,11 +31,11 @@ import de.lmu.ifi.bio.crco.operation.Transfer;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologRepository;
+import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
+import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy.CroCoRepositoryProcessor;
 import de.lmu.ifi.bio.crco.stat.generator.PairwiseStatGenerator;
 import de.lmu.ifi.bio.crco.stat.generator.PairwiseStatGenerator.FeatureType;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
-import de.lmu.ifi.bio.crco.util.NetworkHierachy;
-import de.lmu.ifi.bio.crco.util.NetworkHierachy.CroCoRepositoryProcessor;
 import de.lmu.ifi.bio.crco.util.Pair;
 
 public class PairwiseFeatures {
