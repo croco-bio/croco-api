@@ -87,7 +87,7 @@ public class IntervalTree<E extends Interval> implements Serializable{
 
 
 	// Returns the first matching interval that we can find.
-	public Interval search(Interval interval) {
+	public E search(Interval interval) {
 
 		RbNode node = tree.root();
 		if (node.isNull())
