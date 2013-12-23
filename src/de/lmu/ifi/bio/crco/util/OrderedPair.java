@@ -1,6 +1,5 @@
 package de.lmu.ifi.bio.crco.util;
 
-import java.io.Serializable;
 
 public class OrderedPair<FIRST,SECOND> implements Tuple<FIRST,SECOND> {
 	

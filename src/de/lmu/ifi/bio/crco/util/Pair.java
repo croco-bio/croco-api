@@ -1,7 +1,6 @@
 package de.lmu.ifi.bio.crco.util;
 
 
-
 public class Pair<FIRST,SECOND> implements Tuple<FIRST,SECOND> {
 	
 	

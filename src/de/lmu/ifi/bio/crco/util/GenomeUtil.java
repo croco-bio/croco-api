@@ -145,7 +145,29 @@ public class GenomeUtil {
 		}
 		return intervalsTmp;
 	}
+	
+	public static String reverse(String dna){
+		StringBuffer ret = new StringBuffer();
+		for(int i = dna.length()-1 ; i >= 0 ; i--){
+			char c = dna.charAt(i);
+			if ( c == 'T'){
+				ret.append('A');
+			}else if ( c == 'A'){
+				ret.append('T');
+			}else if ( c == 'G'){
+				ret.append('C');
+			}else if ( c == 'C'){
+				ret.append('G');
+			}else if ( c=='N'){
+				ret.append('N');
+			}else{
+				throw new RuntimeException("Unknown letter (" + c);
+			}
+		}
 		
+        return ret.toString();
+	}
+	
 	public static HashMap<String,List<Peak>> peakReader(File peakFile, HashMap<String,String> chromosomNameMapping) throws IOException{
 		HashMap<String,List<Peak>> peaks = new HashMap<String,List<Peak>>();
 		

@@ -18,7 +18,6 @@ import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.data.genome.Protein;
 import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
-import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 
 /**
@@ -36,6 +35,11 @@ public class FileUtil {
 	}
 	public static MappingFileReader mappingFileReader( Integer fromIndex, Integer toIndex,File... inputFiles){
 		return new MappingFileReader(fromIndex,toIndex,inputFiles);
+	}
+	public static File checkFile(String fileStr) throws IOException{
+		File file = new File(fileStr);
+		if (file.exists()) throw new IOException(String.format("File %s not found",fileStr));
+		return file;
 	}
 	
 	public static List<Gene> getGenes(File gtfFile,String transcriptType, List<String> chrosoms) throws Exception{
