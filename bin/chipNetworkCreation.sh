@@ -1,20 +1,8 @@
 #!/bin/bash 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
-CP="$DIR/target/classes:$DIR/target/dependency/*"
 
-HUMAN_GTF_FILE="$DIR/data/GeneAnnotation/Homo_sapiens.GRCh37.73.gtf"
-MOUSE_GTF_FILE="$DIR/data/GeneAnnotation/Mus_musculus.GRCm38.73.gtf"
-WORM_GTF_FILE="$DIR/data/GeneAnnotation/Caenorhabditis_elegans.WS220.66.gtf"
-FLY_GTF_FILE="$DIR/data/GeneAnnotation/Drosophila_melanogaster.BDGP5.20.gtf"
-
-FLY_EXPERIMENTAL_MAPPING_FILE="/home/users/pesch/Databases/modEncode/Fly/data.unmodified"
-WORM_EXPERIMENTAL_MAPPING_FILE="/mnt/raid1/proj/pesch/modEncode/Worm/data.unmodified"
-
-HUMAN_EXPERIMENTAL_FILES=`find /home/users/pesch/Databases/ENCODE/CHIPSEQ-PEAKS/Human -name data.unmodified`
-REPOSITORY_DIR="/home/extproj/pesch/CroCo"
+source setEnvironment.sh
 COMPOSITE_NAME="ChIP"
 
-MOUSE_EXPERIMENTAL_FILES=`find /home/users/pesch/Databases/ENCODE/CHIPSEQ-PEAKS/Mouse -name data.unmodified`
 
 fileList=""
 for i in $files; do 
