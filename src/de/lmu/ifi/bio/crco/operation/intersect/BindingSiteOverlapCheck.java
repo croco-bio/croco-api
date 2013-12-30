@@ -16,7 +16,7 @@ public class BindingSiteOverlapCheck implements IntersectionAnnotationCheck {
 	@Override
 	public boolean check(TIntObjectHashMap<List<Object>> anno1, TIntObjectHashMap<List<Object>> anno2) {
 		
-		if ( !anno1.contains(EdgeOption.BindingSite.ordinal())  ||!anno1.contains(EdgeOption.BindingSite.ordinal())  ) return false;
+		if ( !anno1.contains(EdgeOption.BindingSite.ordinal())  ||!anno2.contains(EdgeOption.BindingSite.ordinal())  ) return false;
 		
 		List<TFBSPeak>bindingsSites1 = (List) anno1.get(EdgeOption.BindingSite.ordinal());
 		List<TFBSPeak>bindingsSites2 = (List) anno2.get(EdgeOption.BindingSite.ordinal());

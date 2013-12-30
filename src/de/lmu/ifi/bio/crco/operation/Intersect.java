@@ -22,7 +22,6 @@ public class Intersect extends GeneralOperation{
 	protected Network doOperation(){
 		List<Network> networks = this.getNetworks(); 
 		
-		
 		Network net0 = networks.get(0);
 		
 		for(int i = 1 ; i < networks.size(); i++){
