@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.Entity;
@@ -25,7 +26,16 @@ public class TFBSPeak extends Peak {
 	public Transcript getTarget(){
 		return target;
 	}
-	
+
+	public TFBSPeak(String chrom,Entity factor,String motifId,Transcript target,Integer distanceToTranscript, Float pValue, Float score, int start, int end) {
+		super(chrom,start, end,score);
+		this.target = target;
+		this.factors = new ArrayList<Entity>();
+		this.factors.add(factor);
+		this.pValue = pValue;
+		this.motifId = motifId;
+		this.distanceToTranscript = distanceToTranscript;
+	}
 	public TFBSPeak(String chrom,List<Entity> factors,String motifId,Transcript target,Integer distanceToTranscript, Float pValue, Float score, int start, int end) {
 		super(chrom,start, end,score);
 		this.target = target;
@@ -49,7 +59,7 @@ public class TFBSPeak extends Peak {
 	
 	@Override
 	public String toString(){
-		return String.format("%s\t%s\t%s\t%d\t%f\t%f\t%s\t%d\t%d\n",
+		return String.format("%s\t%s\t%s\t%d\t%f\t%.7f\t%s\t%d\t%d",
 				StringUtil.getAsList(factors, ','), target.getIdentifier() , target.getParentGene().getIdentifier(),
 				 distanceToTranscript,score,pValue,getChrom(),getStart(),getEnd() );
 	}
