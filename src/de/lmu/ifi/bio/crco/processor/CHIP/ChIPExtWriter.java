@@ -8,118 +8,74 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
 
+import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.network.DirectedNetwork;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter.IntegerValueHandler;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter.StringValueHandler;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.GenomeUtil;
-import de.lmu.ifi.bio.crco.util.Pair;
 
 public class ChIPExtWriter {
+	private static CroCoOption<Integer> chromsomIndex = new CroCoOption<Integer>("chromsomIndex",new IntegerValueHandler()).setDescription("chromsom index column index in PEAK files (default 0)").setArgs(1).setDefault(0);
+	private static CroCoOption<Integer> startIndex = new CroCoOption<Integer>("startIndex",new IntegerValueHandler()).setArgs(1).setDescription("chromsom start column index in PEAK files (default 1)").setDefault(1);
+	private static CroCoOption<Integer> endIndex = new CroCoOption<Integer>("endIndex",new IntegerValueHandler()).setArgs(1).setDescription("chromsom end column index in PEAK files (default 2)").setDefault(2);
+	private static CroCoOption<Integer> maxSize = new CroCoOption<Integer>("endIndex",new IntegerValueHandler()).setArgs(1).setDescription("max size in bp of a ChIP-seq peak  (default 2000  base pairs)").setDefault(2000);
+	private static CroCoOption<String> aggregateKey = new CroCoOption<String>("aggregateKey",new StringValueHandler()).setArgs(1).setDescription("e.g. cell, or development (default (cell)").setDefault("cell");
+	
 	public static void main(String [] args) throws Exception{
-		HelpFormatter lvFormater = new HelpFormatter();
-		CommandLineParser parser = new BasicParser();
-	
-		Options options = new Options();
-		options.addOption(OptionBuilder.withLongOpt("gtf").withDescription("GTFFile").hasArgs(1).isRequired().create("gtfFile"));
-		options.addOption(OptionBuilder.withLongOpt("chromosomNameMappings").withDescription("reference=synonym").hasArgs().create("chromosomNameMappings"));
-		options.addOption(OptionBuilder.withLongOpt("chromosomNamePrefix").withDescription("chromosoms names prefix").hasArgs().create("chromosomNamePrefix"));
-		options.addOption(OptionBuilder.withLongOpt("chromsomIndex").withDescription("chromsom index column index in PEAK files (default 0)").hasArgs(1).create("chromsomIndex"));
-		options.addOption(OptionBuilder.withLongOpt("startIndex").withDescription("chromsom start column index in PEAK files (default 1)").hasArgs(1).create("startIndex"));
-		options.addOption(OptionBuilder.withLongOpt("endIndex").withDescription("chromsom end column index in PEAK files (default 2)").hasArgs(1).create("endIndex"));
-		options.addOption(OptionBuilder.withLongOpt("taxId").withDescription("TAX-ID").hasArgs(1).create("taxId"));
-		options.addOption(OptionBuilder.withLongOpt("repositoryDir").withDescription("Repository directory").isRequired().hasArgs().create("repositoryDir"));
-		options.addOption(OptionBuilder.withLongOpt("compositeName").withDescription("Composite name").isRequired().hasArgs().create("compositeName"));
-		options.addOption(OptionBuilder.withLongOpt("experimentMappingFiles").withArgName("FILE(s)").withDescription("ChiP experiment description file(s)").isRequired().hasArgs().create("experimentMappingFiles"));
-		options.addOption(OptionBuilder.withLongOpt("aggregateKey").withArgName("NAME").withDescription("e.g. cell, or development").isRequired().hasArgs().create("aggregateKey"));
-		options.addOption(OptionBuilder.withLongOpt("upstream").withDescription("Upstream").isRequired().hasArgs(1).create("upstream"));
-		options.addOption(OptionBuilder.withLongOpt("downstream").withDescription("Downstream ").isRequired().hasArgs().create("downstream"));
-		options.addOption(OptionBuilder.withLongOpt("maxSize").withDescription("maxSize of a peak").hasArgs(1).create("maxSize"));
-		options.addOption(OptionBuilder.withLongOpt("type").withDescription("Transcript type").hasArgs(1).create("type"));
 		
+		ConsoleParameter parameter = new ConsoleParameter();
+		parameter.register(
+				ConsoleParameter.experimentMappingFiles,
+				ConsoleParameter.taxId,
+				ConsoleParameter.repositoryDir,
+				ConsoleParameter.gtf,
+				ConsoleParameter.chromosomNamePrefix,
+				ConsoleParameter.chromosomNameMappings,
+				ConsoleParameter.compositeName,
+				ConsoleParameter.upstream,
+				ConsoleParameter.downstream,
+				chromsomIndex,
+				startIndex,
+				endIndex,
+				maxSize,
+				aggregateKey
+		);
 		
-		CommandLine line = null;
-		try{
-			line = parser.parse( options, args );
-		}catch(Exception e){
-			System.err.println( e.getMessage());
-			lvFormater.printHelp(120, "java " + ChIPExtWriter.class.getName(), "", options, "", true);
-			System.exit(1);
-		}
+		CommandLine cmdLine = parameter.parseCommandLine(args,ChIPExtWriter.class);
 		
-		String type = null;
-		if ( line.hasOption("type"))type =line.getOptionValue("type");
-		File gtfFile = new File(line.getOptionValue("gtfFile"));
-		if (! gtfFile.exists()){
-			CroCoLogger.getLogger().fatal("GTF file does not exist (" + gtfFile  + ")");
-			System.exit(1);
-		}
-		List<File> experimentMappingFiles = new ArrayList<File>(); // File(line.getOptionValue("experimentMappingFile"));
-		for(String s : line.getOptionValues("experimentMappingFiles")){
-			File experimentMappingFile = new File(s);
-			if (!experimentMappingFile.exists() || !experimentMappingFile.isFile() ){
-				CroCoLogger.getLogger().fatal(experimentMappingFile + " does not exist/ no file");
-				System.exit(1);
-			}	
-			experimentMappingFiles.add(experimentMappingFile);
-		}
-		HashMap<String,String> chromosomNameMapping = new HashMap<String,String>();
-		if ( line.hasOption("chromosomNameMappings")){
-			for(String mapping : line.getOptionValues("chromosomNameMappings")){
-				String[] tokens = mapping.split("=");
-				chromosomNameMapping.put(tokens[0], tokens[1]);
-			}
-		}
-		String chromosomNamePrefix =null;
-		if ( line.hasOption("chromosomNamePrefix")){
-			chromosomNamePrefix = line.getOptionValue("chromosomNamePrefix");
-		}
-		/*
-		HashMap<String,String> geneIdMapping = null;
-		if ( line.hasOption("tssMappingFile")){
-			File tssMappingFile = new File(line.getOptionValue("tssMappingFile"));
-			if ( !tssMappingFile.exists()){
-				throw new RuntimeException("Can not find file:" + tssMappingFile);
-			}
-			geneIdMapping = FileUtil.readMappingFile(tssMappingFile, "\t", 0, 1, true,false);
-		}
-		*/
-		File repositoryDir = new File(line.getOptionValue("repositoryDir"));
-		if (! repositoryDir.isDirectory()){
-			throw new RuntimeException(repositoryDir + " is not a directory");
-		}
-		String composite = line.getOptionValue("compositeName");
-	
-		Integer maxSize = null;
-		if ( line.hasOption("maxSize"))
-			maxSize = Integer.valueOf(line.getOptionValue("maxSize"));
-		Integer taxId = Integer.valueOf(line.getOptionValue("taxId"));
-		Integer upstream = Integer.valueOf(line.getOptionValue("upstream"));
-		Integer downstream = Integer.valueOf(line.getOptionValue("downstream"));
-		String aggregateKey = line.getOptionValue("aggregateKey");
-		Integer chromIndex = 0;
-		Integer startIndex=1;
-		Integer endIndex=2;
-		if ( line.hasOption("chromsomIndex")) chromIndex = Integer.valueOf(line.getOptionValue("chromsomIndex"));
-		if ( line.hasOption("startIndex")) startIndex = Integer.valueOf(line.getOptionValue("startIndex"));
-		if ( line.hasOption("endIndex")) endIndex = Integer.valueOf(line.getOptionValue("endIndex"));
+		Integer taxId = ConsoleParameter.taxId.getValue(cmdLine);
+		String chromosomNamePrefix = ConsoleParameter.chromosomNamePrefix.getValue(cmdLine);
+		HashMap<String, String> chromosomNameMapping = ConsoleParameter.chromosomNameMappings.getValue(cmdLine);
+		File gtfFile = ConsoleParameter.gtf.getValue(cmdLine);
+		File repositoryDir = ConsoleParameter.repositoryDir.getValue(cmdLine);
+		String composite = ConsoleParameter.compositeName.getValue(cmdLine);
+		List<File> experimentMappingFiles = ConsoleParameter.experimentMappingFiles.getValue(cmdLine);
+		Integer downstream = ConsoleParameter.downstream.getValue(cmdLine);
+		Integer upstream = ConsoleParameter.upstream.getValue(cmdLine);
+		Integer chromIndex = ChIPExtWriter.chromsomIndex.getValue(cmdLine);
+		Integer startIndex=ChIPExtWriter.startIndex.getValue(cmdLine);
+		Integer endIndex=ChIPExtWriter.endIndex.getValue(cmdLine);
+		Integer maxSize = ChIPExtWriter.maxSize.getValue(cmdLine);
+		String aggregateKey = ChIPExtWriter.aggregateKey.getValue(cmdLine);
 		
 		CroCoLogger.getLogger().info("Max size:\t" + maxSize);
 		CroCoLogger.getLogger().info("TaxId:\t" + taxId);
@@ -134,19 +90,17 @@ public class ChIPExtWriter {
 		CroCoLogger.getLogger().info("Chrom index:\t" + chromIndex);
 		CroCoLogger.getLogger().info("Start index:\t" + startIndex);
 		CroCoLogger.getLogger().info("End index:\t" + endIndex);
-		CroCoLogger.getLogger().info("Type:\t" + type);
 		
 		File outputDir = new File(repositoryDir + "/"   + composite);
 		if ( outputDir.exists()){
-			CroCoLogger.getLogger().fatal(String.format("Composite %s already in repository %s",composite,repositoryDir.toString()));
-			//System.exit(1);
+			CroCoLogger.getLogger().warn(String.format("Composite %s already in repository %s",composite,repositoryDir.toString()));
 		}
 		if  ( !outputDir.mkdirs() ) {
 			CroCoLogger.getLogger().fatal(String.format("Cannnot create composite %s in repository %s",composite,repositoryDir.toString()));
-			//System.exit(1);
+			System.exit(1);
 		}
 		
-		List<Gene> genes = FileUtil.getGenes(gtfFile, type, null);
+		List<Gene> genes = FileUtil.getGenes(gtfFile, "protein_coding", null);
 		HashMap<String,IntervalTree<Promoter>> promoterTrees = GenomeUtil.createPromoterIntervalTree(genes,upstream,downstream,false);
 
 		HashMap<String,List<HashMap<String, String>>> experiments = new HashMap<String,List<HashMap<String, String>>>();
@@ -249,25 +203,24 @@ public class ChIPExtWriter {
 				File annotationFile = new File(aggreatedDir + "/" +  fileBaseName + ".annotation.gz");
 				BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
 				
-				HashMap<String, List<Pair<Peak, Promoter>>> targets = createEnrichedNetworkChipNetwork(peaks,promoterTrees, chromosomNamePrefix,chromosomNameMapping);
+				List<TFBSPeak> targets = getTFBSPeaks(new Entity(targetMapped),antibody,peaks,promoterTrees, chromosomNamePrefix,chromosomNameMapping);
 				
-				for(Entry<String, List<Pair<Peak, Promoter>>> entry  : targets.entrySet()){
-					String target = entry.getKey();
-					
-					bwNetwork.write( targetMapped.toUpperCase() + "\t" + target.toUpperCase() + "\n");
-					
-					for(Pair<Peak, Promoter> peakPromoter : entry.getValue()){
-						Peak peak = peakPromoter.getFirst();
-						Promoter promoter = peakPromoter.getSecond();
-						bwAnnotation.write("ChiPBinding\t" +
-								targetMapped.toUpperCase() + "\t" +target.toUpperCase() + "\t" +
-								peak.getChrom() + "\t" + (int)peak.getLow() + "\t" + (int)peak.getHigh() + "\t"  + promoter.getStart() + "\t" + promoter.getEnd() + "\t" +  promoter.getTranscripts().iterator().next().getParentGene().getName() + "\n"
-							);
-					}
+				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,false);
 
+				for(TFBSPeak tfbsPeak  : targets){
+			
+					Entity factor = tfbsPeak.getFactors().get(0); //can be only 1
+					Entity target = new Entity( tfbsPeak.getTarget().getParentGene().getIdentifier());
+						
+					network.add(factor, target);
+						//bwNetwork.write( targetMapped.toUpperCase() + "\t" + target.toUpperCase() + "\n");
+						
+					bwAnnotation.write(String.format("ChIPTFBS:\t%s\n",tfbsPeak.toString()));
+	
 					if ( k++ % 10000 == 0){
 						bwAnnotation.flush();
 						bwNetwork.flush();
+						
 					}
 				}
 				bwNetwork.flush();
@@ -284,14 +237,17 @@ public class ChIPExtWriter {
 
 	
 	/**
-	 * Maps ChIP bindings to genes via the transcripts
-	 * @param chipBindings ChIP bindings IntervalTree
-	 * @param promoterTrees Promoter IntervalTree
-	 * @return a map of genes to ChIP bindings
+	 * Maps ChiP-bindings to promoter
+	 * @param factor  the TF factor
+	 * @param antibody the used antibody 
+	 * @param chipBindings the chip bindings 
+	 * @param promoterTrees gene promoter tree
+	 * @param chromosomNamePrefix
+	 * @param chromosomNameMapping
+	 * @return list of TFBSPeak
 	 */
-	public static HashMap<String,List<Pair<Peak,Promoter>>> createEnrichedNetworkChipNetwork(HashMap<String, IntervalTree<Peak>> chipBindings, HashMap<String, IntervalTree<Promoter>> promoterTrees,String chromosomNamePrefix, HashMap<String,String> chromosomNameMapping) {
-		HashMap<String,List<Pair<Peak,Promoter>>>  ret = new HashMap<String,List<Pair<Peak,Promoter>>> ();
-		
+	private static List<TFBSPeak> getTFBSPeaks(Entity factor,String antibody, HashMap<String, IntervalTree<Peak>> chipBindings, HashMap<String, IntervalTree<Promoter>> promoterTrees,String chromosomNamePrefix, HashMap<String,String> chromosomNameMapping) {
+		List<TFBSPeak>  ret = new ArrayList<TFBSPeak> ();
 		for(Entry<String,IntervalTree<Peak>> chipBinding : chipBindings.entrySet()){
 			String chrom = chipBinding.getKey();
 			
@@ -310,19 +266,24 @@ public class ChIPExtWriter {
 			Collection<Peak> chipBindingsForChrom = chipBinding.getValue().getObjects();
 			for(Peak peak : chipBindingsForChrom){ //for each peak in chip experiment for current chrom
 				if ( peak == null) continue;
+		
+				Integer absolutMiddle = (peak.getStart()+peak.getEnd())/2;
 				List<Promoter> promoters =  chromPromoter.searchAll(peak); 
-				if ( promoters != null && promoters.size() > 0){ //in the case any overlaps with transcript promoters
+				if ( promoters != null && promoters.size() > 0){ //overlap with transcript promoter
 					for(Promoter promoter : promoters){
-						HashSet<String> geneId = new HashSet<String>(); 
-						for(Transcript transcript : promoter.getTranscripts()){ //each promoter may overlaps with several transcripts and several genes
-							geneId.add(transcript.getParentGene().getIdentifier());
-						}
-						for(String target : geneId){
-							if (! ret.containsKey(target)){
-								ret.put(target, new ArrayList<Pair<Peak,Promoter>>());
+						for(Transcript transcript : promoter.getTranscripts()){
+							Gene gene = transcript.getParentGene();
+							Integer distanceToTss=null;
+							if (gene.getStrand().equals(Strand.PLUS) ){
+								distanceToTss = absolutMiddle-transcript.getTSSStrandCorredStart();
+							}else{
+								distanceToTss = transcript.getTSSStrandCorredEnd()-absolutMiddle;
 							}
-							ret.get(target).add(new Pair<Peak,Promoter>(peak,promoter)); //add peak to gene
+							
+							TFBSPeak tfbsPeak = new TFBSPeak(chrom,factor,antibody,transcript,distanceToTss,null,peak.score,peak.getStart(),peak.getEnd());
+							ret.add(tfbsPeak);
 						}
+						
 					}
 				}
 			}
