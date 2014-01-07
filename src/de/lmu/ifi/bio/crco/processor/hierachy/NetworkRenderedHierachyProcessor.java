@@ -7,8 +7,6 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,7 +22,6 @@ import org.apache.commons.collections15.Transformer;
 
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.data.Entity;
-import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.converter.JUNGConverter;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy.CroCoRepositoryProcessor;

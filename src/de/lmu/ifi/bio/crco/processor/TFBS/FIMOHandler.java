@@ -50,15 +50,19 @@ public class FIMOHandler extends TFBSHandler {
 	private Float pValueThreshold = null;
 	private HashMap<String, Set<String>> motifIdMapping;
 	private HashMap<String, IntervalTree<Promoter>> trees;
+	private Integer upstream = null;
+	private Integer downstream = null;
 	
 	public FIMOHandler(File regionFile, Float pValueThreshold, List<Gene> genes, HashMap<String, Set<String>> motifIdMapping,Integer upstream,Integer downstream){
-		this(regionFile,pValueThreshold,motifIdMapping,GenomeUtil.createPromoterIntervalTree(genes,upstream,downstream,true));
+		this(regionFile,pValueThreshold,motifIdMapping,downstream,upstream,GenomeUtil.createPromoterIntervalTree(genes,upstream,downstream,true));
 	}
-	public FIMOHandler(File regionFile, Float pValueThreshold, HashMap<String, Set<String>> motifIdMapping, HashMap<String, IntervalTree<Promoter>> chromPromoterIntervalTree){
+	private FIMOHandler(File regionFile, Float pValueThreshold, HashMap<String, Set<String>> motifIdMapping,Integer upstream, Integer downstream, HashMap<String, IntervalTree<Promoter>> chromPromoterIntervalTree){
 		this.regionFile = regionFile;
 		this.pValueThreshold = pValueThreshold; 
 		this.motifIdMapping = motifIdMapping;
 		this.trees =chromPromoterIntervalTree;
+		this.upstream = upstream;
+		this.downstream= downstream;
 	}
 
 	
@@ -149,9 +153,13 @@ public class FIMOHandler extends TFBSHandler {
 						Gene gene = transcript.getParentGene();
 						Integer distanceToTss=null;
 						if (gene.getStrand().equals(Strand.PLUS) ){
-							distanceToTss = transcript.getTSSStrandCorredStart()-absolutMiddle;
+							distanceToTss = absolutMiddle-transcript.getTSSStrandCorredStart();
 						}else{
-							distanceToTss = absolutMiddle-transcript.getTSSStrandCorredEnd();
+							distanceToTss = transcript.getTSSStrandCorredEnd()-absolutMiddle;
+						}
+						if ( distanceToTss < -upstream||  distanceToTss > downstream){
+						//	CroCoLogger.getLogger().debug("skip " +distanceToTss );
+							continue;
 						}
 						
 						TFBSPeak peak = new TFBSPeak(dnaRegion.getChrom(),factors,motifId,transcript,distanceToTss,pValue,score,absolutStart,absolutEnd);
@@ -295,7 +303,7 @@ public class FIMOHandler extends TFBSHandler {
 		}
 		
 		StringBuffer factorStr = new StringBuffer();
-		for(Entity factor: network.getTargets()){
+		for(Entity factor: network.getFactors()){
 			factorStr.append(factor.getIdentifier() + " ");
 		}
 		bwInfo.write(String.format("%s: %s\n",Option.FactorList,factorStr.toString().trim()));

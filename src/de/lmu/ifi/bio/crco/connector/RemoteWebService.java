@@ -194,8 +194,6 @@ public class RemoteWebService implements QueryService{
 	}
 
 
-
-
 	@Override
 	public List<ContextTreeNode> getContextTreeNodes(String name) throws Exception {
 		return (List)performceOperation(baseUrl,"getContextTreeNodes",name);

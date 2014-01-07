@@ -38,7 +38,7 @@ public class FileUtil {
 	}
 	public static File checkFile(String fileStr) throws IOException{
 		File file = new File(fileStr);
-		if (file.exists()) throw new IOException(String.format("File %s not found",fileStr));
+		if (!file.exists()) throw new IOException(String.format("File %s not found",fileStr));
 		return file;
 	}
 	
@@ -338,6 +338,15 @@ public class FileUtil {
 			this.fromIndex = fromIndex;
 			this.toIndex = toIndex;
 			this.inputFiles = inputFiles;
+		}
+
+		/**
+		 * @see #MappingFileReader(Integer,Integer,File...)
+		 */
+		public MappingFileReader(Integer fromIndex, Integer toIndex,List<File>  inputFiles){
+			this.fromIndex = fromIndex;
+			this.toIndex = toIndex;
+			this.inputFiles = inputFiles.toArray(new File[inputFiles.size()]);
 		}
 	}
 
