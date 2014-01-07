@@ -1,8 +1,24 @@
 #!/bin/bash 
 
-REPOSITORY_DIR="/home/extproj/pesch/CroCo/"
 COMPOSITE_NAME="OpenChromTFBS"
+source setEnvironment.sh
 
+##Test
+
+java -Xmx4G -Xms4G  -cp $CP de.lmu.ifi.bio.crco.processor.OpenChrom.DNaseTFBSExtWriter \
+	-motifSetName JASPAR \
+	-experimentMappingFile $HUMAN_EXPERIMENT_MAPPING \
+	-taxId 9606 \
+	-tfbsFiles $HUMAN_JASPAR_SCAN   \
+	-tfbsRegion $HUMAN_REGIONS \
+	-pValueCutOf $E6\
+	-motifMappingFiles $HUMAN_JASPAR_MAPPING \
+	-compositeName $COMPOSITE_NAME/Human/$E6/JASPAR \
+	-repositoryDir $REPOSITORY_HOME \
+	-gtf $HUMAN_GTF_FILE \
+	-chromosomNamePrefix chr
+##Remove
+exit
 for e in $E5 $E6; do 
 	for i in $MOUSE_JASPAR_SCAN,$MOUSE_JASPAR_MAPPING,"JASPAR" $MOUSE_TRANSFAC_SCAN,$MOUSE_TRANSFAC_MAPPING,"TRANSFAC" $MOUSE_WEI2010_SCAN,$MOUSE_WEI2010_MAPPING,"WEI" $MOUSE_CHEN_SCAN,$MOUSE_CHEN_MAPPING,"CHEN" $MOUSE_UNIPROBE_SCAN,$MOUSE_UNIPROBE_MAPPING,"UNIPROBE"; do 
 		IFS=",";
@@ -11,7 +27,7 @@ for e in $E5 $E6; do
 		MAPPING=$2;
 		NAME=$3
                 
-		java -Xmx4G -Xms4G  -cp $CP network.imp.DNaseTFBSExtWriter \
+		java -Xmx4G -Xms4G  -cp $CP de.lmu.ifi.bio.crco.processor.OpenChrom.DNaseTFBSExtWriter \
 		 -motifSetName $NAME \
 	 	 -experimentMappingFile $MOUSE_EXPERIMENT_MAPPING \
 		 -taxId 10090 \
@@ -20,7 +36,7 @@ for e in $E5 $E6; do
 		 -pValueCutOf $e \
 		 -motifMappingFiles $MAPPING \
 		 -compositeName $COMPOSITE_NAME/Mouse/$e/$NAME \
-		 -repositoryDir $REPOSITORY_DIR
+		 -repositoryDir $REPOSITORY_HOME
 	done
 done
 
@@ -33,7 +49,7 @@ for e in $E5 $E6; do
 		MAPPING=$2;
 		NAME=$3
                 
-		java -Xmx4G -Xms4G  -cp $CP network.imp.DNaseTFBSExtWriter \
+		java -Xmx4G -Xms4G  -cp $CP de.lmu.ifi.bio.crco.processor.OpenChrom.DNaseTFBSExtWriter \
 		 -motifSetName $NAME \
 	 	 -experimentMappingFile $HUMAN_EXPERIMENT_MAPPING \
 		 -taxId 9606 \
@@ -42,7 +58,7 @@ for e in $E5 $E6; do
 		 -pValueCutOf $e \
 		 -motifMappingFiles $MAPPING \
 		 -compositeName $COMPOSITE_NAME/Human/$e/$NAME/ \
-		 -repositoryDir $REPOSITORY_DIR
+		 -repositoryDir $REPOSITORY_HOME
 	done
 done
 

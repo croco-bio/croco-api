@@ -4,7 +4,7 @@ source setEnvironment.sh
 java -Xmx4G -Xms4G  -cp $CP de.lmu.ifi.bio.crco.processor.TFBS.FIMOHandler \
 	 -taxId 9606 \
 	 -compositeName TFBS/Human \
-	 -repositoryDir $REPOSITORY_DIR \
+	 -repositoryDir $REPOSITORY_HOME \
    -upstream 5000 -downstream 5000 \
 	 -gtf $HUMAN_GTF_FILE \
    -pValueCutOf $E6 \
