@@ -1,9 +1,6 @@
 package de.lmu.ifi.bio.crco.operation;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
@@ -20,7 +17,7 @@ public class Difference extends GeneralOperation{
 
 
 	@Override
-	public List<Parameter> getParameters() {
+	public List<Parameter<?>> getParameters() {
 		
 		return null;
 	}

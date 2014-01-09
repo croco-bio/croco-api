@@ -25,17 +25,17 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class TransferBindings extends GeneralOperation {
-	public static Parameter ChainFileFile = new Parameter("ChainFileFile",File.class);
-	public static Parameter LiftOverExec = new Parameter("LiftOverExec",File.class);
-	public static Parameter MinMatch = new Parameter("LiftOver Min. match score",Float.class);
+	public static Parameter<File> ChainFileFile = new Parameter<File>("ChainFileFile");
+	public static Parameter<File> LiftOverExec = new Parameter<File>("LiftOverExec");
+	public static Parameter<Float> MinMatch = new Parameter<Float>("LiftOver Min. match score");
 
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network =(Network) this.getNetworks().get(0);
 		
-		File chainFile = this.getParameter(ChainFileFile, File.class);
-		File liftOver = this.getParameter(LiftOverExec, File.class);
-		Float minMatch = this.getParameter(MinMatch, Float.class);
+		File chainFile = this.getParameter(ChainFileFile);
+		File liftOver = this.getParameter(LiftOverExec);
+		Float minMatch = this.getParameter(MinMatch);
 		
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
 		
@@ -86,19 +86,19 @@ public class TransferBindings extends GeneralOperation {
 
 	@Override
 	public void checkParameter() throws OperationNotPossibleException {
-		File chainFile = this.getParameter(ChainFileFile, File.class);
+		File chainFile = this.getParameter(ChainFileFile);
 		if (! chainFile.exists()){
 			throw new OperationNotPossibleException(String.format("Given cahin file %s does not exist",chainFile.toString()));
 		}
-		File liftOver = this.getParameter(LiftOverExec, File.class);
+		File liftOver = this.getParameter(LiftOverExec);
 		if (! chainFile.exists()){
 			throw new OperationNotPossibleException(String.format("Given liftover exec. %s does not exist",liftOver.toString()));
 		}
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> para = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> para = new ArrayList<Parameter<?>>();
 		para.add(ChainFileFile);
 		para.add(LiftOverExec);
 		para.add(MinMatch);

@@ -23,8 +23,8 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class Transfer extends GeneralOperation{
-	public static Parameter OrthologRepository = new Parameter("OrthologRepository", de.lmu.ifi.bio.crco.operation.ortholog.OrthologRepository.class);
-	public static Parameter OrthologMappingInformation = new Parameter("List of OrthologMappingInformation",List.class);
+	public static Parameter<OrthologRepository> OrthologRepository = new Parameter<OrthologRepository>("OrthologRepository");
+	public static Parameter<List<OrthologMappingInformation>> OrthologMappingInformation = new Parameter<List<OrthologMappingInformation>>("List of OrthologMappingInformation");
 	
 	private Pair<Species,Species> getSourceAndTargetSpeciesRepresentation(OrthologMappingInformation orthologMappingInformation, Integer sourceTaxId ){
 		Species sourceSpeciesRepresentation = null;
@@ -45,9 +45,9 @@ public class Transfer extends GeneralOperation{
 		
 		Integer taxId = network.getTaxId();
 		
-		List<OrthologMappingInformation> orthologMappingInformations = (List)this.getParameter(OrthologMappingInformation,OrthologMappingInformation.class);
+		List<OrthologMappingInformation> orthologMappingInformations = this.getParameter(OrthologMappingInformation);
 
-		OrthologRepository repository = this.getParameter(OrthologRepository, OrthologRepository.class);
+		OrthologRepository repository = this.getParameter(OrthologRepository);
 
 		Species targetSpecies = getSourceAndTargetSpeciesRepresentation(orthologMappingInformations.get(0),taxId).getSecond();
 		
@@ -94,7 +94,7 @@ public class Transfer extends GeneralOperation{
 			throw new OperationNotPossibleException("No tax id given for network");
 		}
 	
-		List<OrthologMappingInformation> orthologs = (List)this.getParameter(OrthologMappingInformation,List.class);
+		List<OrthologMappingInformation> orthologs = this.getParameter(OrthologMappingInformation);
 		if ( orthologs == null || orthologs.size() == 0){
 			throw new OperationNotPossibleException("No ortholog mapping given");
 		}
@@ -111,8 +111,8 @@ public class Transfer extends GeneralOperation{
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> parameters = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 		
 		parameters.add(OrthologMappingInformation);
 		parameters.add(OrthologRepository);
@@ -128,12 +128,12 @@ public class Transfer extends GeneralOperation{
 	public void checkParameter() throws OperationNotPossibleException {
 		//Network network = this.getNetworks().get(0);
 		//Species species = this.getParameter(Parameter.Specie,Species.class);
-		List<OrthologMappingInformation> orthologs = (List)this.getParameter(OrthologMappingInformation,List.class);
+		List<OrthologMappingInformation> orthologs = this.getParameter(OrthologMappingInformation);
 		if ( orthologs == null){
 			throw new OperationNotPossibleException("No mapping given");
 		}
 		
-		OrthologRepository repository = this.getParameter(OrthologRepository,OrthologRepository.class);;
+		OrthologRepository repository = this.getParameter(OrthologRepository);;
 		if( repository == null){
 			throw new OperationNotPossibleException("No ortholog repository given");
 		}

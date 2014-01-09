@@ -46,7 +46,7 @@ public class Union extends GeneralOperation {
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
+	public List<Parameter<?>> getParameters() {
 		return null;
 	}
 

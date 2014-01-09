@@ -13,12 +13,12 @@ import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
  *
  */
 public class SupportFilter extends GeneralOperation{
-	public static Parameter Support = new Parameter("Support",Integer.class);
+	public static Parameter<Integer> Support = new Parameter<Integer>("Support");
 
 	@Override
 	public Network doOperation() {
 		Network network = this.getNetworks().get(0); //this.getParameter(Network.class, 0);
-		Integer minSupport = this.getParameter(Support,Integer.class);
+		Integer minSupport = this.getParameter(Support);
 		
 		
 		Network ret =Network.getEmptyNetwork(network.getClass(), network.getName(),network.getTaxId(), false);
@@ -40,8 +40,8 @@ public class SupportFilter extends GeneralOperation{
 	}
 	
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> parameters = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 		
 		parameters.add(Support);
 		

@@ -16,9 +16,9 @@ import de.lmu.ifi.bio.crco.network.Network;
 public abstract class GeneralOperation {
 
 	
-	HashMap<Parameter,Object> passedParameters = new HashMap<Parameter,Object>();
+	HashMap<Parameter<?>,Object> passedParameters = new HashMap<Parameter<?>,Object>();
 	
-	public<E extends Object> E getParameter( Parameter parameter, Class<E> clazz){
+	public<E extends Object> E getParameter( Parameter<E> parameter){
 		E ret =  (E) passedParameters.get(parameter);
 		if ( ret == null) ret =(E) parameter.getDefaultValue();
 		return ret;
@@ -38,14 +38,10 @@ public abstract class GeneralOperation {
 	}
 
 	
-	public final void setInput(Parameter parameter, Object value) throws CroCoException{
-		if (! parameter.getClazz().isInstance(value)){
-			//CroCoLogger.getLogger().fatal();
-			//return false;
-			throw new CroCoException("Wrong data type for " +  parameter.getName() + ".Given " + (value==null?"null":value.getClass()) + " expected:" + parameter.getClazz());
-		}
+	public final void setInput(Parameter<?> parameter, Object value) throws CroCoException{
+
 		boolean in = false;
-		for(Parameter p : this.getParameters()){
+		for(Parameter<?> p : this.getParameters()){
 			if ( p.equals(parameter)) {in=true; break;}
 		}
 		if ( in == false) throw new CroCoException(String.format("Unknown parameter %s for %s",parameter.toString(),this.getClass().getSimpleName())); 
@@ -91,7 +87,7 @@ public abstract class GeneralOperation {
 	 */
 	public abstract void checkParameter() throws OperationNotPossibleException;
 	
-	public abstract List<Parameter> getParameters();
+	public abstract List<Parameter<?>> getParameters();
 
 	public String getDescription() {
 		return this.getClass().getSimpleName();

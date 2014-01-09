@@ -17,12 +17,12 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class GeneAnnotationEnrichment extends GeneralOperation {
-	public static Parameter QueryService = new Parameter("QueryService",de.lmu.ifi.bio.crco.connector.QueryService.class);
+	public static Parameter<QueryService> QueryService = new Parameter<QueryService>("QueryService");
 
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network = super.getNetworks().get(0);
-		QueryService service = this.getParameter(QueryService, QueryService.class);
+		QueryService service = this.getParameter(QueryService);
 		Species species = new Species(network.getTaxId());
 		HashMap<String,String> idNameMapping = new HashMap<String,String>();
 		try{
@@ -59,8 +59,8 @@ public class GeneAnnotationEnrichment extends GeneralOperation {
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> parameter = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> parameter = new ArrayList<Parameter<?>>();
 		parameter.add(QueryService);
 		return parameter;
 	}

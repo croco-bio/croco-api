@@ -19,12 +19,12 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  */
 public class Shuffle extends GeneralOperation{
 	
-	public static Parameter RandomGenerator  = new Parameter("Random generator",Random.class,new Random(0));
+	public static Parameter<Random> RandomGenerator  = new Parameter<Random>("Random generator",new Random(0));
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network = this.getNetworks().get(0);
 		
-		Random rnd = this.getParameter(RandomGenerator, Random.class);
+		Random rnd = this.getParameter(RandomGenerator);
 		
 		Network ret = network.getEmptyNetwork(network.getClass(), network);
 
@@ -92,8 +92,8 @@ public class Shuffle extends GeneralOperation{
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> parameter = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> parameter = new ArrayList<Parameter<?>>();
 		parameter.add(RandomGenerator);
 		return parameter;
 	}

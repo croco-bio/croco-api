@@ -13,8 +13,8 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.Tuple;
 
 public class GeneSetFilter extends GeneralOperation {
-	public static Parameter genes = new Parameter("List of genes",Collection.class);
-	public static Parameter filterType = new Parameter("Filter type",FilterType.class);
+	public static Parameter<Collection<Entity>> genes = new Parameter<Collection<Entity>>("List of genes");
+	public static Parameter<FilterType> filterType = new Parameter<FilterType>("Filter type");
 	
 	
 	public static enum FilterType{
@@ -24,9 +24,9 @@ public class GeneSetFilter extends GeneralOperation {
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network = this.getNetworks().get(0);
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
-		Set ofInterest = new HashSet<Entity>(this.getParameter(genes, Set.class));
+		Set ofInterest = new HashSet<Entity>(this.getParameter(genes));
 		
-		FilterType type = this.getParameter(filterType, FilterType.class);
+		FilterType type = this.getParameter(filterType);
 		
 		HashMap<Entity,Set<Entity>> neighbours = new HashMap<Entity,Set<Entity>>();
 		
@@ -126,15 +126,15 @@ public class GeneSetFilter extends GeneralOperation {
 
 	@Override
 	public void checkParameter() throws OperationNotPossibleException {
-		Collection ofInterest = this.getParameter(genes, Set.class);
+		Collection<Entity> ofInterest = this.getParameter(genes);
 		if ( ofInterest == null) throw new OperationNotPossibleException("No gene list given");
-		FilterType f = this.getParameter(filterType, FilterType.class);
+		FilterType f = this.getParameter(filterType);
 		if ( f == null) throw new OperationNotPossibleException("No filter type defined");
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		ArrayList<Parameter> parameters = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		ArrayList<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 		parameters.add(genes);
 		parameters.add(filterType);
 		return parameters;

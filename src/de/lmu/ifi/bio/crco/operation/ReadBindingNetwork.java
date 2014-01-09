@@ -20,19 +20,19 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class ReadBindingNetwork extends GeneralOperation {
-	public static Parameter NetworkHierachyNode  = new Parameter("NetworkHierachyNode",de.lmu.ifi.bio.crco.data.NetworkHierachyNode.class);
-	public static Parameter QueryService = new Parameter("QueryService",de.lmu.ifi.bio.crco.connector.QueryService.class);
-	public static Parameter GlobalRepository = new Parameter("GlobalRepository",Boolean.class);
-	public static Parameter ContextTreeNode = new Parameter("ContextTreeNode",ContextTreeNode.class);
+	public static Parameter<NetworkHierachyNode> NetworkHierachyNode  = new Parameter<NetworkHierachyNode>("NetworkHierachyNode");
+	public static Parameter<QueryService> QueryService = new Parameter<QueryService>("QueryService");
+	public static Parameter<Boolean> GlobalRepository = new Parameter<Boolean>("GlobalRepository");
+	public static Parameter<ContextTreeNode> ContextTreeNode = new Parameter<ContextTreeNode>("ContextTreeNode");
 
 	
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
-		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode, NetworkHierachyNode.class);
-		QueryService service = this.getParameter(QueryService, QueryService.class);
-		ContextTreeNode contextTreeNode = this.getParameter(ContextTreeNode,ContextTreeNode.class);
+		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode );
+		QueryService service = this.getParameter(QueryService);
+		ContextTreeNode contextTreeNode = this.getParameter(ContextTreeNode);
 		
-		Boolean globalRepository = this.getParameter(GlobalRepository,Boolean.class);
+		Boolean globalRepository = this.getParameter(GlobalRepository);
 		if (globalRepository ==null ){
 			globalRepository = false;
 		}
@@ -78,12 +78,12 @@ public class ReadBindingNetwork extends GeneralOperation {
 
 	@Override
 	public void checkParameter() throws OperationNotPossibleException {
-		QueryService service = this.getParameter(QueryService, QueryService.class);
-		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode, NetworkHierachyNode.class);
+		QueryService service = this.getParameter(QueryService);
+		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode);
 		
 		if ( service == null) throw new OperationNotPossibleException("Query service is null");
 		if ( node == null) throw new OperationNotPossibleException("No node given");
-		Boolean globalRepository = this.getParameter(GlobalRepository,Boolean.class);
+		Boolean globalRepository = this.getParameter(GlobalRepository);
 		if (globalRepository ==null ){
 			CroCoLogger.getLogger().warn("No edge repository strategy defined");
 		}
@@ -91,8 +91,8 @@ public class ReadBindingNetwork extends GeneralOperation {
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> parameters = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 		parameters.add(NetworkHierachyNode);
 		parameters.add(GlobalRepository);
 		parameters.add(QueryService);

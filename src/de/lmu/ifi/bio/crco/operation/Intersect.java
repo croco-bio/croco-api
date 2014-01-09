@@ -16,7 +16,7 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class Intersect extends GeneralOperation{
-	static Parameter IntersectionAnnotationCheck = new Parameter("IntersectionAnnotationCheck",IntersectionAnnotationCheck.class);
+	static Parameter<IntersectionAnnotationCheck> IntersectionAnnotationCheck = new Parameter<IntersectionAnnotationCheck>("IntersectionAnnotationCheck");
 	
 	@Override
 	protected Network doOperation(){
@@ -30,7 +30,7 @@ public class Intersect extends GeneralOperation{
 			}
 		}
 	
-		IntersectionAnnotationCheck check = this.getParameter(IntersectionAnnotationCheck, IntersectionAnnotationCheck.class);
+		IntersectionAnnotationCheck check = this.getParameter(IntersectionAnnotationCheck);
 	
 		Network ret=Network.getEmptyNetwork(net0.getClass(),net0);
 		ret.setName("Intersection");
@@ -84,8 +84,8 @@ public class Intersect extends GeneralOperation{
 	}
 
 	@Override
-	public List<Parameter> getParameters() {
-		List<Parameter> parameters = new ArrayList<Parameter>();
+	public List<Parameter<?>> getParameters() {
+		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 		parameters.add(IntersectionAnnotationCheck);
 		
 		return parameters;
