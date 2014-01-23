@@ -8,26 +8,21 @@ import de.lmu.ifi.bio.crco.data.Entity;
 public class Transcript extends Entity{
 	
 	private List<Exon> exons = null;
-	private String transcriptName;
-	private String transcriptId;
 	private String type;
 	private Gene parentGene;
 	private Protein protein;
 	
-	public Transcript(Gene parentGene, String transcriptName) {
-		super(transcriptName);
-		this.transcriptName = transcriptName;
+	public Transcript(Gene parentGene, String transcriptId) {
+		super(transcriptId);
 		this.parentGene = parentGene;
 		this.exons = new ArrayList<Exon>();
 		
 	}
 	
-	public Transcript(Gene parentGene, String transcriptName,String transcriptId, String type) {
-		super(transcriptName);
-		this.transcriptName = transcriptName;
+	public Transcript(Gene parentGene, String transcriptId,String transcriptName, String type) {
+		super(transcriptId);
 		this.parentGene = parentGene;
 		this.type = type;
-		this.transcriptId = transcriptId;
 		this.exons = new ArrayList<Exon>();
 		
 	}
@@ -40,6 +35,10 @@ public class Transcript extends Entity{
 	public void setProtein(Protein currentProtein) {
 		this.protein = currentProtein;
 	}
+	public Protein getProtein(){
+		return protein;
+	}
+	
 	/**
 	 * Adds an exon (assume correct order)
 	 * @param exon 
@@ -53,7 +52,7 @@ public class Transcript extends Entity{
 
 	
 	/**
-	 * @return the <b>strand corrected<b> TSS end position or null when no exon or parent gene annotations are available
+	 * @return the <b>strand corrected<b> TSS end position or null when no exon or parent gene annotation is available
 	 */
 	public Integer getTSSStrandCorredEnd(){
 		if ( exons != null && parentGene != null){
@@ -66,7 +65,7 @@ public class Transcript extends Entity{
 	}
 	
 	/**
-	 * @return the <br>strand corrected<b> TSS start position or null when no exon or parent gene annotations are available
+	 * @return the <br>strand corrected<b> TSS start position or null when no exon or parent gene annotation is available
 	 */
 	public Integer getTSSStrandCorredStart(){
 		if ( exons != null && parentGene != null){

@@ -1,6 +1,7 @@
 package de.lmu.ifi.bio.crco.data;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
@@ -8,23 +9,21 @@ import java.util.Vector;
 
 public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
  
-	 private Integer groupId;
-	 private String name;
-	 private boolean selected = false;
-	 private boolean hasNetwork = false;
-	 private NetworkType type;
+	private Integer groupId;
+	private String name;
+	private boolean selected = false;
+	private boolean hasNetwork = false;
+	private NetworkType type;
+	private Integer numChildren = null;
+	private Vector<NetworkHierachyNode> children;
+	private Integer taxId;
+	private NetworkHierachyNode parent;
+	
 	 
 	public NetworkType getType() {
 		return type;
 	}
 
-	public Integer getNumLeafs() {
-		return numLeafs;
-	}
-
-	public void setNumLeafs(Integer numLeafs) {
-		this.numLeafs = numLeafs;
-	}
 
 	public boolean hasNetwork() {
 		return hasNetwork;
@@ -34,7 +33,6 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		StringBuffer ret = new StringBuffer(name );
 		while(tmpParent != null ){
 			ret.append("->" + parent.getName());
-			
 			
 			if ( parent.parent != null && tmpParent.equals(parent.parent)) break;
 			tmpParent = parent.parent;
@@ -53,11 +51,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		this.type = node.getType();
 	}
 	
-	
-	 private Integer taxId;
-	 private NetworkHierachyNode parent;
-	 
-	 private Integer numChildren = null;
+
 
 	 
 	 public Integer getGroupId() {
@@ -96,7 +90,13 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	}
 */
 	public Integer getNumChildren() {
-		return numChildren;
+		 if ( numChildren == null){
+			if ( this.getChildren() != null)
+				return this.getChildren().size();
+			return 0;
+			 
+		 }
+		 return numChildren;
 	}
 
 	public void setNumChildren(Integer numChildren) {
@@ -118,9 +118,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		 }
 		 return numChildren;
 	 }
-	private Integer numLeafs; 
-	private Vector<NetworkHierachyNode> children;
-	
+
 	public NetworkHierachyNode(Integer groupId, Integer taxId){
 		this.groupId = groupId;
 		this.taxId = taxId;
@@ -130,8 +128,8 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	public Integer getParentGroupdId(){
 		return parentGroupId;
 	}
-	public NetworkHierachyNode(Integer numLeafs, Integer parentGroupId,Integer groupId,String name, boolean hasNetwork,Integer taxId,NetworkType type  ) {
-		this.numLeafs = numLeafs;
+	public NetworkHierachyNode(Integer numChildren, Integer parentGroupId,Integer groupId,String name, boolean hasNetwork,Integer taxId,NetworkType type  ) {
+		this.numChildren = numChildren;
 		this.groupId = groupId;
 		
 		this.parentGroupId = parentGroupId;
@@ -141,8 +139,8 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		this.hasNetwork = hasNetwork;
 		this.taxId = taxId;
 	}
-	public NetworkHierachyNode(Integer numLeafs, NetworkHierachyNode parent,Integer groupId,String name, boolean hasNetwork,Integer taxId,NetworkType type  ) {
-		this.numLeafs = numLeafs;
+	public NetworkHierachyNode(Integer numChildren, NetworkHierachyNode parent,Integer groupId,String name, boolean hasNetwork,Integer taxId,NetworkType type  ) {
+		this.numChildren = numChildren;
 		this.groupId = groupId;
 		this.type = type;
 		this.groupId = groupId;
@@ -177,9 +175,9 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 			return false;
 		
 	}
-
-	public void removeChild(NetworkHierachyNode node) {
-		this.children.remove(node);
+	
+	public boolean removeChild(NetworkHierachyNode node) {
+		return this.children.remove(node);
 		
 	}
 
