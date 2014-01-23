@@ -8,12 +8,12 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 public class NetworkOverlap implements PairwiseStatGenerator {
 	
 	@Override
-	public float compute( Network network1, Network network2 ) throws Exception {
+	public Result compute( Network network1, Network network2 ) throws Exception {
 		if (! network1.getTaxId().equals(network2.getTaxId())) throw new RuntimeException("Cannot compare networks");
 		
 		int[] stat = getStat(network1,network2); //overlap of a and b
 
-		return (float)stat[0]/(float)stat[1];
+		return new Result(stat[0],stat[1]);
 		
 	}
 

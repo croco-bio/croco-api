@@ -13,11 +13,11 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 public class Explainability implements PairwiseStatGenerator {
 	
 	@Override
-	public float compute( Network network1, Network network2 ) throws Exception {
-		if (! network1.getTaxId().equals(network2.getTaxId())) throw new RuntimeException("Cannot compare networks");
+	public Result compute( Network network1, Network network2 ) throws Exception {
+		if (! network1.getTaxId().equals(network2.getTaxId())) throw new RuntimeException("Cannot compare networks (different tax ids)");
 		
 		int overlap = getOverlap(network1,network2); 
-		return (float) overlap / (float) network1.size(); //fraction of edges in network 2 found in network 1
+		return new Result( overlap , network1.size()); //fraction of edges in network 2 found in network 1
 		
 	}
 	

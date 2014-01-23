@@ -12,7 +12,17 @@ public interface PairwiseStatGenerator {
 	enum FeatureType{
 		SYMMETRIC, ASYMMETRIC;
 	}
-	
+	class Result{
+		public Result(Integer numerator, Integer  denominator ){
+			this.numerator = numerator;
+			this.denominator = denominator;
+		}
+		public Integer numerator;
+		public Integer denominator;
+		public float getFrac(){
+			return (float)numerator/(float)denominator;
+		}
+	}
 	
 	/**
 	 * Computes a similarity value between two networks.
@@ -21,7 +31,7 @@ public interface PairwiseStatGenerator {
 	 * @return similarity value
 	 * @throws Exception when the taxId differs
 	 */
-	public float compute( Network network1, Network network2 ) throws Exception;
+	public Result compute( Network network1, Network network2 ) throws Exception;
 	public Option getOption();
 	public FeatureType getFeatureType();
 
