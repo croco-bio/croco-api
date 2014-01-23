@@ -133,7 +133,14 @@ public class LocalService implements QueryService{
 
 			Integer taxId = res.getInt(5);
 			if ( res.wasNull())  taxId = null;
-			NetworkType type = NetworkType.values()[res.getInt(7)];
+			NetworkType type = null;
+			Integer networkTypeID = res.getInt(7);
+			if ( NetworkType.values().length >networkTypeID){
+				type = NetworkType.values()[networkTypeID];
+			}else{
+				CroCoLogger.getLogger().error(String.format("Unknown network type %d",networkTypeID));
+			}
+			
 			NetworkHierachyNode nhn = new NetworkHierachyNode(null,parentGroupId,groupId,name,hasNetwork,taxId,type);
 			groupIdToNetwork.put(groupId, nhn);
 			networks.add(nhn);
