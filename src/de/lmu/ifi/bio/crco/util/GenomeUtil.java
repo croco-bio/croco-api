@@ -26,7 +26,7 @@ import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
 
 public class GenomeUtil {
 	/**
-	 * @return IntervalTree with enriched regions for each chromsom 
+	 * @return IntervalTree with enriched regions for each chromosome 
 	 * @throws IOException when the peakFile is not readable
 	 */
 	public static HashMap<String,IntervalTree<Peak>> createPeakIntervalTree(File peakFile,Integer chromIndex, Integer startIndex, Integer endIndex,Integer scoreIndex,Integer maxSize) throws IOException{
@@ -50,7 +50,7 @@ public class GenomeUtil {
 			if ( scoreIndex != null && scoreIndex > 0 &&  tokens.length >= scoreIndex) score = Float.valueOf(tokens[scoreIndex]);
 			
 			if ( start > end){
-				System.err.println("Start position can not be greater than end position (" + dataLine  + ")");
+				CroCoLogger.getLogger().warn("Start position can not be greater than end position (" + dataLine  + ")");
 				continue;
 			}
 			Peak peak = new Peak(chromosom,start,end,score);
@@ -66,7 +66,7 @@ public class GenomeUtil {
 	/**
 	 * Generates  promoter regions. 
 	 * @param genes list of genes
-	 * @return IntervalTree with promoter regions for each chromsom 
+	 * @return IntervalTree with promoter regions for each chromosome 
 	 */
 	public static HashMap<String,IntervalTree<Promoter>> createPromoterIntervalTree(List<Gene> genes, int tssUpstreamSpan, int tssDownstreamSpan, boolean noneOverlapping){
 		HashMap<String,IntervalTree<Promoter>> intervalsTmp = new HashMap<String,IntervalTree<Promoter>> ();
@@ -160,7 +160,7 @@ public class GenomeUtil {
 				ret.append('G');
 			}else if ( c=='N'){
 				ret.append('N');
-			}else{
+			}else{ //TODO: change to proper exception!
 				throw new RuntimeException("Unknown letter (" + c);
 			}
 		}

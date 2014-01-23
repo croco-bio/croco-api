@@ -1,7 +1,7 @@
 package de.lmu.ifi.bio.crco.util;
 
 
-public class Pair<FIRST,SECOND> implements Tuple<FIRST,SECOND> {
+public class Pair<FIRST,SECOND> implements Tuple<FIRST,SECOND>, Comparable<Pair<FIRST,SECOND>> {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -63,6 +63,12 @@ public class Pair<FIRST,SECOND> implements Tuple<FIRST,SECOND> {
 
 	public SECOND getSecond() {
 		return second;
+	}
+
+
+	@Override
+	public int compareTo(Pair<FIRST, SECOND> o) {
+		throw new UnsupportedOperationException();
 	}
 
 

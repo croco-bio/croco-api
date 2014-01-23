@@ -24,7 +24,7 @@ public class GeneSetFilter extends GeneralOperation {
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network = this.getNetworks().get(0);
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
-		Set ofInterest = new HashSet<Entity>(this.getParameter(genes));
+		Set<Entity> ofInterest = new HashSet<Entity>(this.getParameter(genes));
 		
 		FilterType type = this.getParameter(filterType);
 		
@@ -64,56 +64,7 @@ public class GeneSetFilter extends GeneralOperation {
 					ret.add(edge, network.getAnnotation(edgeId));
 				}
 			}
-		}/*
-		List<Set<Entity>> conneted = new ArrayList<Set<Entity>>();
-		
-		HashSet<Entity> processed = new HashSet<Entity>();
-		
-		for(Entity e : neighbours.keySet()){
-			if ( processed.contains(e)) continue;
-			
-			Set<Entity> component = new HashSet<Entity>();
-			Stack<Entity> toProcess = new Stack<Entity>();
-			toProcess.add(e);
-			while(!toProcess.isEmpty()){
-				Entity top = toProcess.pop();
-				component.add(top);
-				processed.add(top);
-				for(Entity child : neighbours.get(top)){
-					if ( processed.contains(child)) continue;
-					toProcess.add(child);
-				}
-			}
-			
-			conneted.add(component);
 		}
-		
-		
-		
-		Set<Entity> factors = network.getFactors();
-		
-		for(Entity factor : factors){
-			for(Set<Entity> comp : conneted){
-				if ( comp.contains(factor)){
-					comp.retainAll(factors);
-					
-					for(Entity f1 : comp){
-						for(Entity f2 : comp){
-							if ( network.containsEdge(f1,f2)){
-								Integer d = network.getEdgeId(f1, f2);
-								ret.add(f1, f2, network.getAnnotation(d));
-							}
-						}	
-					}
-					
-					//factors.removeAll(comp);
-				}
-			}
-		}
-		
-
-	*/
-			
 		
 		return ret;
 	}

@@ -10,12 +10,12 @@ import java.util.Iterator;
  */
 public class StringUtil {
 	/**
-	 * Returns a user specified string representation of a list of collections 
+	 * Returns a user specified string representation of a collection 
 	 * @param data -- the collection
 	 * @param seperator -- the separator
 	 * @return the collection represented as string separated by separator.
 	 */
-	public static String getAsList(Collection<?> data, char seperator){
+	public static String getAsString(Collection<?> data, char seperator){
 		Iterator<?> it = data.iterator();
 		boolean first = true;
 		StringBuffer ret = new StringBuffer();

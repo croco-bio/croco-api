@@ -26,7 +26,7 @@ public class Shuffle extends GeneralOperation{
 		
 		Random rnd = this.getParameter(RandomGenerator);
 		
-		Network ret = network.getEmptyNetwork(network.getClass(), network);
+		Network ret = Network.getEmptyNetwork(network.getClass(), network);
 
 		final HashMap<Entity,Integer> inDeg = new HashMap<Entity,Integer>();
 		HashMap<Entity,Integer> outDeg = new HashMap<Entity,Integer>();
@@ -83,7 +83,6 @@ public class Shuffle extends GeneralOperation{
 	@Override
 	public void accept(List<Network> networks)throws OperationNotPossibleException {
 		if ( networks.size() != 1) throw new OperationNotPossibleException("Only one network accepted as parameter");
-		
 	}
 
 	@Override

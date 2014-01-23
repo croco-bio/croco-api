@@ -83,8 +83,8 @@ public class Engine {
 		System.out.println(generalOperation.getClass().getName() + " " + methods);
 		*/
 		
-	
-		for(Parameter parameter : generalOperation.getParameters()){
+	/*
+		for(Parameter<?> parameter : generalOperation.getParameters()){
 			if ( parameter.getName().equals(name)){ //no wrapper is needed
 				if ( parameter.getClazz().equals(Integer.class)){
 					return Integer.valueOf(value);
@@ -112,7 +112,7 @@ public class Engine {
 								);
 				}
 			}*/
-		}
+		
 		
 		return null;
 	}

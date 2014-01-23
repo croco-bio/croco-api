@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
@@ -26,16 +27,19 @@ import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.processor.TFBS.FIMOHandler;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.GenomeUtil;
 
 public class DNaseTFBSExtWriter {
+	private static CroCoOption<String> openChromExpType_Parameter = new CroCoOption<String>("openChromExpType",new ConsoleParameter.StringValueHandler()).isRequired().setArgs(1);
 	
 	public static void main(String[] args) throws Exception{
-		
+		Locale.setDefault(Locale.US);
 		ConsoleParameter parameter = new ConsoleParameter();
 		parameter.register(
+				openChromExpType_Parameter,
 				ConsoleParameter.experimentMappingFile,
 				ConsoleParameter.taxId,
 				ConsoleParameter.tfbsFiles,
@@ -48,11 +52,13 @@ public class DNaseTFBSExtWriter {
 				ConsoleParameter.gtf,
 				ConsoleParameter.chromosomNamePrefix,
 				ConsoleParameter.downstream,
-				ConsoleParameter.upstream
+				ConsoleParameter.upstream,
+				ConsoleParameter.test
 		);
 		
 		CommandLine cmdLine = parameter.parseCommandLine(args,DNaseTFBSExtWriter.class);
 		
+		String openChromExpType = openChromExpType_Parameter.getValue(cmdLine);
 		Integer taxId = ConsoleParameter.taxId.getValue(cmdLine);
 		List<File> tfbsFiles = ConsoleParameter.tfbsFiles.getValue(cmdLine);
 		File tfbsRegion = ConsoleParameter.tfbsRegion.getValue(cmdLine);
@@ -66,7 +72,9 @@ public class DNaseTFBSExtWriter {
 		File dnaseExperimentDataFile = ConsoleParameter.experimentMappingFile.getValue(cmdLine);
 		Integer downstream = ConsoleParameter.downstream.getValue(cmdLine);
 		Integer upstream = ConsoleParameter.upstream.getValue(cmdLine);
+		Boolean test = ConsoleParameter.test.getValue(cmdLine);
 		
+		CroCoLogger.getLogger().info("Experimental mapping file:\t" +dnaseExperimentDataFile );
 		CroCoLogger.getLogger().info("GTF file:\t" + gtfFile);
 		CroCoLogger.getLogger().info("TFBS file:\t" + tfbsFiles);
 		CroCoLogger.getLogger().info("Mapping file:\t" +motifMappingFiles );
@@ -77,6 +85,7 @@ public class DNaseTFBSExtWriter {
 		CroCoLogger.getLogger().info("Chromosom name perfix:\t" + chromosomNamePrefix);
 		CroCoLogger.getLogger().info("Upstream:\t" + upstream);
 		CroCoLogger.getLogger().info("Downstream:\t" + downstream);
+		CroCoLogger.getLogger().info("Test:\t" + test);
 		
 		
 		File outputDir = new File(repositoryDir + "/"   + composite);
@@ -88,9 +97,8 @@ public class DNaseTFBSExtWriter {
 				System.exit(1);
 			}
 		}
-		
+		HashMap<String, Set<String>> motifIdMapping = new FileUtil.MappingFileReader(0,2,motifMappingFiles).setColumnSeperator("\\s+").includeAllColumnsAfterToIndex(true).readNNMappingFile();
 		List<Gene> genes = FileUtil.getGenes(gtfFile, "protein_coding", null);
-		HashMap<String, Set<String>> motifIdMapping = new FileUtil.MappingFileReader(0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readNNMappingFile();
 		HashMap<String, IntervalTree<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf,genes, motifIdMapping,upstream,downstream).readHits(tfbsFiles);
 		
 		HashMap<String,List<HashMap<String, String>>> experiments = new HashMap<String,List<HashMap<String, String>>>();
@@ -111,7 +119,8 @@ public class DNaseTFBSExtWriter {
 				
 			file = dnaseExperimentDataFile.getParent()+ "/" + file;
 			if (! new File(file).exists()){
-				throw new RuntimeException(String.format("Cannot find referenced file %s in %s",file,dnaseExperimentDataFile.toString()));
+				CroCoLogger.getLogger().warn(String.format("Cannot find referenced file %s in %s",file,dnaseExperimentDataFile.toString()));
+				continue;
 			}
 			information.put("file", file);
 			
@@ -168,15 +177,18 @@ public class DNaseTFBSExtWriter {
 				bwInfo.write(String.format("%s: %s\n",Option.NetworkName, aggregations.getKey() ));
 				bwInfo.write(String.format("%s: %d\n",Option.TaxId.name(),taxId));
 				bwInfo.write(String.format("%s: %s\n",Option.EdgeType,"Directed"));
-				bwInfo.write(String.format("%s: %s\n",Option.NetworkType.name(), NetworkType.DNase.name()));
-				bwInfo.write(String.format("%s: %s\n",Option.DNaseMotifSet.name(),motifSetName.toString()));
-				bwInfo.write(String.format("%s: %s\n",Option.DNaseMotifPVal.name(),pValueCutOf.toString()));
-
+				bwInfo.write(String.format("%s: %s\n",Option.NetworkType.name(), NetworkType.OpenChrom.name()));
+				bwInfo.write(String.format("%s: %s\n",Option.OpenChromMotifSet.name(),motifSetName.toString()));
+				bwInfo.write(String.format("%s: %s\n",Option.OpenChromMotifPVal.name(),pValueCutOf.toString()));
+				bwInfo.write(String.format("%s: %s\n",Option.OpenChromType.name(),openChromExpType));
+				
+				
 				String cell = expNet.get("Cell");
 				String age= expNet.get("Age");
 				String replicate= expNet.get("Replicate");
 				String strain= expNet.get("Strain");
 				String treatment= expNet.get("Treatment");
+				String exp_comp = expNet.get("Composite");
 				
 				if (cell!= null && cell.length()> 0  ){
 					bwInfo.write(String.format("%s: %s\n",Option.cellLine.name(),cell));
@@ -187,7 +199,7 @@ public class DNaseTFBSExtWriter {
 				}
 				
 				if ( composite != null && composite.length() > 0){
-					bwInfo.write(String.format("%s: %s\n",Option.composite.name(),composite));
+					bwInfo.write(String.format("%s: %s\n",Option.composite.name(),exp_comp));
 				}
 				
 				if (replicate != null&& replicate.length() > 0 ){
@@ -202,7 +214,7 @@ public class DNaseTFBSExtWriter {
 					bwInfo.write(String.format("%s: %s\n",Option.treatment.name(),treatment));
 				}
 				File networkFile = new File(aggreatedDir + "/" + fileBaseName + ".network.gz");
-				
+				if ( test) continue;
 				File annotationFile = new File(aggreatedDir + "/" + fileBaseName + ".annotation.gz");
 				BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
 				
@@ -257,9 +269,6 @@ public class DNaseTFBSExtWriter {
 				bwInfo.write(String.format("%s: %s\n",Option.FactorList,factorStr.toString().trim()));
 				bwInfo.flush();
 				bwInfo.close();
-				
-				//bwNetwork.flush();
-				//bwNetwork.close();
 				
 				bwAnnotation.flush();
 				bwAnnotation.close();

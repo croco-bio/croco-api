@@ -51,13 +51,14 @@ public class Intersect extends GeneralOperation{
 					consistent = false;
 				}else{
 					TIntObjectHashMap<List<Object>> anno = networks.get(i).getAnnotation(networks.get(i).getEdgeId(edge));
-					for(int edgeOption : anno.keys()){
-						if (! annotation.contains(edgeOption)){
-							annotation.put(edgeOption, new ArrayList<Object>());
+					if (anno != null){
+						for(int edgeOption : anno.keys()){
+							if (! annotation.contains(edgeOption)){
+								annotation.put(edgeOption, new ArrayList<Object>());
+							}
+							annotation.get(edgeOption).addAll(anno.get(edgeOption));
 						}
-						annotation.get(edgeOption).addAll(anno.get(edgeOption));
 					}
-					
 				}
 			}
 			if ( consistent){

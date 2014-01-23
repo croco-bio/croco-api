@@ -87,8 +87,7 @@ public class ReadNetwork extends GeneralOperation {
 	
 	
 	@Override
-	public void accept(List<Network> networks)
-			throws OperationNotPossibleException {
+	public void accept(List<Network> networks)throws OperationNotPossibleException {
 		if (networks != null && networks.size()  > 0) throw new OperationNotPossibleException("Does not accept networks as parameter") ;
 	}
 

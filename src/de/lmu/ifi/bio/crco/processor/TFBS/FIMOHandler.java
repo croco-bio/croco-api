@@ -42,6 +42,7 @@ import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.GenomeUtil;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.StringUtil;
 
 
 public class FIMOHandler extends TFBSHandler {
@@ -107,11 +108,14 @@ public class FIMOHandler extends TFBSHandler {
 		
 		while ( (line = br.readLine() )!= null) {
 			String[] tokens = line.split("\t");
+			
 			if ( tokens.length < 7){
 				br.close();
 				throw new IOException("strange line:\t" + line);
 			}
-			lineCounter++;
+			if ( lineCounter++ % 200000 == 0){
+			//	System.err.print(".");
+			}
 			String motifId = tokens[0].toUpperCase();;
 			Integer regionId = Integer.valueOf(tokens[1]);
 			
@@ -129,6 +133,8 @@ public class FIMOHandler extends TFBSHandler {
 			Float score = Float.valueOf(tokens[5]);
 			
 			if ( pValue >pValueThreshold) continue;
+			if ( !trees.containsKey(dnaRegion.getChrom()))continue;
+			
 			belowThreshold++;
 			
 			if (! motifIdMapping.containsKey(motifId)) {
@@ -168,13 +174,15 @@ public class FIMOHandler extends TFBSHandler {
 				}
 			}
 		}
-		
+		System.err.println();
 		br.close();
 		CroCoLogger.getLogger().info("Number of mapped Motifs:\t" + processedMotifs.size() + "\tNumber of not mapped Motifs:\t" +skippedMotifs.size()  );
 		CroCoLogger.getLogger().info("Number of TFBS predictions:\t" + lineCounter );
 		CroCoLogger.getLogger().info("Number of TFBS predictions below < " +pValueThreshold + ":\t" + belowThreshold );
 		CroCoLogger.getLogger().info("Number of TBFS predictions below < " + pValueThreshold + " not mappable:\t"  + skipped );
-		
+		for(String s : skippedMotifs){
+			CroCoLogger.getLogger().debug(String.format("Skipped: %s",s));
+		}
 		
 		return tfbsPeaks;
 		
@@ -268,7 +276,7 @@ public class FIMOHandler extends TFBSHandler {
 		}
 		
 		List<Gene> genes = FileUtil.getGenes(gtfFile, "protein_coding", null);
-		HashMap<String, Set<String>> mapping = new FileUtil.MappingFileReader(0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).readNNMappingFile();
+		HashMap<String, Set<String>> mapping = new FileUtil.MappingFileReader(0,2,motifMappingFiles).includeAllColumnsAfterToIndex(true).setColumnSeperator("\\s+").readNNMappingFile();
 		
 		HashMap<String, IntervalTree<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf,genes, mapping,5000,5000).readHits(tfbsFiles);
 		
@@ -297,7 +305,11 @@ public class FIMOHandler extends TFBSHandler {
 				for(Entity factor : peak.getFactors()){
 					network.add(factor,new Entity(peak.getTarget().getParentGene().getIdentifier()));
 				}
-				bwAnnotation.write(String.format("TBFS:\t%s\n",peak.toString()));
+				String tfbs =  String.format("%s\t%s\t%s\t%s\t%d\t%f\t%.7f\t%s\t%d\t%d",
+						StringUtil.getAsString(peak.getFactors(), ','),  peak.getTarget().getParentGene().getIdentifier(),peak.getTarget().getIdentifier() ,peak.getMotifId(),
+						 peak.getDistanceToTranscript(),peak.getScore(),peak.getpValue(),peak.getChrom(),peak.getStart(),peak.getEnd() );
+				
+				bwAnnotation.write(String.format("TBFS\t%s\n",tfbs));
 			}
 			bwAnnotation.flush();
 		}

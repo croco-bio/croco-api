@@ -42,7 +42,7 @@ public class FileUtil {
 		return file;
 	}
 	
-	public static List<Gene> getGenes(File gtfFile,String transcriptType, List<String> chrosoms) throws Exception{
+	public static List<Gene> getGenes(File gtfFile,String transcriptType, List<String> chrosoms) throws IOException{
 		CroCoLogger.getLogger().info(String.format("Reading GTF:\t%s",gtfFile.toString()));
 		if ( !gtfFile.exists()){
 			throw new IOException(gtfFile.getAbsoluteFile().toString() + " does not exist");
@@ -90,7 +90,7 @@ public class FileUtil {
 			while(matcher.find()){
 				String type = matcher.group(1);
 				if ( type.equals("gene_id")) geneId = matcher.group(2).toUpperCase(); //default for entity class (otherwise equals fails)
-				else if ( type.equals("transcript_name")) transcriptId = matcher.group(2);
+				else if ( type.equals("transcript_name")) transcriptName = matcher.group(2);
 				else if ( type.equals("transcript_id")) transcriptId = matcher.group(2).toUpperCase(); 
 				else if ( type.equals("gene_name")) geneName = matcher.group(2);
 				else if ( type.equals("protein_id")) proteinId = matcher.group(2).toUpperCase();
@@ -224,23 +224,35 @@ public class FileUtil {
 		public HashMap<String,Set<String>> readNNMappingFile() throws IOException{
 			HashMap<String,Set<String>> ret = new HashMap<String,Set<String>>();
 			for(File inputFile : inputFiles){
+				CroCoLogger.getLogger().debug(String.format("Read mapping file: %s",inputFile.toString()));
 				BufferedReader br = new BufferedReader(new FileReader(inputFile));
 				String line = null;
 				if ( header) line = br.readLine();
 				while (( line = br.readLine())!=null){
 					String[] tokens = line.split(seperator);
-					if ( tokens.length <= Math.max(fromIndex,toIndex)) continue;
+			
+					if ( tokens.length <= Math.max(fromIndex,toIndex)){
+						CroCoLogger.getLogger().warn(String.format("Skip: %s",line ) );
+						continue;
+					}
 					String from = tokens[fromIndex];
-					String to = tokens[toIndex];
-					if ( !caseSensitve) {
-						from =  from.toUpperCase();
-						to = to.toUpperCase();
+					
+					for(int i =  toIndex ; i< tokens.length  ; i++){
+						if ( i !=fromIndex){
+							String to = tokens[i];
+							if ( !caseSensitve) {
+								from =  from.toUpperCase();
+								to = to.toUpperCase();
+							}
+								
+							if ( !ret.containsKey(from)) {
+								ret.put(from, new HashSet<String>());
+							}
+							ret.get(from).add(to);	
+						}
+						if ( allColumns == false) break;
 					}
 					
-					if ( !ret.containsKey(from)) {
-						ret.put(from, new HashSet<String>());
-					}
-					ret.get(from).add(to);	
 				}
 				br.close();
 			}
@@ -269,7 +281,7 @@ public class FileUtil {
 					
 					for(int i =  toIndex ; i< tokens.length  ; i++){
 						if ( i !=fromIndex){
-							String to = tokens[toIndex];
+							String to = tokens[i];
 							if ( !caseSensitve) {
 								from =  from.toUpperCase();
 								to = to.toUpperCase();

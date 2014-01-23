@@ -41,7 +41,6 @@ public class OrthologMappingInformation {
 			species1 = species2;
 			species2 = tmp;
 		}
-		
 		this.database = database;
 		this.species1 = species1;
 		this.species2 = species2;

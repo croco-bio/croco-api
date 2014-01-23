@@ -97,9 +97,6 @@ public class ConsoleParameter {
 		public E getValue(CommandLine cmdLine) throws CroCoParameterException{
 			if (!cmdLine.hasOption(this.name) &&  defaultValue != null)
 				return defaultValue;
-			if (!cmdLine.hasOption(this.name)) 
-				return null;
-			
 			E ret = null;
 			try{
 				ret = handler.getValue(cmdLine,this.name);
@@ -136,12 +133,12 @@ public class ConsoleParameter {
 		@Override
 		public HashMap<String, String> getValue(CommandLine cmdLine, String parameterName) throws CroCoParameterException {
 			HashMap<String,String> map = new HashMap<String,String>();
-			
-			for(String mapping : cmdLine.getOptionValues(parameterName)){
-				String[] tokens = mapping.split("=");
-				map.put(tokens[0], tokens[1]);
+			if ( cmdLine.getOptionValue(parameterName) != null){
+				for(String mapping : cmdLine.getOptionValues(parameterName)){
+					String[] tokens = mapping.split("=");
+					map.put(tokens[0], tokens[1]);
+				}
 			}
-			
 			return map;
 		}
 		
@@ -155,7 +152,7 @@ public class ConsoleParameter {
 		}
 		
 	}
-	public static class FolderListExistHandler extends Handler<File>{
+	public static class FolderExistHandler extends Handler<File>{
 		@Override
 		public File getValue(CommandLine cmdLine,String parameterName) throws CroCoParameterException{
 			File file = new File(cmdLine.getOptionValue(parameterName));
@@ -223,7 +220,7 @@ public class ConsoleParameter {
 	}
 
 	//list of commonly used options
-	public static CroCoOption<List<File>> experimentMappingFiles  =new CroCoOption<List<File>>("experimentMappingFile",new FileListExistHandler()).setArgName("FILE").setDescription("Experiment description files").isRequired().setArgs();
+	public static CroCoOption<List<File>> experimentMappingFiles  =new CroCoOption<List<File>>("experimentMappingFiles",new FileListExistHandler()).setArgName("FILE").setDescription("Experiment description files").isRequired().setArgs();
 	public static CroCoOption<File> experimentMappingFile  =new CroCoOption<File>("experimentMappingFile",new FileExistHandler()).setArgName("FILE").setDescription("Experiment description file").isRequired().setArgs(1);
 	public static CroCoOption<Integer> taxId  =new CroCoOption<Integer>("taxId",new IntegerValueHandler()).isRequired().setArgs(1);
 	public static CroCoOption<Boolean> test = new CroCoOption<Boolean>("test", new FlagHandler()).setDescription("Test flag");
@@ -231,7 +228,7 @@ public class ConsoleParameter {
 	public static CroCoOption<File> tfbsRegion = new CroCoOption<File>("tfbsRegion",new FileExistHandler()).setArgName("FILE").isRequired().setArgs(1);
 	public static CroCoOption<Float> pValueCutOf = new CroCoOption<Float>("pValueCutOf",new FloatValueHandler()).setArgName("FLOAT").isRequired().setArgs(1);
 	public static CroCoOption<List<File>> motifMappingFiles = new CroCoOption<List<File>>("motifMappingFiles",new FileListExistHandler()).setArgName("FILES").isRequired().hasArgs();
-	public static CroCoOption<File> repositoryDir = new CroCoOption<File>("repositoryDir",new FolderListExistHandler()).setArgName("FILE").isRequired().setArgs(1);
+	public static CroCoOption<File> repositoryDir = new CroCoOption<File>("repositoryDir",new FolderExistHandler()).setArgName("FILE").isRequired().setArgs(1);
 	public static CroCoOption<String> compositeName = new CroCoOption<String>("compositeName",new StringValueHandler()).setArgName("NAME").isRequired().setArgs(1);
 	public static CroCoOption<String> motifSetName = new CroCoOption<String>("motifSetName",new StringValueHandler()).setArgName("NAME").isRequired().setArgs(1);
 	public static CroCoOption<File> gtf = new CroCoOption<File>("gtf",new FileExistHandler()).setArgName("FILE").isRequired().setArgs(1);

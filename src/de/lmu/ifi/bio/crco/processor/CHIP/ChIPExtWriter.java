@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.zip.GZIPOutputStream;
 
@@ -25,6 +26,7 @@ import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
+import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter.IntegerValueHandler;
@@ -32,16 +34,17 @@ import de.lmu.ifi.bio.crco.util.ConsoleParameter.StringValueHandler;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.GenomeUtil;
+import de.lmu.ifi.bio.crco.util.StringUtil;
 
 public class ChIPExtWriter {
 	private static CroCoOption<Integer> chromsomIndex = new CroCoOption<Integer>("chromsomIndex",new IntegerValueHandler()).setDescription("chromsom index column index in PEAK files (default 0)").setArgs(1).setDefault(0);
 	private static CroCoOption<Integer> startIndex = new CroCoOption<Integer>("startIndex",new IntegerValueHandler()).setArgs(1).setDescription("chromsom start column index in PEAK files (default 1)").setDefault(1);
 	private static CroCoOption<Integer> endIndex = new CroCoOption<Integer>("endIndex",new IntegerValueHandler()).setArgs(1).setDescription("chromsom end column index in PEAK files (default 2)").setDefault(2);
-	private static CroCoOption<Integer> maxSize = new CroCoOption<Integer>("endIndex",new IntegerValueHandler()).setArgs(1).setDescription("max size in bp of a ChIP-seq peak  (default 2000  base pairs)").setDefault(2000);
+	private static CroCoOption<Integer> maxSize = new CroCoOption<Integer>("maxSize",new IntegerValueHandler()).setArgs(1).setDescription("max size in bp of a ChIP-seq peak  (default 2000  base pairs)").setDefault(2000);
 	private static CroCoOption<String> aggregateKey = new CroCoOption<String>("aggregateKey",new StringValueHandler()).setArgs(1).setDescription("e.g. cell, or development (default (cell)").setDefault("cell");
 	
 	public static void main(String [] args) throws Exception{
-		
+		Locale.setDefault(Locale.US);
 		ConsoleParameter parameter = new ConsoleParameter();
 		parameter.register(
 				ConsoleParameter.experimentMappingFiles,
@@ -94,10 +97,10 @@ public class ChIPExtWriter {
 		File outputDir = new File(repositoryDir + "/"   + composite);
 		if ( outputDir.exists()){
 			CroCoLogger.getLogger().warn(String.format("Composite %s already in repository %s",composite,repositoryDir.toString()));
-		}
-		if  ( !outputDir.mkdirs() ) {
-			CroCoLogger.getLogger().fatal(String.format("Cannnot create composite %s in repository %s",composite,repositoryDir.toString()));
-			System.exit(1);
+		}else{
+			if  ( !outputDir.mkdirs() ) {
+				CroCoLogger.getLogger().warn(String.format("Cannnot create composite %s in repository %s",composite,repositoryDir.toString()));
+			}
 		}
 		
 		List<Gene> genes = FileUtil.getGenes(gtfFile, "protein_coding", null);
@@ -198,7 +201,6 @@ public class ChIPExtWriter {
 				
 				HashMap<String, IntervalTree<Peak>> peaks = GenomeUtil.createPeakIntervalTree(file,chromIndex,startIndex,endIndex,-1,maxSize); //max size == we want to ignore very long peaks
 				File networkFile = new File(aggreatedDir + "/" +  fileBaseName+ ".network.gz");
-				BufferedWriter bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(networkFile)) ));
 				
 				File annotationFile = new File(aggreatedDir + "/" +  fileBaseName + ".annotation.gz");
 				BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
@@ -209,22 +211,23 @@ public class ChIPExtWriter {
 
 				for(TFBSPeak tfbsPeak  : targets){
 			
-					Entity factor = tfbsPeak.getFactors().get(0); //can be only 1
+					Entity factor = tfbsPeak.getFactors().get(0); //can only be 1
 					Entity target = new Entity( tfbsPeak.getTarget().getParentGene().getIdentifier());
-						
 					network.add(factor, target);
 						//bwNetwork.write( targetMapped.toUpperCase() + "\t" + target.toUpperCase() + "\n");
-						
-					bwAnnotation.write(String.format("ChIPTFBS:\t%s\n",tfbsPeak.toString()));
+					
+					String tfbs =  String.format("%s\t%s\t%s\t%d\t%s\t%d\t%d",
+							StringUtil.getAsString(tfbsPeak.getFactors(), ','),  tfbsPeak.getTarget().getParentGene().getIdentifier(),tfbsPeak.getTarget().getIdentifier() ,
+							tfbsPeak.getDistanceToTranscript(),tfbsPeak.getChrom(),tfbsPeak.getStart(),tfbsPeak.getEnd() );
+					
+					bwAnnotation.write(String.format("ChIPTFBS\t%s\n",tfbs));
 	
 					if ( k++ % 10000 == 0){
 						bwAnnotation.flush();
-						bwNetwork.flush();
 						
 					}
 				}
-				bwNetwork.flush();
-				bwNetwork.close();
+				NetworkHierachy.writeNetworkHierachyFile(network, networkFile);
 				bwAnnotation.flush();
 				bwAnnotation.close();
 				
@@ -246,7 +249,7 @@ public class ChIPExtWriter {
 	 * @param chromosomNameMapping
 	 * @return list of TFBSPeak
 	 */
-	private static List<TFBSPeak> getTFBSPeaks(Entity factor,String antibody, HashMap<String, IntervalTree<Peak>> chipBindings, HashMap<String, IntervalTree<Promoter>> promoterTrees,String chromosomNamePrefix, HashMap<String,String> chromosomNameMapping) {
+	static List<TFBSPeak> getTFBSPeaks(Entity factor,String antibody, HashMap<String, IntervalTree<Peak>> chipBindings, HashMap<String, IntervalTree<Promoter>> promoterTrees,String chromosomNamePrefix, HashMap<String,String> chromosomNameMapping) {
 		List<TFBSPeak>  ret = new ArrayList<TFBSPeak> ();
 		for(Entry<String,IntervalTree<Peak>> chipBinding : chipBindings.entrySet()){
 			String chrom = chipBinding.getKey();

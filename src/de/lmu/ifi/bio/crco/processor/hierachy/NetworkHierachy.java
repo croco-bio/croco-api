@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -446,6 +447,18 @@ public class NetworkHierachy  {
 		}
 		bwNetwork.flush();
 		bwNetwork.close();
+	}
+	public static void readNetwork(Network network, File file,Set<Entity> factors) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+		String line = null;
+		while((line=br.readLine())!=null){
+			String[] tokens = line.split("\t");
+			Entity factor = new Entity(tokens [0]);
+			if (!factors.contains(factor)) continue;
+			Entity target = new Entity(tokens[1]);
+			network.add(factor, target);
+		}
+		br.close();
 	}
 	public static void readNetwork(Network network, File file) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));

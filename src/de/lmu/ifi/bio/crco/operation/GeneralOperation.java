@@ -14,7 +14,6 @@ import de.lmu.ifi.bio.crco.network.Network;
  *
  */
 public abstract class GeneralOperation {
-
 	
 	HashMap<Parameter<?>,Object> passedParameters = new HashMap<Parameter<?>,Object>();
 	
@@ -29,10 +28,11 @@ public abstract class GeneralOperation {
 	public List<Network> getNetworks() {
 		return networks;
 	}
-
+	
 	public void setInputNetwork(Network...networks){
 		this.networks = Arrays.asList(networks);
 	}
+	
 	public void setInputNetwork(List<Network> networks){
 		this.networks = networks;
 	}
@@ -47,10 +47,7 @@ public abstract class GeneralOperation {
 		if ( in == false) throw new CroCoException(String.format("Unknown parameter %s for %s",parameter.toString(),this.getClass().getSimpleName())); 
 		passedParameters.put(parameter, value);
 		
-		
-
 	}
-	
 	
 	protected abstract  Network doOperation() throws OperationNotPossibleException ;
 	
@@ -58,13 +55,7 @@ public abstract class GeneralOperation {
 		checkParameter();
 		
 		this.accept(this.networks) ;
-		 /*
-		if ( this.getParameters() != null){
-			for(Parameter parameter : this.getParameters()){
-				if ( this.getParameter(parameter,parameter.clazz) == null) throw new ParameterNotWellDefinedException(parameter + " not given");;
-			}
-		}
-		*/
+
 		try{
 			Network ret = this.doOperation();
 			return ret;
