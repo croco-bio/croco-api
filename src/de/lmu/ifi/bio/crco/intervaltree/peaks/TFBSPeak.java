@@ -14,7 +14,7 @@ public class TFBSPeak extends Peak {
 	private String motifId;
 	//Distance from TFBS to annotated TSS (strand corrected; <0 Upstream; >0 Downstream)
 	private Integer distanceToTranscript = null;
-	private float pValue;
+	private Float pValue;
 	
 	public float getpValue() {
 		return pValue;
@@ -57,12 +57,7 @@ public class TFBSPeak extends Peak {
 		super(start,end);
 	}
 	
-	@Override
-	public String toString(){
-		return String.format("%s\t%s\t%s\t%d\t%f\t%.7f\t%s\t%d\t%d",
-				StringUtil.getAsList(factors, ','), target.getIdentifier() , target.getParentGene().getIdentifier(),
-				 distanceToTranscript,score,pValue,getChrom(),getStart(),getEnd() );
-	}
+
 
 
 }

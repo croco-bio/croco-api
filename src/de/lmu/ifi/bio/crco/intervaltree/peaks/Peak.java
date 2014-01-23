@@ -10,6 +10,9 @@ import de.lmu.ifi.bio.crco.util.Pair;
 
 public class Peak extends Interval {
 	public Float score = null;
+	public Float getScore() {
+		return score;
+	}
 	private String chrom;
 	public String getChrom() {
 		return chrom;
