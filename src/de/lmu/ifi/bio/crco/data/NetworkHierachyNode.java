@@ -204,13 +204,6 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		while(!toProcess.isEmpty()){
 			NetworkHierachyNode top = toProcess.pop();
 			if ( top.hasNetwork()){
-				/*
-				if (! networkGroups.containsKey(top.getType() )) {
-					networkGroups.put(top.getType(), new ArrayList<NetworkHierachyNode>());
-				}
-				
-				networkGroups.get(top.getType()).add( top);
-				*/
 				ret.add(top);
 			}
 			if ( top.getChildren() != null){
