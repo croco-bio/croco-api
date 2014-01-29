@@ -20,6 +20,8 @@ public class MotifHierachyNode extends HierachyNode {
 	}
 	private List<Pair<Gene,Gene>> edges = new ArrayList<Pair<Gene,Gene>>();
 	
+	//added for xsteam
+	public MotifHierachyNode(){};
 	
 	public MotifHierachyNode(Integer mId,Integer taxId,String name, String description,  Integer numLeafs) {
 		super(numLeafs,mId);

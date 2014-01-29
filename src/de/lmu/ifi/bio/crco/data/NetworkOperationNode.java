@@ -11,6 +11,7 @@ public class NetworkOperationNode {
 	private Vector<NetworkOperationNode> children = new Vector<NetworkOperationNode>();
 	private NetworkOperationNode parent;
 	
+	//added for xsteam
 	public NetworkOperationNode(){}
 	
 	public NetworkOperationNode(NetworkOperationNode parent,Integer taxId,  GeneralOperation operator ){
@@ -24,11 +25,9 @@ public class NetworkOperationNode {
 		this.parent = parent;
 	}
 
-	
 	public Species getSpecies(){
 		return species;
 	}
-
 	
 	public  GeneralOperation getOperator() {
 		return operator;
@@ -37,7 +36,7 @@ public class NetworkOperationNode {
 	public String toString(){
 		String ret = "";
 		if ( operator != null) ret = operator.getDescription(); //+ " (";
-		if( species != null) ret += "(" + species.getName() + ")";
+		if( species != null && species.getName() != null) ret += "(" + species.getName() + ")";
 		
 		return ret;
 	}

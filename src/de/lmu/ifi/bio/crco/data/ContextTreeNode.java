@@ -15,6 +15,10 @@ public class ContextTreeNode extends HierachyNode  {
 	private String term;
 	private String description;
 	private List<ContextTreeNode> children;
+	
+	//added for xsteam
+	public ContextTreeNode(){}
+	
 	public String getTerm() {
 		return term;
 	}

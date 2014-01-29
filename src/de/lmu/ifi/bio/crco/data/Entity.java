@@ -12,6 +12,7 @@ public class Entity {
 	public String getIdentifier() {
 		return identifier;
 	}
+	//added for xsteam
 	public Entity(){}
 	
 	public Entity(String identifier){

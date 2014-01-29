@@ -7,6 +7,9 @@ public abstract class HierachyNode {
 	private Integer numLeafs;
 	private Integer id;
 	
+	//added for xsteam
+	public HierachyNode(){};
+	
 	public HierachyNode(Integer numLeafs,Integer id){
 		this.numLeafs = numLeafs;
 		this.id = id;
