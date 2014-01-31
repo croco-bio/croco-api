@@ -1,5 +1,7 @@
 package de.lmu.ifi.bio.crco.connector;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
@@ -270,7 +274,7 @@ public class LocalService implements QueryService{
 
 */
 	@Override
-	public Network readNetwork(Integer groupId, Integer contextId, boolean gloablRepository) throws Exception{
+	public Network readNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception{
 	
 		
 		logger.debug("Load:\t" + groupId + " with context " + contextId);
@@ -324,14 +328,17 @@ public class LocalService implements QueryService{
 			Integer optionId = res.getInt(1);
 			Option option = Option.values()[optionId];
 			
-		//	Option option = Option.valueOf(res.getString(1));
-			
 			String value = res.getString(2);
 			
 			options.add(new Pair<Option,String>(option,value));
 			
 		}
+		
 		res.close();
+		Integer interaction = this.getNumberOfEdges(groupId) ;
+		if ( interaction != null)
+			options.add(new Pair<Option,String>(Option.numberOfInteractions,interaction+""));
+		
 		stat.close();
 		
 		return options;
@@ -373,7 +380,7 @@ public class LocalService implements QueryService{
 
 
 	@Override
-	public List<OrthologMappingInformation> getTransferTargetSpecies(int taxId) throws Exception {
+	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception {
 		List<OrthologMappingInformation> ret = new ArrayList<OrthologMappingInformation>();
 		Statement stat = connection.createStatement();
 		stat.execute(
@@ -521,7 +528,7 @@ public class LocalService implements QueryService{
 
 
 	@Override
-	public List<TFBSPeak> getTFBSBindings(int groupId, Integer contextId) throws Exception {
+	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId) throws Exception {
 		String where = null;
 		
 		if ( contextId != null){
@@ -605,6 +612,29 @@ public class LocalService implements QueryService{
 	}
 	public void setConnection(Connection connection) {
 		this.connection = connection;
+	}
+	@Override
+	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
+		File networkFile = null;
+		String sql =String.format("SELECT network_file_location from NetworkHierachy where group_id=%d",groupId);
+		CroCoLogger.getLogger().debug(sql);
+		Statement stat = connection.createStatement();
+		stat.execute(sql);
+		ResultSet res = stat.getResultSet();
+		if ( res.next()) {
+			String f = res.getString(1);
+			if (f!= null) networkFile=new File(f);
+		}
+		res.close();
+		stat.close();
+		BufferedImage ret= null;
+		if ( networkFile != null){
+			File imageFile = new File(networkFile.toString().replace("network.gz","network.png"));
+			if (  imageFile.exists()){
+				ret =  ImageIO.read(imageFile);
+			}
+		}
+		return ret;
 	}
 
 

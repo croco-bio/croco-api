@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.crco.connector;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,6 +30,7 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
@@ -54,25 +56,52 @@ public class BufferedService implements QueryService {
 			}
 		}
 	}
-	
-	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception{
-		File networkFile = new File(baseDir + "/ortholog-" + orthologMappingInformation.getDatabase().ordinal() + "-" + orthologMappingInformation.getSpecies1().getTaxId() +"-" + orthologMappingInformation.getSpecies2().getTaxId() );
-		if ( !networkFile.exists()){
-			OrthologMapping obj = service.getOrthologMapping(orthologMappingInformation);
-			write(obj, networkFile);
-		}
-		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
-
-		return read(networkFile);
-	}
-
 	@Override
-	public Network readNetwork(Integer groupId, Integer contextId, boolean globalRepository) throws Exception{
+	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception{
+		File orthologMappingFile = new File(baseDir + "/ortholog-" + orthologMappingInformation.getDatabase().ordinal() + "-" + orthologMappingInformation.getSpecies1().getTaxId() +"-" + orthologMappingInformation.getSpecies2().getTaxId() + ".croco.gz" );
+		if ( !orthologMappingFile.exists()){
+			OrthologMapping mapping = service.getOrthologMapping(orthologMappingInformation);
+			writeOrthologMapping(orthologMappingFile, orthologMappingInformation,mapping);
+		}
+		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",orthologMappingFile.getAbsoluteFile().toString()));
+
+		return readOrthologMapping(orthologMappingFile);
+	}
+	public static void writeOrthologMapping(File file,OrthologMappingInformation orthologMappingInformation, OrthologMapping orthologMapping) throws IOException{
+		OutputStreamWriter writer = new OutputStreamWriter(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(file))));
+		writer.write("#" +orthologMappingInformation.getDatabase().getName() + "\t" + orthologMappingInformation.getSpecies1().getName() + "\t" + orthologMappingInformation.getSpecies2().getName());
+		
+		for(Entry<Entity, Set<Entity>> e : orthologMapping.getMapping().entrySet()){
+			for(Entity value : e.getValue()){
+				writer.write(e.getKey().getIdentifier() + "\t" + value.getIdentifier() + "\n");
+			}
+		}
+		
+		writer.flush();
+		writer.close();
+	}
+	private OrthologMapping readOrthologMapping(File file) throws IOException{
+		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
+		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+		OrthologMapping mapping = new OrthologMapping();
+		String line = br.readLine();
+		while((line = br.readLine())!=null){
+			String[] tokens = line.split("\t");
+			Entity e1 = new Entity(tokens[0]);
+			Entity e2 = new Entity(tokens[1]);
+			mapping.addMapping(e1, e2);
+		}
+		br.close();
+		CroCoLogger.getLogger().debug(String.format("Read ortholog mapping from file"));
+		return mapping;
+	}
+	
+	@Override
+	public Network readNetwork(Integer groupId, Integer contextId, Boolean globalRepository) throws Exception{
 		File networkFile = new File(baseDir + "/network-" + groupId + ".croco.gz");
 		if ( !networkFile.exists()){
 			Network network = service.readNetwork(groupId,contextId,globalRepository);
 			writeNetwork(networkFile,network);
-			//Helper.write(network, networkFile);
 			return network;
 		}
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
@@ -86,13 +115,8 @@ public class BufferedService implements QueryService {
 		String clazz = tokens[0];
 		String name = tokens[1];
 		Integer taxId = Integer.valueOf(tokens[2]);
-		Class<Network> networkClass = null;
-		try {
-			networkClass = (Class<Network>)Class.forName(clazz);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		Network ret = Network.getEmptyNetwork(networkClass, name, taxId,globalRepository);
+	
+		Network ret = new DirectedNetwork(name,taxId,false);
 		String line = null;
 		int k = 0;
 		while((line = br.readLine())!=null){
@@ -136,6 +160,7 @@ public class BufferedService implements QueryService {
 		writer.close();
 	
 	}
+	/*
 	public static<E extends Object> void write(E e, File file) throws IOException{
 		XStream xstream = new XStream();;
 		FileWriter fw = new FileWriter(file);
@@ -148,6 +173,7 @@ public class BufferedService implements QueryService {
 		Object o = xstream.fromXML(file);
 		return (E) o;
 	}
+	*/
 	@Override
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
 		return service.getNetworkHierachy(path);
@@ -180,13 +206,13 @@ public class BufferedService implements QueryService {
 		return service.getNumberOfEdges(groupId);
 	}
 	@Override
-	public List<TFBSPeak> getTFBSBindings(int groupId, Integer contextId)
+	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId)
 			throws Exception {
 		return service.getTFBSBindings(groupId, contextId);
 	}
 
 	@Override
-	public List<OrthologMappingInformation> getTransferTargetSpecies(int taxId)
+	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)
 			throws Exception {
 		return service.getTransferTargetSpecies(taxId);
 	}
@@ -220,6 +246,10 @@ public class BufferedService implements QueryService {
 	@Override
 	public Species getSpecies(Integer taxId) throws Exception {
 		return service.getSpecies(taxId);
+	}
+	@Override
+	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
+		return service.getRenderedNetwork(groupId);
 	}
 
 }

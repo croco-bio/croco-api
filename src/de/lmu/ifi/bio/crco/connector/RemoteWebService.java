@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.crco.connector;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+
+import javax.imageio.ImageIO;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
@@ -37,6 +40,12 @@ public class RemoteWebService implements QueryService{
 		this.baseUrl = baseUrl;
 	
 	}
+	/**
+	 * Dummy object for null values;
+	 * @author pesch
+	 *
+	 */
+	public static class NullObject{}
 	public static InputStream getStreamedData(String baseUrl, String method, Object...parameters) throws Exception{
 		URL url = new URL(String.format("%s/%s",baseUrl  , method));
 		
@@ -67,8 +76,11 @@ public class RemoteWebService implements QueryService{
 		XStream xstream = new XStream();
 		
 		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
+		
 		for(Object parameter: parameters){
+			
 			out.writeObject(parameter);
+			
 		}
 		out.close();
 		
@@ -90,15 +102,44 @@ public class RemoteWebService implements QueryService{
 			conn.getInputStream().read(tmp);
 			String errorMessage = new String(tmp).trim();
 			CroCoLogger.getLogger().fatal(String.format("Cannnot read result from web service. Message from server %s",errorMessage));
+			e.printStackTrace();
 		}
 		return object;
 	}
 	@Override
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation)throws Exception {
-		return (OrthologMapping)performceOperation(baseUrl,"getOrthologMapping",orthologMappingInformation);
+
+		
+		InputStream is = getStreamedData(baseUrl,"getOrthologMapping",orthologMappingInformation);
+	
+		
+		BufferedReader br = null;
+		try{
+			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(is)));
+		}catch(Exception e){
+			 byte[] tmp = new byte[1014];
+			is.read(tmp);
+			String errorMessage =new String(tmp).trim(); 
+			throw new CroCoException(String.format("Can not read ortholog mapping. Message from server: %s",errorMessage));
+		}
+		String line = null;
+		OrthologMapping ret = new OrthologMapping();
+		while (( line = br.readLine())!=null){
+			if ( line.startsWith("#")) continue;
+			String[] tokens = line.split("\t");
+			Entity factor = new Entity(tokens[0]);
+			Entity target = new Entity(tokens[1]);
+			ret.addMapping(factor, target);
+		}
+		br.close();
+		
+		is.close();
+		
+		
+		return  ret;//(OrthologMapping)performceOperation(baseUrl,"getOrthologMapping",orthologMappingInformation);
 	}
 	@Override
-	public Network readNetwork(Integer groupId, Integer contextId,boolean globalRepository) throws Exception {
+	public Network readNetwork(Integer groupId, Integer contextId,Boolean globalRepository) throws Exception {
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),globalRepository);
@@ -129,9 +170,17 @@ public class RemoteWebService implements QueryService{
 		return network;
 	}
 	@Override
-	public List<TFBSPeak> getTFBSBindings(int groupId, Integer contextId)throws Exception {
+	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
+		InputStream is = getStreamedData(baseUrl,"getRenderedNetwork",groupId);
+		BufferedImage image = ImageIO.read(is);
+		is.close();
+		return image;
+	}
+	
+	@Override
+	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId)throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	
@@ -172,8 +221,7 @@ public class RemoteWebService implements QueryService{
 
 
 	@Override
-	public List<OrthologMappingInformation> getTransferTargetSpecies(int taxId)
-			throws Exception {
+	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)throws Exception {
 		return (List) performceOperation(baseUrl,"getTransferTargetSpecies",taxId);
 		
 	}
@@ -181,9 +229,7 @@ public class RemoteWebService implements QueryService{
 
 
 	@Override
-	public List<OrthologMappingInformation> getOrthologMappingInformation(
-			OrthologDatabaseType database, Species species1, Species species2)
-			throws Exception {
+	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2)throws Exception {
 		
 		return (List) performceOperation(baseUrl,"getOrthologMappingInformation",database,species1,species2);
 	}
@@ -206,7 +252,7 @@ public class RemoteWebService implements QueryService{
 
 
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
-		return (ContextTreeNode)performceOperation(baseUrl,"getSpecies",sourceId);
+		return (ContextTreeNode)performceOperation(baseUrl,"getContextTreeNode",sourceId);
 	}
 
 	@Override
@@ -218,6 +264,7 @@ public class RemoteWebService implements QueryService{
 	public Species getSpecies(Integer taxId) throws Exception {
 		return (Species)performceOperation(baseUrl,"getSpecies",taxId);
 	}
+	
 	
 	
 

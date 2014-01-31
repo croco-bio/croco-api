@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.crco.connector;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
@@ -27,14 +28,14 @@ public interface QueryService {
 	public List<Entity> getEntities(Species species,String annotation, ContextTreeNode context) throws Exception;
 
 	//read networks
-	public Network readNetwork(Integer groupId, Integer contextId, boolean globalRepository) throws Exception;	
+	public Network readNetwork(Integer groupId, Integer contextId, Boolean globalRepository) throws Exception;	
 	
 	//get properties
 	public Integer getNumberOfEdges(Integer groupId) throws Exception;
-	public List<TFBSPeak> getTFBSBindings(int groupId, Integer contextId ) throws Exception;
+	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId ) throws Exception;
 	
 	//ortolog mapping
-	public List<OrthologMappingInformation> getTransferTargetSpecies(int taxId) throws Exception;
+	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception;
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception;
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2) throws Exception;
 	public List<Species> getPossibleTransferSpecies() throws Exception;
@@ -48,5 +49,5 @@ public interface QueryService {
 	public List<Species> getSpecies(String prefix) throws Exception;
 	public Species getSpecies(Integer taxId) throws Exception;
 
-	
+	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception;
 }
