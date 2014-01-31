@@ -46,18 +46,20 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 	private int width;
 	private int height;
 	private String outputFormat;
+	boolean overwrite;
 	
 	HashMap<String,String> nameMapping= null;
-	public NetworkRenderedHierachyProcessor(String outputFormat, int sampleSize, int width, int height) throws Exception{
+	public NetworkRenderedHierachyProcessor(String outputFormat,boolean overwrite, int sampleSize, int width, int height) throws Exception{
 		this.sampleSize = sampleSize;
 		this.width = width;
 		this.height = height;
 		this.outputFormat = outputFormat;
-	
+		this.overwrite = overwrite;
 	}
 	
 	@Override
 	public void init(Integer rootId) throws Exception {
+		//load gene id to gene name mapping for all species
 		LocalService service = new LocalService();
 		nameMapping = new HashMap<String,String>();
 		List<Entity> knownEntities = service.getEntities(null, "protein_coding", null);
@@ -70,12 +72,14 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 
 	@Override
 	public void process(Integer rootId, Integer networkId, File networkFile,File infoFile, File statFile) throws Exception {
+		//render network
 		CroCoLogger.getLogger().debug(String.format("Process: %s",networkFile.toString()));
 		Network network = NetworkHierachy.getNetwork(infoFile, networkFile, false);
 		
+		File networkImageFile = new File(networkFile.toString().replace(".network.gz", ".network."  +outputFormat ));
+		if ( overwrite == false && networkImageFile.exists()) return;
 		BufferedImage image = createImage(network,nameMapping, sampleSize,width, height);
 		
-		File networkImageFile = new File(networkFile.toString().replace(".network.gz", ".network."  +outputFormat ));
 		ImageIO.write(image, outputFormat, networkImageFile);
 	}
 
@@ -177,9 +181,10 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 	
 		Options options = new Options();
 		options.addOption(OptionBuilder.withLongOpt("repositoryDir").withDescription("Repository directory").isRequired().hasArgs(1).create("repositoryDir"));
-		options.addOption(OptionBuilder.withLongOpt("outputFormat").withDescription("Output image format").isRequired().hasArgs(1).create("outputFormat"));
-		options.addOption(OptionBuilder.withLongOpt("width").withDescription("Image width").isRequired().hasArgs(1).create("width"));
-		options.addOption(OptionBuilder.withLongOpt("height").withDescription("Image height").isRequired().hasArgs(1).create("height"));
+		options.addOption(OptionBuilder.withLongOpt("outputFormat").withDescription("Output image format (e.g. png)").isRequired().hasArgs(1).create("outputFormat"));
+		options.addOption(OptionBuilder.withLongOpt("width").withDescription("Image width in pixel (e.g. 300)").isRequired().hasArgs(1).create("width"));
+		options.addOption(OptionBuilder.withLongOpt("height").withDescription("Image height in pixel (e.g. 300)").isRequired().hasArgs(1).create("height"));
+		options.addOption(OptionBuilder.withLongOpt("overwrite").withDescription("Overwrite existing images").create("overwrite"));
 		
 		CommandLine line = null;
 		try{
@@ -196,12 +201,10 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 		Integer width = Integer.valueOf(line.getOptionValue("width"));
 		Integer height = Integer.valueOf(line.getOptionValue("height"));
 		File repositoryDir = new File(line.getOptionValue("repositoryDir"));
+		boolean overwrite = line.hasOption("overwrite");
 		NetworkHierachy hierachy = new NetworkHierachy();
 		
-		hierachy.processHierachy(repositoryDir, new NetworkRenderedHierachyProcessor(outputFormat,1000,width,height), null);
+		hierachy.processHierachy(repositoryDir, new NetworkRenderedHierachyProcessor(outputFormat,overwrite,1000,width,height), null);
 		
-	
 	}
-
-
 }
