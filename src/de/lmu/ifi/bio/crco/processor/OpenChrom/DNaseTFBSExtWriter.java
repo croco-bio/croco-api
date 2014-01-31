@@ -181,7 +181,8 @@ public class DNaseTFBSExtWriter {
 				bwInfo.write(String.format("%s: %s\n",Option.OpenChromMotifSet.name(),motifSetName.toString()));
 				bwInfo.write(String.format("%s: %s\n",Option.OpenChromMotifPVal.name(),pValueCutOf.toString()));
 				bwInfo.write(String.format("%s: %s\n",Option.OpenChromType.name(),openChromExpType));
-				
+				bwInfo.write(String.format("%s: %s\n",Option.Upstream.name(), upstream + ""));
+				bwInfo.write(String.format("%s: %s\n",Option.Downstream.name(), downstream +""));
 				
 				String cell = expNet.get("Cell");
 				String age= expNet.get("Age");
