@@ -19,6 +19,7 @@ public class Species {
 		knownSpecies.add(Worm);
 		knownSpecies.add(Fly);
 	}
+	
 	public static Species getSpecies(Integer taxId){
 		for(Species species : knownSpecies ){
 			if ( species.getTaxId().equals(taxId)) return species;
@@ -34,6 +35,8 @@ public class Species {
 	public String getName() {
 		return name;
 	}
+	//added for xstream
+	public Species(){}
 	public Species( Integer taxId  ){
 		this.taxId = taxId;
 	}
