@@ -11,15 +11,16 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.Network;
+import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.test.IntegrationTest;
-import de.lmu.ifi.bio.crco.test.UnitTest;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 @Category(IntegrationTest.class)
 public class BufferedLocalServiceTest {
 	@Test
-	public void testBufferedReader() throws Exception{
+	public void testReadNetwork() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		
@@ -40,5 +41,18 @@ public class BufferedLocalServiceTest {
 			}
 		}
 	
+	}
+	
+	@Test
+	public void testGetOrtholog() throws Exception{
+		Logger logger = CroCoLogger.getLogger();
+		Connection connection = DatabaseConnection.getConnection();
+		
+		
+		BufferedService service = new BufferedService(new LocalService(logger,connection),new File("/tmp/"));
+		OrthologMapping mapping = service.getOrthologMapping(service.getOrthologMappingInformation(null, Species.Human,Species.Mouse).get(0));
+		assertEquals(41910,mapping.getSize());
+		service.getOrthologMapping(service.getOrthologMappingInformation(null, Species.Human,Species.Mouse).get(0));
+		assertEquals(41910,mapping.getSize());
 	}
 }

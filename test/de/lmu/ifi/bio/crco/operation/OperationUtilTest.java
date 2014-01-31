@@ -2,7 +2,9 @@ package de.lmu.ifi.bio.crco.operation;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -21,7 +23,6 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologRepository;
 import de.lmu.ifi.bio.crco.operation.progress.ProgressInformation;
-import de.lmu.ifi.bio.crco.operation.progress.ProgressListener;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class OperationUtilTest {
@@ -77,7 +78,10 @@ public class OperationUtilTest {
 		Transfer transferOp = new Transfer();
 		
 		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, service.getSpecies(9606), service.getSpecies(10090)).get(0);
-		transferOp.setInput(Transfer.OrthologMappingInformation, mapping);
+		List<OrthologMappingInformation>  mappings = new ArrayList<OrthologMappingInformation>();
+		mappings.add(mapping);
+		
+		transferOp.setInput(Transfer.OrthologMappingInformation, mappings);
 		transferOp.setInput(Transfer.OrthologRepository, OrthologRepository.getInstance(service));
 		NetworkOperationNode transfer = new NetworkOperationNode(null,9695,transferOp);
 		transfer.addChild(intersect);
@@ -148,15 +152,7 @@ public class OperationUtilTest {
 		
 		int k =OperationUtil.getNumberOfOperations(root);
 		ProgressInformation pi = new ProgressInformation(k);
-		pi.addListener(new ProgressListener(){
-
-			@Override
-			public void update(String message) {
-				System.out.println(message);
-				
-			}
-			
-		});
+		
 		
 		Network network = OperationUtil.process(service, root,pi);
 
