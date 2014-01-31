@@ -23,10 +23,11 @@ public class CroCoProperties {
 	
 	private static CroCoProperties instance;
 	
-	
+	public static void init(InputStream is) throws IOException{
+		instance = new CroCoProperties(is);
+	}
 	public static void init(File file) throws IOException{
 		instance = new CroCoProperties(new FileInputStream(file));
-		
 	}
 	
 	public static CroCoProperties getInstance() throws IOException{
