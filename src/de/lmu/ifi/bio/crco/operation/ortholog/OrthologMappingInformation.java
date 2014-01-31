@@ -33,7 +33,7 @@ public class OrthologMappingInformation {
 		}
 		return false;
 	}
-	
+	public OrthologMappingInformation(){}
 	public OrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2) {
 		super();
 		if ( species1.getTaxId() > species2.getTaxId()){ //swap

@@ -9,6 +9,9 @@ import de.lmu.ifi.bio.crco.data.Entity;
 public class OrthologMapping{
 	private HashMap<Entity,Set<Entity>> orthologMapping;
 	
+	public HashMap<Entity,Set<Entity>>  getMapping(){
+		return orthologMapping;
+	}
 	public Set<Entity> getOrthologs(Entity e){
 		return orthologMapping.get(e);
 	}

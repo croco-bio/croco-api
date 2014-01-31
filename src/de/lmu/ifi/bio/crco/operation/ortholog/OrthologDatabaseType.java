@@ -12,6 +12,8 @@ public enum OrthologDatabaseType {
 	public String getVersion() {
 		return version;
 	}
+	
+	OrthologDatabaseType(){};
 	OrthologDatabaseType(String name, String version){
 		this.name = name;
 		this.version = version;
