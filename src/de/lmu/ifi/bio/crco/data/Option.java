@@ -40,7 +40,9 @@ public enum Option {
 	 
 	 networkOverlap(OptionType.NetworkSimilarity,"Network Overlap"),
 	 explainability(OptionType.NetworkSimilarity,"Fraction of explainable source interactions"),
-	 networkDegreeOverlap(OptionType.NetworkSimilarity,"Network degree overlap");
+	 networkDegreeOverlap(OptionType.NetworkSimilarity,"Network degree overlap"),
+	 
+	 numberOfInteractions(OptionType.Experiment,"Number of interactions");
 	 
 	 public OptionType optionType;
 	 public String description;
@@ -57,6 +59,7 @@ public enum Option {
 		 this.alias.add(this.name());
 		 if ( alias.length > 0) this.alias.addAll(Arrays.asList(alias));
 	 }
+	 Option(){}
 	 Option(OptionType optionType){
 		 this.optionType = optionType;
 	 }
