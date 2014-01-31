@@ -22,7 +22,7 @@ public class SupportFilter extends GeneralOperation{
 		
 		
 		Network ret =Network.getEmptyNetwork(network.getClass(), network.getName(),network.getTaxId(), false);
-		
+		ret.setName(ret.getName() + ("SupportFilter =>" + minSupport));
 		
 		for(int edge: network.getEdgeIds()){
 			int support = network.getAnnotation(edge,EdgeOption.GroupId).size();

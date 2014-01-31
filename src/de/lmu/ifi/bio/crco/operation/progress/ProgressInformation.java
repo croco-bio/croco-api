@@ -3,6 +3,8 @@ package de.lmu.ifi.bio.crco.operation.progress;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.lmu.ifi.bio.crco.operation.GeneralOperation;
+
 public class ProgressInformation {
 	public void addListener(ProgressListener listener){
 		this.listeners.add(listener);
@@ -17,9 +19,9 @@ public class ProgressInformation {
 		this.numberOfTasks = numberOfTasks;
 		this.listeners = new ArrayList<ProgressListener>();
 	}
-	public void nextStep(String message){
+	public void nextStep(GeneralOperation operation){
 		for(ProgressListener listener  : listeners){
-			listener.update(message);
+			listener.update(operation);
 		}
 	}
 	private boolean kill;

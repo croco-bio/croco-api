@@ -24,6 +24,7 @@ public class GeneSetFilter extends GeneralOperation {
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network = this.getNetworks().get(0);
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
+		ret.setName(ret.getName() + "(filter)");
 		Set<Entity> ofInterest = new HashSet<Entity>(this.getParameter(genes));
 		
 		FilterType type = this.getParameter(filterType);

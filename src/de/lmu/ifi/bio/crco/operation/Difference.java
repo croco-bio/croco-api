@@ -26,6 +26,7 @@ public class Difference extends GeneralOperation{
 	public void accept(List<Network> networks) throws OperationNotPossibleException{
 		if ( networks.size() == 0) return;
 		Integer taxId = networks.get(0).getTaxId();
+		
 		for(int i = 1 ; i< networks.size();i++){
 			if ( !networks.get(i).getTaxId().equals(taxId)){
 				throw new OperationNotPossibleException("Intersect not possible for different tax ids");
@@ -47,7 +48,7 @@ public class Difference extends GeneralOperation{
 		Network ret = Network.getEmptyNetwork(this.getNetworks().get(0).getClass(), "Difference", this.getNetworks().get(0).getTaxId(), false);
 		
 		Network net0 = this.getNetworks().get(0);
-		
+		net0.setName(String.format("Difference (unique in %s", net0.getName()));
 		List<Network> networks = this.getNetworks(); 
 		
 		for(int edgeId : net0.getEdgeIds()){

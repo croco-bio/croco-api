@@ -18,7 +18,7 @@ public class Union extends GeneralOperation {
 		List<Network> networks = this.getNetworks(); //this.getParameter(List.class, 0);
 		
 		Network net = Network.getEmptyNetwork(networks.get(0).getClass(),networks.get(0)); 
-		
+		net.setName("Union");
 		//Network ret = networks.get(0);
 		for(int i = 0 ; i< networks.size(); i++){
 			

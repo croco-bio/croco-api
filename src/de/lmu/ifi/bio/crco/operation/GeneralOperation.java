@@ -8,6 +8,7 @@ import de.lmu.ifi.bio.crco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.data.exceptions.ParameterNotWellDefinedException;
 import de.lmu.ifi.bio.crco.network.Network;
+import de.lmu.ifi.bio.crco.util.CroCoLogger;
 /**
  * Options can be applied to any network. Network operation do implement this abstract class.
  * @author robert
@@ -37,15 +38,24 @@ public abstract class GeneralOperation {
 		this.networks = networks;
 	}
 
-	
-	public final void setInput(Parameter<?> parameter, Object value) throws CroCoException{
+	/**
+	 * Sets a value for a parmater
+	 * @param parameter -- the parameter
+	 * @param value -- the value
+	 * @return true when successful
+	 */
+	public final <E extends Object> boolean setInput(Parameter<E> parameter, E value) {
 
 		boolean in = false;
 		for(Parameter<?> p : this.getParameters()){
 			if ( p.equals(parameter)) {in=true; break;}
 		}
-		if ( in == false) throw new CroCoException(String.format("Unknown parameter %s for %s",parameter.toString(),this.getClass().getSimpleName())); 
+		if ( in == false) {
+			CroCoLogger.getLogger().warn(String.format("Unknown parameter %s for %s",parameter.toString(),this.getClass().getSimpleName()));
+			return false;
+		}
 		passedParameters.put(parameter, value);
+		return true;
 		
 	}
 	

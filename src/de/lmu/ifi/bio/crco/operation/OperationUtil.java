@@ -70,16 +70,17 @@ public class OperationUtil {
 	 */
 	public static Network process(QueryService service, NetworkOperationNode operation, ProgressInformation pi) throws Exception  {
 		List<Network> ret = new ArrayList<Network>();
-
+		if ( pi.isKill()) return null;
 		for(NetworkOperationNode child : operation.getChildren()){
-			if ( pi != null)pi.nextStep("Process:" + child.getOperator().getClass().getSimpleName());
+			
+			if ( pi != null)pi.nextStep(child.getOperator());
 			ret.add(OperationUtil.process(service,child,pi));
 		}
 
 		CroCoLogger.getLogger().debug(operation + " on " +  ret.size() + " networks");
 		
 		GeneralOperation operator = operation.getOperator();
-		if ( pi != null)pi.nextStep("Do:" + operation.getClass().getSimpleName());
+		if ( pi != null)pi.nextStep(operator);
 
 		operator.setInputNetwork(ret);
 
