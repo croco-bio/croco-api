@@ -3,8 +3,10 @@ package de.lmu.ifi.bio.crco.processor.ortholog;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -49,13 +52,13 @@ public class EnsemblCompara {
 		stat.execute("DELETE FROM OrthologKnownGenes");
 		
 		stat.close();
-	
+		
 		
 		EnsemblCompara cmp = new EnsemblCompara();
 		System.out.println("Import source information");
 		cmp.importSourceIdentifierInformation(baseDir.getValue(cmdLine), taxIdSpecialSet);
-		System.out.println("Import genes");
-		cmp.importGenes(baseDir.getValue(cmdLine),tmpFile);
+		//System.out.println("Import genes");
+		//cmp.importGenes(baseDir.getValue(cmdLine),tmpFile);
 		System.out.println("Import relations");
 		cmp.importRelations(baseDir.getValue(cmdLine), taxIdSpecialSet, tmpFile);
 	}
@@ -65,7 +68,10 @@ public class EnsemblCompara {
 		HashMap<Integer,List<String>> memberMapping = new HashMap<Integer,List<String>>();
 		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
-		BufferedReader br = new BufferedReader(new FileReader(baseDir + "/data"));
+		
+		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(baseDir + "/data"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+		
 		String line = br.readLine();
 		int k  = 1;
 		LocalService service = new LocalService();
