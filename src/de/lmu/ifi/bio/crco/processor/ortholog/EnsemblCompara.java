@@ -1,10 +1,8 @@
 package de.lmu.ifi.bio.crco.processor.ortholog;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -41,10 +39,10 @@ public class EnsemblCompara {
 		for(Species species : Species.knownSpecies){
 			taxIdSpecialSet.add(species.getTaxId());
 		}
-		
+		System.out.println("TaxIDs:" + taxIdSpecialSet);
 		Connection connection = DatabaseConnection.getConnection();
 		Statement stat = connection.createStatement();
-		stat.execute("DELETE FROM Ortholog");
+		//stat.execute("DELETE FROM Ortholog");
 		stat.execute("DELETE FROM OrthologMappingInformation");
 		stat.execute("DELETE FROM OrthologKnownGenes");
 		
@@ -54,34 +52,37 @@ public class EnsemblCompara {
 		EnsemblCompara cmp = new EnsemblCompara();
 		System.out.println("Import source information");
 		cmp.importSourceIdentifierInformation(baseDir.getValue(cmdLine), taxIdSpecialSet);
-		System.out.println("Import genes");
-		cmp.importGenes(baseDir.getValue(cmdLine),tmpFile);
-		System.out.println("Import relations");
-		cmp.importRelations(baseDir.getValue(cmdLine), taxIdSpecialSet, tmpFile);
+		//System.out.println("Import genes");
+		//cmp.importGenes(baseDir.getValue(cmdLine),tmpFile);
+		//System.out.println("Import relations");
+		//cmp.importRelations(baseDir.getValue(cmdLine), taxIdSpecialSet, tmpFile);
 	}
 	
 	public void importRelations(File baseDir,Set<Integer> taxIdSpecialSet,  File tmpFile) throws Exception {
 		int currentGroupId = 0;
 		HashMap<Integer,List<String>> memberMapping = new HashMap<Integer,List<String>>();
 		
+		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(baseDir + "/orthologs.gz"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+				
+				
 		BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
-		BufferedReader br = new BufferedReader(new FileReader(baseDir + "/data"));
 		String line = br.readLine();
 		int k  = 1;
-		LocalService service = new LocalService();
-		HashSet<String> known = new HashSet<String>();
-		for(Entity e :  service.getEntities(null, "protein_coding", null)){
-			known.add(e.getIdentifier());
-		}
+		//LocalService service = new LocalService();
+		//HashSet<String> known = new HashSet<String>();
+		//for(Entity e :  service.getEntities(null, "protein_coding", null)){
+		//	known.add(e.getIdentifier());
+		//}
 		
 		while (( line = br.readLine())!=null){
 			String[] tokens= line.split("\t");
-			Integer hId = Integer.valueOf(tokens[3]);
-			Integer taxId = Integer.valueOf(tokens[5]);
-			Integer membeId = Integer.valueOf(tokens[6]);
-			String id = tokens[7];
+			Integer hId = Integer.valueOf(tokens[2]);
+			Integer taxId = Integer.valueOf(tokens[0]);
+
+			String id = tokens[3];
 			
-			String type = tokens[4];
+			String type = tokens[1];
 		//	
 			
 			if ( !hId.equals(currentGroupId)){
@@ -117,7 +118,7 @@ public class EnsemblCompara {
 				memberMapping.put(taxId, new ArrayList<String>());
 			}
 			if (! type.contains("ortholog")) continue;
-			if (! known.contains(id)) continue;
+			//if (! known.contains(id)) continue;
 			memberMapping.get(taxId).add(id);
 		}
 		System.out.println();
@@ -159,12 +160,15 @@ public class EnsemblCompara {
 				continue;
 			
 			}
-			if ( taxIdsOfInterest.contains(taxId)) continue;
+			//if ( taxIdsOfInterest.contains(taxId)) continue;
 			taxIdsAll.add(taxId);
 		}
 		Collections.sort(taxIdsAll);
-		for(Integer taxId1 : taxIdsOfInterest){
-			for(Integer taxId2 : taxIdsAll){
+		for(int i = 0 ; i< taxIdsAll.size() ; i++){
+			Integer taxId1 = taxIdsAll.get(i);
+			for(int j=i+1;j <taxIdsAll.size();j++ ){
+				Integer taxId2 = taxIdsAll.get(j);
+				if ( !taxIdsOfInterest.contains(taxId1) && !taxIdsOfInterest.contains(taxId2)) continue;
 				if (taxId1 < taxId2){
 					stat.setInt(2, taxId1);
 					stat.setInt(5, taxId2);

@@ -43,39 +43,56 @@ public class Shuffle extends GeneralOperation{
 			inDeg.put(edge.getSecond(),inDeg.get(edge.getSecond())+1);
 
 		}
-
+		int w = 0;
+		for(Entity e : inDeg.keySet()){
+			w+=inDeg.get(e);
+		}
+		System.out.println("--" + w);
+		
 		List<Entity> s = new ArrayList<Entity>(inDeg.keySet());
-		Collections.shuffle(s);
 		Comparator<Entity> cmp = new Comparator<Entity>(){
 			@Override
 			public int compare(Entity o1, Entity o2) {
 				return -1*inDeg.get(o1).compareTo(inDeg.get(o2));
 			}
 		};
-
+		Collections.shuffle(s);
 		Collections.sort(s,cmp);
+
 		List<Entity> factors = new ArrayList<Entity>(outDeg.keySet());
 		Collections.shuffle(factors,rnd);
-
-
+		System.out.println(network.size());
 		for( Entity e:factors){
 			int out = outDeg.get(e);
 
 			int k = 0;
+			if ( e.getIdentifier().equals("ENSG00000167182")){
+				System.out.println(out + " " + s.size() + " " + ret.size());
+			}
+			if ( s.size() > ret.size()) throw new OperationNotPossibleException("Shuffle went wrong!");
 			for(int  i = 0 ; i < out ; i++){
-				if ( ret.size() != network.size()) throw new RuntimeException("Networks have a different size");
+				if ( k >= s.size()) {
+					System.out.println(out + " " + k);
+					System.out.println(e);
+					System.out.println(s);
+					System.out.println(k);
+				}
 				Entity selected = s.get(k);
-				if ( ret.containsEdge(e, selected)) throw new RuntimeException("Shuffle went wrong, edge already contained");
-				ret.add(e, selected, 1);
+				if ( ret.containsEdge(e, selected)) throw new OperationNotPossibleException("Shuffle went wrong, edge already contained");
+				ret.add(e, selected);
 				inDeg.put(selected, inDeg.get(selected)-1);
+				
+		
 				if ( inDeg.get(selected) == 0) {
+		
 					s.remove(k);
 				}else{
 					k++;
 				}
 			}
 		}
-		if ( ret.size() != network.size()) throw new RuntimeException("Networks have a different size");
+		if ( inDeg.size() != 0) throw new OperationNotPossibleException("Indeg not null");
+		if ( ret.size() != network.size()) throw new OperationNotPossibleException("Networks have a different size");
 		return ret;
 		
 	}

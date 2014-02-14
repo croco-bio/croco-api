@@ -66,7 +66,8 @@ public class PairwiseFeatures {
 		public void init(Integer rootId) throws Exception {}
 
 		@Override
-		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile) throws Exception {
+		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile,File annotationFile) throws Exception {
+			//CroCoLogger.getLogger().debug("Read " + networkFile);
 			Network network = NetworkHierachy.getNetwork(infoFile, null, false);
 			network.addNetworkInfo(Option.networkFile, networkFile.toString());
 			networks.add(network);
@@ -338,10 +339,10 @@ public class PairwiseFeatures {
 			
 			GeneSetFilter filter = new GeneSetFilter();
 			
-			
 			filter.setInput(GeneSetFilter.filterType, FilterType.FactorFilter);
 			filter.setInput(GeneSetFilter.genes, sourceNetworkFactors );
 			filter.setInputNetwork(sourceNetwork);
+			
 			Network sourceNetworkFiltered = filter.operate();
 			for (Entry<Option, PairwiseStatGenerator> e : generators.entrySet()) {
 				if ( !computations.containsKey(new Pair<String,Option>(targetNetworkName,e.getKey()))) {                    //when not yet computed

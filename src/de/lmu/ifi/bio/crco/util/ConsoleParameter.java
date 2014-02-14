@@ -17,7 +17,6 @@ import de.lmu.ifi.bio.crco.data.exceptions.CroCoException;
 
 public class ConsoleParameter {
 	private List<CroCoOption<?>> crocoOptions = new ArrayList<CroCoOption<?>> ();
-	
 
 	private CommandLine cmdLine = null;
 	public CommandLine parseCommandLine(String[] args,Class<?> clazz) throws CroCoParameterException {
@@ -36,11 +35,21 @@ public class ConsoleParameter {
 			lvFormater.printHelp(120, "java " + clazz.getName(), "", options, "", true);
 			System.exit(1);
 		}
+		//check parameter
+		for(CroCoOption<?> crocooption : crocoOptions){
+			crocooption.getValue(cmdLine);
+		}
+		
 		return cmdLine;
 	}
 	public void register(CroCoOption<?> ... options){
 		for(CroCoOption<?> option :  options){
 			crocoOptions.add(option);
+		}
+	}
+	public void printInfo() throws CroCoParameterException{
+		for(CroCoOption<?> option : crocoOptions){
+			CroCoLogger.getLogger().info(option.name + ":" + option.getValue(cmdLine));
 		}
 	}
 	
@@ -204,7 +213,7 @@ public class ConsoleParameter {
 		
 	}
 	
-	static class  CroCoParameterException extends CroCoException{
+	public static class  CroCoParameterException extends CroCoException{
 		private static final long serialVersionUID = 1L;
 		
 		public CroCoParameterException(Exception e,String msg){
@@ -215,7 +224,7 @@ public class ConsoleParameter {
 		}
 		
 	}
-	abstract static class Handler<E>{
+	public abstract static class Handler<E>{
 		abstract public E getValue(CommandLine cmdLine,String parameterName) throws CroCoParameterException;
 	}
 

@@ -337,4 +337,17 @@ public abstract class Network {
 	public HashMap<Option, String> getNetworkInfo() {
 		return networkInfo;
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		if ( o instanceof Network){
+			if ( this.getSize() != ((Network)o).getSize()) return false;
+			for(int edgeId : this.getEdgeIds()){
+				Tuple<Entity, Entity> edge = this.getEdge(edgeId);
+				if ( !((Network) o).containsEdge(edge)) return false;
+			}
+			return true;
+		}
+		return false;
+	}
 }

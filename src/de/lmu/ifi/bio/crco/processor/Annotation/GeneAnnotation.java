@@ -92,8 +92,8 @@ public class GeneAnnotation {
 			for(Transcript transcript : gene.getTranscripts()){
 				transcriptStat.setString(1, gene.getIdentifier());
 				transcriptStat.setString(2, transcript.getIdentifier());
-				transcriptStat.setInt(3, transcript.getTSSStrandCorredStart());
-				transcriptStat.setInt(4, transcript.getTSSStrandCorredEnd());
+				transcriptStat.setInt(3, transcript.getStrandCorredStart());
+				transcriptStat.setInt(4, transcript.getStrandCorredEnd());
 				transcriptStat.setString(5, transcript.getType());
 				transcriptStat.addBatch();
 			}

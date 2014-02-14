@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
@@ -31,7 +32,7 @@ public class GenomeUtil {
 	 */
 	public static HashMap<String,IntervalTree<Peak>> createPeakIntervalTree(File peakFile,Integer chromIndex, Integer startIndex, Integer endIndex,Integer scoreIndex,Integer maxSize) throws IOException{
 		HashMap<String,IntervalTree<Peak>> peaks = new HashMap<String,IntervalTree<Peak>>();
-
+		boolean gff = false;
 		BufferedReader data = null;
 		if ( peakFile.getName().endsWith(".gz"))
 			data= new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(peakFile))));
@@ -39,6 +40,7 @@ public class GenomeUtil {
 			data = new BufferedReader(new FileReader(peakFile));
 		String dataLine = null;
 		while (( dataLine = data.readLine())!=null){
+			if ( dataLine.startsWith("##gff-version")) gff = true;
 			if ( dataLine.startsWith("#")) continue;
 			String[] tokens = dataLine.split("\t");
 			String chromosom = tokens[chromIndex];
@@ -47,7 +49,7 @@ public class GenomeUtil {
 			Integer size = end-start;
 			if ( maxSize != null && maxSize >= 0 && size > maxSize) continue;
 			Float score = null;
-			if ( scoreIndex != null && scoreIndex > 0 &&  tokens.length >= scoreIndex) score = Float.valueOf(tokens[scoreIndex]);
+			if ( gff == false && scoreIndex != null && scoreIndex > 0 &&  tokens.length >= scoreIndex) score = Float.valueOf(tokens[scoreIndex]);
 			
 			if ( start > end){
 				CroCoLogger.getLogger().warn("Start position can not be greater than end position (" + dataLine  + ")");
@@ -61,6 +63,49 @@ public class GenomeUtil {
 		}
 		data.close();
 		return peaks;
+	}
+	public static class TFBSGeneEnrichment{
+		public Gene gene;
+		public Transcript closestTranscriptUpstream;
+		public Transcript closestTranscriptDownstream;
+		public TFBSGeneEnrichment(Gene gene,Transcript closestTranscriptUpstream,Transcript closestTranscriptDownstream) {
+			super();
+			this.gene = gene;
+			this.closestTranscriptUpstream = closestTranscriptUpstream;
+			this.closestTranscriptDownstream = closestTranscriptDownstream;
+		}
+		
+	}
+	
+	public static List<TFBSGeneEnrichment> enrich(List<Promoter> promoters,Integer position,Integer upstream, Integer downstream){
+		HashSet<Gene> releventGenes = new HashSet<Gene>();
+		
+		for(Promoter promoter : promoters){
+			for(Transcript transcript : promoter.getTranscripts()){
+		
+				releventGenes.add(transcript.getParentGene());;
+			}
+		}
+		 List<TFBSGeneEnrichment> ret = new  ArrayList<TFBSGeneEnrichment>();
+		for(Gene relevantGene :releventGenes){
+			Transcript closestUpstream = null;
+			Transcript cloestDownstream = null;
+		
+			for(Transcript transcript : relevantGene.getTranscripts()){
+				Integer distanceToTss =Transcript.getDistanceToTssStart(transcript,position);
+			
+				if (distanceToTss<0  && Math.abs(distanceToTss)<=upstream  &&  (closestUpstream == null ||distanceToTss>Transcript.getDistanceToTssStart(closestUpstream, position)) ){
+					closestUpstream = transcript;
+				}else if (distanceToTss>=0 &&  distanceToTss<=downstream&&  (cloestDownstream == null ||distanceToTss<Transcript.getDistanceToTssStart(cloestDownstream, position)) ){
+					cloestDownstream = transcript;
+				}
+			}
+			if ( closestUpstream == null && cloestDownstream == null) continue;
+			ret.add(new TFBSGeneEnrichment(relevantGene, closestUpstream, cloestDownstream));
+		}
+		
+		
+		return ret;
 	}
 	
 	/**
@@ -97,9 +142,9 @@ public class GenomeUtil {
 				Promoter promoter = null;
 				
 				if ( gene.getStrand().equals(Strand.PLUS))
-					promoter = new Promoter(Math.max(transcript.getTSSStrandCorredStart()-tssUpstreamSpan,0),transcript.getTSSStrandCorredStart()+tssDownstreamSpan,transcript);
+					promoter = new Promoter(Math.max(transcript.getStrandCorredStart()-tssUpstreamSpan,0),transcript.getStrandCorredStart()+tssDownstreamSpan,transcript);
 				else
-					promoter = new Promoter(Math.max(transcript.getTSSStrandCorredStart()-tssDownstreamSpan,0),transcript.getTSSStrandCorredStart()+tssUpstreamSpan,transcript);
+					promoter = new Promoter(Math.max(transcript.getStrandCorredStart()-tssDownstreamSpan,0),transcript.getStrandCorredStart()+tssUpstreamSpan,transcript);
 				
 				chrTree.insert(promoter);
 			}
@@ -128,11 +173,13 @@ public class GenomeUtil {
 						int max = currentPromoter.getEnd();
 						if ( promoters != null && promoters.size() > 0){
 							for(Promoter promoter : promoters){ 
+								currentPromoter.getTranscripts().addAll(promoter.getTranscripts());
 								transcripts.addAll(promoter.getTranscripts());
 								min = Math.min(min, promoter.getStart());
 								max = Math.max(max, promoter.getEnd());
 							}
 						}
+						
 						if ( min == currentPromoter.getStart() && max == currentPromoter.getEnd()) break; //no more changes
 						currentPromoter = new Promoter(min,max,transcripts);
 					}

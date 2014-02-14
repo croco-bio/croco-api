@@ -48,6 +48,7 @@ public class ReadBindingNetwork extends GeneralOperation {
 			else
 				bindings = service.getTFBSBindings(node.getGroupId(),contextTreeNode.getId());
 			 for(TFBSPeak binding : bindings){
+			/*
 				 List<Entity> factors = binding.getFactors(); 
 				 for(Entity factor : factors){
 					 Entity target = binding.getTarget();
@@ -57,7 +58,7 @@ public class ReadBindingNetwork extends GeneralOperation {
 					 }else{
 						 net.addEdge(factor,target, node.getGroupId(), binding);
 				 	}
-			 	}
+			 	}*/
 			 }
 			 
 			 k+=bindings.size();

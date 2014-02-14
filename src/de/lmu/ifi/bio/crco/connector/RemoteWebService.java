@@ -7,11 +7,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
@@ -25,6 +24,8 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.exceptions.CroCoException;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
@@ -218,15 +219,11 @@ public class RemoteWebService implements QueryService{
 	}
 
 
-
-
 	@Override
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)throws Exception {
 		return (List) performceOperation(baseUrl,"getTransferTargetSpecies",taxId);
 		
 	}
-
-
 
 	@Override
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2)throws Exception {
@@ -264,8 +261,14 @@ public class RemoteWebService implements QueryService{
 	public Species getSpecies(Integer taxId) throws Exception {
 		return (Species)performceOperation(baseUrl,"getSpecies",taxId);
 	}
-	
-	
-	
 
+	@Override
+	public List<Gene> getGene(String id) throws Exception {
+		return (List<Gene>)performceOperation(baseUrl,"getGene",id);
+	}
+
+	@Override
+	public Map<Pair<Entity, Entity>, List<Peak>> getBindings(String factor,String target) throws Exception {
+		return (Map<Pair<Entity, Entity>, List<Peak>>)performceOperation(baseUrl,"getBindings",factor,target);
+	}
 }

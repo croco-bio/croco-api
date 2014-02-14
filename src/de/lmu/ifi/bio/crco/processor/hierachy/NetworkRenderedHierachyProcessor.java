@@ -71,7 +71,7 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 	}
 
 	@Override
-	public void process(Integer rootId, Integer networkId, File networkFile,File infoFile, File statFile) throws Exception {
+	public void process(Integer rootId, Integer networkId, File networkFile,File infoFile, File statFile,File annotationFile) throws Exception {
 		//render network
 		CroCoLogger.getLogger().debug(String.format("Process: %s",networkFile.toString()));
 		Network network = NetworkHierachy.getNetwork(infoFile, networkFile, false);

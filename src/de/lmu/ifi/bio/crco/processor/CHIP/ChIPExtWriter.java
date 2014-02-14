@@ -19,12 +19,10 @@ import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
-import de.lmu.ifi.bio.crco.data.genome.Strand;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter;
@@ -34,7 +32,7 @@ import de.lmu.ifi.bio.crco.util.ConsoleParameter.StringValueHandler;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.GenomeUtil;
-import de.lmu.ifi.bio.crco.util.StringUtil;
+import de.lmu.ifi.bio.crco.util.GenomeUtil.TFBSGeneEnrichment;
 
 public class ChIPExtWriter {
 	private static CroCoOption<Integer> chromsomIndex = new CroCoOption<Integer>("chromsomIndex",new IntegerValueHandler()).setDescription("chromsom index column index in PEAK files (default 0)").setArgs(1).setDefault(0);
@@ -104,7 +102,7 @@ public class ChIPExtWriter {
 		}
 		
 		List<Gene> genes = FileUtil.getGenes(gtfFile, "protein_coding", null);
-		HashMap<String,IntervalTree<Promoter>> promoterTrees = GenomeUtil.createPromoterIntervalTree(genes,upstream,downstream,false);
+		HashMap<String,IntervalTree<Promoter>> promoterTrees = GenomeUtil.createPromoterIntervalTree(genes,upstream,downstream,true);
 
 		HashMap<String,List<HashMap<String, String>>> experiments = new HashMap<String,List<HashMap<String, String>>>();
 		for(File experimentMappingFile : experimentMappingFiles ){
@@ -199,29 +197,58 @@ public class ChIPExtWriter {
 				bwInfo.flush();
 				bwInfo.close();
 				
-				HashMap<String, IntervalTree<Peak>> peaks = GenomeUtil.createPeakIntervalTree(file,chromIndex,startIndex,endIndex,-1,maxSize); //max size == we want to ignore very long peaks
+				HashMap<String, IntervalTree<Peak>> chipBindings = GenomeUtil.createPeakIntervalTree(file,chromIndex,startIndex,endIndex,7,maxSize); //max size == we want to ignore very long peaks
 				File networkFile = new File(aggreatedDir + "/" +  fileBaseName+ ".network.gz");
 				
 				File annotationFile = new File(aggreatedDir + "/" +  fileBaseName + ".annotation.gz");
 				BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
+				//new Entity(targetMapped);
 				
-				List<TFBSPeak> targets = getTFBSPeaks(new Entity(targetMapped),antibody,peaks,promoterTrees, chromosomNamePrefix,chromosomNameMapping);
+				//List<TFBSPeak> targets = getTFBSPeaks(peaks,promoterTrees, chromosomNamePrefix,chromosomNameMapping);
 				
 				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,false);
 
-				for(TFBSPeak tfbsPeak  : targets){
-			
-					Entity factor = tfbsPeak.getFactors().get(0); //can only be 1
-					Entity target = new Entity( tfbsPeak.getTarget().getParentGene().getIdentifier());
-					network.add(factor, target);
-						//bwNetwork.write( targetMapped.toUpperCase() + "\t" + target.toUpperCase() + "\n");
+				for(Entry<String, IntervalTree<Peak>> chipBinding  : chipBindings.entrySet()){
+					String chrom = chipBinding.getKey();
+					IntervalTree<Promoter> chromPromoter = promoterTrees.get(chrom);
+					if ( chromPromoter == null && chromosomNameMapping.containsKey(chrom)){
+						chromPromoter = promoterTrees.get(chromosomNameMapping.get(chrom));
+					}
+					if (chromPromoter == null && chromosomNamePrefix!= null){
+						chrom = chrom.replace(chromosomNamePrefix, "");
+						chromPromoter = promoterTrees.get(chrom);
+					}
+					if (chromPromoter == null ){
+						CroCoLogger.getLogger().warn(String.format("No promoter information for chrom: %s (mapping %s)", chrom, chromosomNameMapping));
+						continue;
+					} 
 					
-					String tfbs =  String.format("%s\t%s\t%s\t%d\t%s\t%d\t%d",
-							StringUtil.getAsString(tfbsPeak.getFactors(), ','),  tfbsPeak.getTarget().getParentGene().getIdentifier(),tfbsPeak.getTarget().getIdentifier() ,
-							tfbsPeak.getDistanceToTranscript(),tfbsPeak.getChrom(),tfbsPeak.getStart(),tfbsPeak.getEnd() );
+					Collection<Peak> peakList = chipBinding.getValue().getObjects();
+					for(Peak peak : peakList){
+						if ( peak == null) continue;
+						
+						Integer absolutMiddle = (peak.getStart()+peak.getEnd())/2;
+						List<Promoter> promoters =  chromPromoter.searchAll(peak); 
+						
+						List<TFBSGeneEnrichment> enrichedGenes = GenomeUtil.enrich(promoters, absolutMiddle, upstream, downstream);
+						
+						for(TFBSGeneEnrichment  geneAssoication : enrichedGenes){
+								
+							network.add(new Entity(targetMapped),geneAssoication.gene );
+							
+							String tfbs =  String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%d",
+									targetMapped,geneAssoication.gene.getIdentifier(),antibody,
+									geneAssoication.closestTranscriptUpstream==null?"NaN":Transcript.getDistanceToTssStart(geneAssoication.closestTranscriptUpstream, absolutMiddle),
+									geneAssoication.closestTranscriptDownstream==null?"NaN":Transcript.getDistanceToTssStart(geneAssoication.closestTranscriptDownstream, absolutMiddle),
+									peak.getScore()==null?"NaN":peak.getScore(),peak.getChrom(),peak.getStart(),peak.getEnd() );
+							
+							bwAnnotation.write(String.format("CHIP\t%s\n",tfbs));
+							
+							
+						}
+												
+					}
 					
-					bwAnnotation.write(String.format("ChIPTFBS\t%s\n",tfbs));
-	
 					if ( k++ % 10000 == 0){
 						bwAnnotation.flush();
 						
@@ -237,62 +264,4 @@ public class ChIPExtWriter {
 		}
 	}
 
-
-	
-	/**
-	 * Maps ChiP-bindings to promoter
-	 * @param factor  the TF factor
-	 * @param antibody the used antibody 
-	 * @param chipBindings the chip bindings 
-	 * @param promoterTrees gene promoter tree
-	 * @param chromosomNamePrefix
-	 * @param chromosomNameMapping
-	 * @return list of TFBSPeak
-	 */
-	static List<TFBSPeak> getTFBSPeaks(Entity factor,String antibody, HashMap<String, IntervalTree<Peak>> chipBindings, HashMap<String, IntervalTree<Promoter>> promoterTrees,String chromosomNamePrefix, HashMap<String,String> chromosomNameMapping) {
-		List<TFBSPeak>  ret = new ArrayList<TFBSPeak> ();
-		for(Entry<String,IntervalTree<Peak>> chipBinding : chipBindings.entrySet()){
-			String chrom = chipBinding.getKey();
-			
-			IntervalTree<Promoter> chromPromoter = promoterTrees.get(chrom);
-			if ( chromPromoter == null && chromosomNameMapping.containsKey(chrom)){
-				chromPromoter = promoterTrees.get(chromosomNameMapping.get(chrom));
-			}
-			if (chromPromoter == null && chromosomNamePrefix!= null){
-				chrom = chrom.replace(chromosomNamePrefix, "");
-				chromPromoter = promoterTrees.get(chrom);
-			}
-			if (chromPromoter == null ){
-				CroCoLogger.getLogger().warn(String.format("No promoter information for chrom: %s (mapping %s)", chrom, chromosomNameMapping));
-				continue;
-			} 
-			Collection<Peak> chipBindingsForChrom = chipBinding.getValue().getObjects();
-			for(Peak peak : chipBindingsForChrom){ //for each peak in chip experiment for current chrom
-				if ( peak == null) continue;
-		
-				Integer absolutMiddle = (peak.getStart()+peak.getEnd())/2;
-				List<Promoter> promoters =  chromPromoter.searchAll(peak); 
-				if ( promoters != null && promoters.size() > 0){ //overlap with transcript promoter
-					for(Promoter promoter : promoters){
-						for(Transcript transcript : promoter.getTranscripts()){
-							Gene gene = transcript.getParentGene();
-							Integer distanceToTss=null;
-							if (gene.getStrand().equals(Strand.PLUS) ){
-								distanceToTss = absolutMiddle-transcript.getTSSStrandCorredStart();
-							}else{
-								distanceToTss = transcript.getTSSStrandCorredEnd()-absolutMiddle;
-							}
-							
-							TFBSPeak tfbsPeak = new TFBSPeak(chrom,factor,antibody,transcript,distanceToTss,null,peak.score,peak.getStart(),peak.getEnd());
-							ret.add(tfbsPeak);
-						}
-						
-					}
-				}
-			}
-		}
-	
-		return ret;
-		
-	}
 }

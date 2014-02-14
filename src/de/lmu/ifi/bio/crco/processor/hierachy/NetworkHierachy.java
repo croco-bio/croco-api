@@ -7,11 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,31 +71,37 @@ public class NetworkHierachy  {
 			lvFormater.printHelp(120, "java " + NetworkHierachy.class.getName(), "", options, "", true);
 			System.exit(1);
 		}
-
-		Connection connection = DatabaseConnection.getConnection();
-		Statement stat = connection.createStatement();
-		stat.execute("DELETE FROM NetworkHierachy");
-		stat.execute("DELETE FROM Network");
-		stat.execute("DELETE FROM NetworkOption");
-		stat.execute("DELETE FROM NetworkSimilarity");
-		stat.close();
+		
 		
 		File repositoryDir = new File(line.getOptionValue("repositoryDir"));
 		File tmpDir = null;
 		if ( line.hasOption("tmpDir")) tmpDir = new File(line.getOptionValue("tmpDir"));
 		File networkFile =File.createTempFile("networks.", ".croco",tmpDir) ;
 		File statFile =File.createTempFile("stat.", ".croco",tmpDir) ;
+		File annotationFile = File.createTempFile("annotation.", ".croco",tmpDir);
 		
 		CroCoLogger.getLogger().info(String.format("Repository dir: %s",repositoryDir));
 		CroCoLogger.getLogger().info(String.format("Temp networkFile: %s",networkFile));
 		CroCoLogger.getLogger().info(String.format("Temp statFile: %s",statFile));
+		CroCoLogger.getLogger().info(String.format("Annotation file: %s",annotationFile));
+		
+		CroCoLogger.getLogger().info("Cleaning data");
+		Connection connection = DatabaseConnection.getConnection();
+		Statement stat = connection.createStatement();
+		stat.execute("DELETE FROM NetworkHierachy");
+		stat.execute("DELETE FROM Network");
+		stat.execute("DELETE FROM NetworkOption");
+		stat.execute("DELETE FROM NetworkSimilarity");
+		stat.execute("DELETE FROM Network2Binding");
+		
+		stat.close();
+		
 		
 		try{
 			NetworkHierachy hierachy = new NetworkHierachy();
 			
-			PreparedStatement hierachyPrepStat = connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location) values(?,?,?,?,?,?,?)");
 			
-			hierachy.processHierachy(repositoryDir, hierachy.new NetworkProcessor(repositoryDir,connection,networkFile, hierachyPrepStat,statFile), hierachy.new SubFolderProcess(hierachyPrepStat));
+			hierachy.processHierachy(repositoryDir, hierachy.new NetworkProcessor(repositoryDir,connection, networkFile,statFile,annotationFile), hierachy.new SubFolderProcess(connection));
 			
 		}catch(Exception e){
 			throw new RuntimeException(e);
@@ -129,7 +137,6 @@ public class NetworkHierachy  {
 		while(!files.isEmpty()){
 			File file = files.pop();
 			Integer currentRootId = parentIds.pop();
-		
 			if ( file.getName().endsWith(".network.gz")){
 				File infoFile = new File( file.toString().replace(".network.gz", ".info"));
 				if (! infoFile.exists()){
@@ -137,7 +144,9 @@ public class NetworkHierachy  {
 					return;
 				}
 				File statFile = new File(file.toString().replace(".network.gz", ".stat"));
-				if ( networkFileHandler != null)networkFileHandler.process(currentRootId,nextFreeId++, file, infoFile,statFile);
+				File annotationFile = new File(file.toString().replace(".network.gz", ".annotation.gz"));
+				
+				if ( networkFileHandler != null)networkFileHandler.process(currentRootId,nextFreeId++, file, infoFile,statFile,annotationFile);
 				
 			}else if ( file.isDirectory()){
 				File infoFile = new File(file + "/.info");
@@ -161,7 +170,7 @@ public class NetworkHierachy  {
 					parentIds.add(nextFreeId);
 				}
 				File statFile = new File(file.toString().replace(".network.gz", ".stat"));
-				if ( folderHandler != null) folderHandler.process(currentRootId,nextFreeId++ , file, infoFile,statFile);
+				if ( folderHandler != null) folderHandler.process(currentRootId,nextFreeId++ , file, infoFile,statFile,null);
 				
 			}
 		}	
@@ -177,21 +186,21 @@ public class NetworkHierachy  {
 	public interface CroCoRepositoryProcessor {
 		
 		public void init(Integer rootId) throws Exception;
-		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile) throws Exception;
+		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile, File annotationFile) throws Exception;
 		public void finish() throws Exception;
 		
 	}
 	class SubFolderProcess implements CroCoRepositoryProcessor{
 		private PreparedStatement hierachy;
-		public SubFolderProcess(PreparedStatement hierachy) throws Exception{
-			this.hierachy = hierachy;
+		public SubFolderProcess(Connection connection) throws SQLException{
+			this.hierachy =  connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location) values(?,?,?,?,?,?,?)");
 		}
 		
 		@Override
 		public void init(Integer rootId) throws Exception {}
 
 		@Override
-		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile) throws Exception {
+		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile,File annotationFile) throws SQLException,IOException {
 			HashMap<Option, String> infoAnnotation = null;
 			if ( infoFile.exists()){
 				infoAnnotation = readInfoFile(infoFile);
@@ -210,7 +219,7 @@ public class NetworkHierachy  {
 			hierachy.setBoolean(5, false);
 			hierachy.setNull(6, java.sql.Types.INTEGER);
 			hierachy.setNull(7, java.sql.Types.VARCHAR);
-			hierachy.addBatch();
+			hierachy.execute();
 			
 		}
 
@@ -228,29 +237,38 @@ public class NetworkHierachy  {
 		
 		private List<File> statFiles;
 		private BufferedWriter bwNetwork;
+		private BufferedWriter bwAnnotation;
+		private BufferedWriter bwStat;
+		
 		private int counter = 0;
 		
 		private Connection connection;
+		
 		private File repositoryDir;
 		private File networkFile;
 		private File statFile;
-		private BufferedWriter bwStat;
+		private File annotationFile;
 		
-		public NetworkProcessor(File repositoryDir,Connection connection, File networkFile,PreparedStatement hierachy,File statFile) throws Exception{
+		
+		public NetworkProcessor(File repositoryDir,Connection connection, File networkFile,File statFile, File annotationFile) throws Exception{
 			this.repositoryDir = repositoryDir;
 			this.networkFile = networkFile;
+			this.annotationFile = annotationFile;
+			
 			this.statFiles = new ArrayList<File>();
-			bwNetwork = new BufferedWriter(new FileWriter(networkFile));
 			
 			this.connection = connection;
 			this.statFile = statFile;
-			this.hierachy = hierachy;
-			bwStat = new BufferedWriter(new FileWriter(statFile));
+			this.hierachy = connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location) values(?,?,?,?,?,?,?)");
 			
+			
+			bwStat = new BufferedWriter(new FileWriter(statFile));
+			bwNetwork = new BufferedWriter(new FileWriter(networkFile));
+			bwAnnotation = new BufferedWriter(new FileWriter(annotationFile));
 			networkOptions = connection.prepareStatement("INSERT INTO NetworkOption(option_id,group_id,value) values(?,?,?)");
 
 		}
-		private void addtoNetwork(int groupId, File file) throws Exception{
+		private void addtoNetwork(int groupId, File file) throws IOException{
 			BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
 			String line = null;
 			while((line=br.readLine())!=null){
@@ -258,10 +276,87 @@ public class NetworkHierachy  {
 			}
 			br.close();
 		}
+		private Float getValue(String value){
+			if ( value.trim().equals("NaN"))
+				return null;
+			if ( value.trim().equals("-"))
+				return null;
+			if( value.trim().equals(".") )
+				return null;
+			if( value.trim().length() == 0)
+				return null;
+			if ( Float.valueOf(value).intValue() == -1){
+				return null;
+			}
+			return Float.valueOf(value);
+		}
+		private void addToAnnotation(int groupId, File file) throws IOException{
+			BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+			String line = null;
+			while((line=br.readLine())!=null){
+				String[] tokens = line.split("\t");
+				String type = tokens[0];
+				
+				String factor = tokens[1];
+				String target = tokens[2];
+				String bindingPartner = null;
+				Float bindingPValue = null;
+				String chrom = null;
+				Integer bindingStart = null;
+				Integer bindingEnd = null;
 		
+				Integer openChromStart = null;
+				Integer openChromEnd = null;
+				
+				Float openChromPValue = null;
+				
+				if ( type.equals("TFBS") || type.equals("TBFS") ){
+					bindingPartner = tokens[3];
+					bindingPValue = Float.valueOf(tokens[7]);
+					chrom = tokens[8];
+					bindingStart = Integer.valueOf(tokens[9]);
+					bindingEnd = Integer.valueOf(tokens[10]);
+				}else if ( type.equals("CHIP")){
+					bindingPartner = tokens[3];
+					bindingPValue = getValue(tokens[6]);
+					if ( bindingPValue != null){
+						bindingPValue = (float) Math.pow(bindingPValue, -10);
+					}
+					chrom = tokens[7];
+					bindingStart = Integer.valueOf(tokens[8]);
+					bindingEnd = Integer.valueOf(tokens[9]);	
+				}else if ( type.equals("OpenChromTFBS")){
+					bindingPartner = tokens[3];
+					bindingPValue = getValue(tokens[7]);
+					chrom = tokens[8];
+					bindingStart = Integer.valueOf(tokens[9]);
+					bindingEnd = Integer.valueOf(tokens[10]);
+					
+					openChromStart = Integer.valueOf(tokens[11]);
+					openChromEnd = Integer.valueOf(tokens[12]);
+					/*
+					openChromPValue = getValue(tokens[13]);
+					if ( openChromPValue != null){
+						openChromPValue = (float) Math.pow(openChromPValue, -10);
+					}
+					*/
+					openChromPValue = null;
+				}else{
+					br.close();
+ 					throw new IOException("Unknown type:" + type);
+				}
+				String out = groupId + "\t" + factor + "\t" + target + "\t" + chrom + "\t" +
+							 bindingStart + "\t" +bindingEnd + "\t"+ (bindingPValue==null?"\\N":bindingPValue +"")+ "\t" +bindingPartner + "\t" + 
+							 (openChromPValue==null?"\\N":openChromPValue) + "\t" + (openChromStart==null?"\\N":openChromStart) + "\t" + (openChromEnd==null?"\\N":openChromEnd);
+ 				bwAnnotation.write(out + "\n");
+			}
+			
+			br.close();
+		}
 		@Override
-		public void process(Integer rootId ,Integer networkId, File networkFile, File infoFile, File statFile) throws Exception {
-		
+		public void process(Integer rootId ,Integer networkId, File networkFile, File infoFile, File statFile, File annotationFile) throws Exception {
+			CroCoLogger.getLogger().debug("Process:" + networkFile);
+			
 			if ( counter++ % 300 == 0){
 				hierachy.executeBatch();
 				networkOptions.executeBatch();
@@ -295,9 +390,14 @@ public class NetworkHierachy  {
 				networkOptions.addBatch();
 			}
 			bwNetwork.flush();
+			bwAnnotation.flush();
 			hierachy.addBatch();
-			
 			addtoNetwork(networkId,networkFile);
+			if ( annotationFile != null && annotationFile.exists()){
+				addToAnnotation(networkId,annotationFile);
+			}
+			
+			
 		}
 
 
@@ -321,6 +421,8 @@ public class NetworkHierachy  {
 			hierachy.close();
 			bwNetwork.flush();
 			bwNetwork.close();
+			bwAnnotation.flush();
+			bwAnnotation.close();
 			
 			HashMap<String,Integer> fileIdMapping =  new HashMap<String,Integer>();
 			Statement stat = connection.createStatement();
@@ -376,46 +478,39 @@ public class NetworkHierachy  {
 			
 			System.out.println("Loading network into database");
 			stat = connection.createStatement();
-			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network (group_id,gene1,gene2)",networkFile.toString()) );
+			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network (group_id,gene1,gene2);  ",networkFile.toString()) );
 			stat.close();
 			
 			System.out.println("Loading stats into database");
 			stat = connection.createStatement();
-			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE NetworkSimilarity (group_id_1,group_id_2,option_id,value)",statFile.toString()) );
+			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE NetworkSimilarity (group_id_1,group_id_2,option_id,value);",statFile.toString()) );
+			stat.close();
+			
+			System.out.println("Loading annotation into database");
+			stat = connection.createStatement();
+			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network2Binding;",annotationFile.toString()) );
 			stat.close();
 		}
 		
 	}
-	
+
 	public static void processHierachy(){
 		
 	}
 	
-	private static void addtoBindingAnnotation( BufferedWriter bwBindingAnnotation,int groupId, File file) throws Exception {
-	/*	BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
-		String line = null;
-		while((line=br.readLine())!=null){
-			if (line.startsWith("ChiPBinding")){
-				bwBindingAnnotation.write(groupId + "\t"+ line );
-			}
-			String[] tokens = line.split("\t");
-			String type = tokens[0];
-			
-			
-			if (type.equals("ChiPBinding")){
-				
-			}
-		}
-		*/
-		return;
-	}
+
 	public static Network getNetwork(File infoFile, File networkFile,boolean gloablRepository) throws Exception {
 		HashMap<Option, String> infos = readInfoFile(infoFile);
 		if ( networkFile != null) infos.put(Option.networkFile, networkFile.toString());
 		return getNetwork(networkFile,infos,gloablRepository);
 	}
 	private static Network getNetwork(File networkFile,HashMap<Option,String> infos, boolean gloablRepository) throws Exception{
-		Integer taxId = Integer.valueOf(infos.get(Option.TaxId));
+		Integer taxId = null;
+		try{
+			taxId = Integer.valueOf(infos.get(Option.TaxId));
+		}catch(Exception e){
+			throw new RuntimeException("Can not get taxId for" + networkFile);
+		}
 		String name = infos.get(infos.get(Option.NetworkName));
 		if ( name == null) name = infos.get(Option.networkFile);
 		Network network = new DirectedNetwork(name,taxId,gloablRepository);
@@ -425,7 +520,7 @@ public class NetworkHierachy  {
 		
 		return network;
 	}
-	private static HashMap<Option,String> readInfoFile(File infoFile) throws Exception{
+	private static HashMap<Option,String> readInfoFile(File infoFile) throws IOException{
 		HashMap<Option,String> ret = new HashMap<Option,String> ();
 		BufferedReader br =new BufferedReader(new FileReader(infoFile));
 		String line = null;

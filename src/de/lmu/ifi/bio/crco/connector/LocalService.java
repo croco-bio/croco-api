@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -23,6 +24,10 @@ import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.DNaseTFBSPeak;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
@@ -270,9 +275,7 @@ public class LocalService implements QueryService{
 		return mapping;
 		
 	}
-	/*
 
-*/
 	@Override
 	public Network readNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception{
 	
@@ -635,6 +638,106 @@ public class LocalService implements QueryService{
 			}
 		}
 		return ret;
+	}
+	@Override
+	public List<Gene> getGene(String id) throws Exception {
+		
+		PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement(
+				"SELECT gene.gene,gene_name,transcript.transcript_id,tss_start,transcript.tss_end,transcript.bio_type,gene.chrom,gene.strand From Gene gene "+
+				"JOIN Transcript transcript on transcript.gene = gene.gene " +
+				"where gene.gene = ? or gene.gene_name = ?"
+		);
+		CroCoLogger.getLogger().debug(stat.toString());
+		stat.setString(1, id);
+		stat.setString(2, id);
+		
+		List<Gene> genes= new ArrayList<Gene>();
+		Gene gene = null;
+		stat.execute();
+		ResultSet res = stat.getResultSet();
+		
+		while(res.next()){
+			String geneId = res.getString(1);
+			String geneName = res.getString(2);
+			String transcriptId = res.getString(3);
+			Integer tssStart = res.getInt(4);
+		//	Integer end = res.getInt(5);
+			String bioType = res.getString(6);
+			String chrom = res.getString(7);
+			Strand strand = null;
+			if( res.getString(8).equals("0"))
+				strand = Strand.PLUS;
+			else
+				strand = Strand.MINUS;
+			
+			if( gene == null || !gene.getIdentifier().equals(geneId)){
+				if( gene != null) genes.add(gene);
+				gene = new Gene(chrom,geneId,geneName,strand,null,null);
+			}
+			
+			Transcript transcript = new Transcript(gene,transcriptId,null,tssStart,bioType);
+			gene.addTranscript(transcript);
+		}
+		
+		stat.close();
+		if( gene != null) genes.add(gene);
+		return genes;
+	}
+	@Override
+	public Map<Pair<Entity,Entity>,List<Peak>>  getBindings(String factor, String target) throws Exception {
+		PreparedStatement stat = null;
+		if ( target != null && factor != null){
+			stat = DatabaseConnection.getConnection().prepareStatement(
+					"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene1 = ? and gene2 = ?"
+			);
+			stat.setString(1, factor);
+			stat.setString(2, target);
+		}else if ( factor == null && target != null){
+			stat = DatabaseConnection.getConnection().prepareStatement(
+					"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene2 = ?"
+			);
+			stat.setString(1, target);
+		}else{
+			throw new Exception("Target and factor must not be null");
+		}
+	
+	
+		CroCoLogger.getLogger().debug(stat);
+		stat.execute();
+		ResultSet res = stat.getResultSet();
+		Map<Pair<Entity,Entity>,List<Peak>>  peaks = new HashMap<Pair<Entity,Entity>,List<Peak>>();
+		while(res.next()){
+			Integer groupId = res.getInt(1);
+			
+			Entity tf = new Entity(res.getString(2));
+			Entity tg = new Entity(res.getString(3));
+			
+			Pair<Entity,Entity> e = new Pair<Entity,Entity>(tf,tg);
+			if (!peaks.containsKey(e)){
+				peaks.put(e,new ArrayList<Peak>());
+			}
+			
+			Integer bindingStart = res.getInt(4);
+			Integer bindingEnd = res.getInt(5);
+			Float bindingPValue = res.getFloat(6);
+			String motifId = res.getString(7);
+			TFBSPeak tfbsPeak = new TFBSPeak(null,bindingStart,bindingEnd,motifId,bindingPValue,null);
+			
+			Integer openChromStart = res.getInt(8);
+			Integer openChromEnd = res.getInt(9);
+			
+			if ( openChromStart != null){
+				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
+				peak.groupId = groupId;
+				peaks.get(e).add(peak);
+			}else{
+				tfbsPeak.groupId = groupId;
+				peaks.get(e).add(tfbsPeak);
+			}
+		}
+		
+		res.close();
+		return peaks;
 	}
 
 

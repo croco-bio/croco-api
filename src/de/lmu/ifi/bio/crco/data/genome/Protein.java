@@ -63,6 +63,13 @@ public class Protein {
 		return codingExons;
 	}
 	public void add(Exon exon) {
+		if (parentTranscript != null && codingExons.size()  > 0 ){
+			Exon lastExon = codingExons.get(codingExons.size()-1);
+			Gene parentGene = parentTranscript.getParentGene();
+			if ( parentGene.getStrand().equals(Strand.PLUS) && lastExon.getEnd() > exon.getStart()) throw new RuntimeException("Exons not ordered (PLUS)");
+			if ( parentGene.getStrand().equals(Strand.MINUS) && lastExon.getStart() < exon.getEnd()) throw new RuntimeException("Exons not ordered (MINUS)");
+			
+		}
 		codingExons.add(exon);
 	}
 	
