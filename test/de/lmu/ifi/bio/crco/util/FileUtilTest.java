@@ -12,9 +12,148 @@ import java.util.Set;
 import org.junit.Test;
 
 import de.lmu.ifi.bio.crco.data.genome.Gene;
-import de.lmu.ifi.bio.crco.util.FileUtil.MappingFileReader;
+import de.lmu.ifi.bio.crco.data.genome.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
+import de.lmu.ifi.bio.crco.intervaltree.Interval;
+import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
 
 public class FileUtilTest {
+
+	
+	@Test
+	public void testGTFDistance5() throws Exception{
+		
+		File gtf = new File("data/GeneAnnotation/ENSG00000240583.gtf");
+		
+		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
+		assertEquals(1,genes.size());
+		
+		Integer absolutMiddle = (30890444+	30890453)/2;
+		Gene relevantGene = genes.get(0);
+		for(Transcript transcript :relevantGene.getTranscripts()){
+			
+			/*Integer distanceToTss = 0;
+			if (relevantGene.getStrand().equals(Strand.PLUS) ){
+				distanceToTss = absolutMiddle-transcript.getStrandCorredStart();
+			}else{
+				distanceToTss = transcript.getStrandCorredStart()-absolutMiddle;
+			}
+			*/
+			Integer distanceToTss = Transcript.getDistanceToTssStart(transcript, absolutMiddle);
+			if (distanceToTss<0  && Math.abs(distanceToTss)<=5000  ) {
+				System.out.println("Upstream:" +transcript.getIdentifier() + "\t" + distanceToTss);
+				
+			}else if (distanceToTss>=0 &&  distanceToTss<=5000  ){
+				System.out.println("Downstream:" + transcript.getIdentifier() + "\t" + distanceToTss);
+				
+			}
+			
+		}
+	}
+	
+	@Test
+	public void testGTFDistance4() throws Exception{
+		
+		File gtf = new File("data/GeneAnnotation/ENSG00000137752.gtf");
+		
+		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
+		assertEquals(1,genes.size());
+		
+		Integer absolutMiddle = (104975996	+104976005)/2;
+		Gene relevantGene = genes.get(0);
+		for(Transcript transcript :relevantGene.getTranscripts()){
+			
+			/*Integer distanceToTss = 0;
+			if (relevantGene.getStrand().equals(Strand.PLUS) ){
+				distanceToTss = absolutMiddle-transcript.getStrandCorredStart();
+			}else{
+				distanceToTss = transcript.getStrandCorredStart()-absolutMiddle;
+			}
+			*/
+			Integer distanceToTss = Transcript.getDistanceToTssStart(transcript, absolutMiddle);
+			if (distanceToTss<0  && Math.abs(distanceToTss)<=5000  ) {
+				System.out.println("Upstream:" +transcript.getIdentifier() + "\t" + distanceToTss);
+				
+			}else if (distanceToTss>=0 &&  distanceToTss<=5000  ){
+				System.out.println("Downstream:" + transcript.getIdentifier() + "\t" + distanceToTss);
+				
+			}
+			
+		}
+	}
+	
+	@Test
+	public void testGTFDistance3() throws Exception{
+		File gtf = new File("data/GeneAnnotation/ENSG00000197948.gtf");
+		
+		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
+		assertEquals(1,genes.size());
+		
+		Integer absolutMiddle = (141015146+	141015164)/2;
+		System.out.println(absolutMiddle);
+		Gene relevantGene = genes.get(0);
+		for(Transcript transcript :relevantGene.getTranscripts()){
+			Integer distanceToTss = 0;
+			if (relevantGene.getStrand().equals(Strand.PLUS) ){
+				distanceToTss = absolutMiddle-transcript.getStrandCorredStart();
+			}else{
+				distanceToTss = transcript.getStrandCorredStart()-absolutMiddle;
+			}
+			System.out.println(transcript.getStrandCorredStart());
+			System.out.println(transcript.getExons());
+			System.out.println(transcript.getStrandCorredStart());
+			System.out.println(distanceToTss);
+		}
+	}
+	
+	@Test
+	public void testGTFDistance2() throws Exception{
+		
+		File gtf = new File("data/GeneAnnotation/ENSG00000269407.gtf");
+		
+		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
+		assertEquals(1,genes.size());
+		
+		Integer absolutMiddle = (23326705	+23326723)/2;
+		System.out.println(absolutMiddle);
+		Gene relevantGene = genes.get(0);
+		for(Transcript transcript :relevantGene.getTranscripts()){
+			Integer distanceToTss = 0;
+			if (relevantGene.getStrand().equals(Strand.PLUS) ){
+				distanceToTss = absolutMiddle-transcript.getStrandCorredStart();
+			}else{
+				distanceToTss = transcript.getStrandCorredStart()-absolutMiddle;
+			}
+			System.out.println(transcript.getStrandCorredStart());
+			System.out.println(transcript.getExons());
+			System.out.println(transcript.getStrandCorredStart());
+			System.out.println(distanceToTss);
+		}
+	}
+	@Test
+	public void testGTFDistance1() throws Exception{
+		File gtf = new File("data/GeneAnnotation/ENSG00000180071.gtf");
+		
+		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
+		assertEquals(1,genes.size());
+		
+		Integer absolutMiddle = (38575065+38575083)/2;
+		System.out.println(absolutMiddle);
+		Gene relevantGene = genes.get(0);
+		for(Transcript transcript :relevantGene.getTranscripts()){
+			Integer distanceToTss = 0;
+			if (relevantGene.getStrand().equals(Strand.PLUS) ){
+				distanceToTss = absolutMiddle-transcript.getStrandCorredStart();
+			}else{
+				distanceToTss = transcript.getStrandCorredStart()-absolutMiddle;
+			}
+			System.out.println(transcript.getExons());
+			System.out.println(transcript.getStrandCorredStart());
+			System.out.println(distanceToTss);
+		}
+	}
+	
 	@Test
 	public void testReadGTF() throws Exception{
 		File gtf = new File("data/GeneAnnotation/Stat1.gtf.test");

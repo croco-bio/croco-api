@@ -40,7 +40,7 @@ public class DNaseTFBSExtWriterTest {
 		String chromosomNamePrefix = "chr";
 		
 		HashMap<String, Set<String>> motifIdMapping = new FileUtil.MappingFileReader(0,2,motifMappingFile).setColumnSeperator("\\s+").includeAllColumnsAfterToIndex(true).readNNMappingFile();
-		HashMap<String, IntervalTree<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf,genes, motifIdMapping,upstream,downstream).readHits(tfbsFile);
+		HashMap<String, IntervalTree<TFBSPeak>> matchTree = new FIMOHandler(tfbsRegion,pValueCutOf,upstream,downstream).readHits(tfbsFile);
 	
 		for(String chrom : peaks.keySet()){
 			IntervalTree<Peak> openChromPeaks = peaks.get(chrom);
@@ -57,19 +57,8 @@ public class DNaseTFBSExtWriterTest {
 				if ( openChromPeak == null) continue;
 				List<TFBSPeak> openChromChipEnriched = tfbsPeaks.searchAll(openChromPeak);
 				
-				for(TFBSPeak peak :openChromChipEnriched ){
-					for(Entity factor : peak.getFactors() )  {
-						Entity target = new Entity( peak.getTarget().getParentGene().getIdentifier());
-						
-						System.out.println("OpenChromTFBS\t" +
-								factor + "\t" +target+ "\t" + peak.getTarget().getIdentifier() + "\t" + 
-								peak.getChrom() + "\t" + (int)peak.getLow() + "\t" + (int)peak.getHigh() + "\t" + 
-								peak.getpValue() + "\t" + peak.getMotifId() + "\t" + peak.getDistanceToTranscript()  + "\t" + 
-								openChromPeak.getChrom() + "\t" + (int)openChromPeak.getLow() + "\t" + (int)openChromPeak.getHigh() 
-							);
-					}
-					
-				}
+				
+				
 			}
 
 		

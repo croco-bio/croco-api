@@ -21,7 +21,7 @@ public class FIMOHandlerTest {
 		
 		//	public FIMOHandler(File regionFile, Float pValueThreshold, List<Gene> genes, HashMap<String, Set<String>> motifIdMapping,Integer upstream,Integer downstream){
 
-		FIMOHandler handler = new FIMOHandler(regionFile, pValueThreshold, genes, mapping,5000,5000);
+		FIMOHandler handler = new FIMOHandler(regionFile, pValueThreshold  ,5000,5000);
 		
 	}
 

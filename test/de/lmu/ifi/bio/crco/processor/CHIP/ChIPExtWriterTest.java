@@ -28,13 +28,13 @@ public class ChIPExtWriterTest {
 		File exp = new File("/home/users/pesch/Databases/ENCODE/CHIPSEQ-PEAKS/Mouse/wgEncodeSydhTfbs/wgEncodeSydhTfbsCh12Znfmizdcp1ab65767IggrabPk.narrowPeak.gz");
 		
 		HashMap<String, IntervalTree<Peak>> peaks = GenomeUtil.createPeakIntervalTree(exp,0,1,2,-1,null); //max size == we want to ignore very long peaks
-		List<TFBSPeak> targets = ChIPExtWriter.getTFBSPeaks(new Entity("test"),"test",peaks,promoterTrees, "chr",new HashMap<String,String>());
-		for(TFBSPeak tfbsPeak  : targets){
-			Entity factor = tfbsPeak.getFactors().get(0); //can be only 1
-			Entity target = new Entity( tfbsPeak.getTarget().getParentGene().getIdentifier());
+	//	List<TFBSPeak> targets = ChIPExtWriter.getTFBSPeaks(new Entity("test"),"test",peaks,promoterTrees, "chr",new HashMap<String,String>());
+		//for(TFBSPeak tfbsPeak  : targets){
+			//Entity factor = tfbsPeak.getFactors().get(0); //can be only 1
+			//Entity target = new Entity( tfbsPeak.getTarget().getParentGene().getIdentifier());
 			
-			System.out.println(target);
-		}
+		//	System.out.println(target);
+		//}
 	}
 	
 	@Test

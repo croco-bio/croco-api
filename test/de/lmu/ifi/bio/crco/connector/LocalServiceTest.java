@@ -1,6 +1,6 @@
 package de.lmu.ifi.bio.crco.connector;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -17,6 +17,8 @@ import de.lmu.ifi.bio.crco.data.IdentifierType;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.test.IntegrationTest;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
@@ -42,6 +44,16 @@ public class LocalServiceTest {
 		stat.close();
 		
 		//service.findNetwork(options );
+	}
+	@Test
+	public void getGene() throws Exception{
+		QueryService service = new LocalService();
+		List<Gene> genes = service.getGene("ENSG00000169032");
+		assertEquals(genes.size(),1);
+		for(Transcript transcript : genes.get(0).getTranscripts()){
+			System.out.println(transcript.getStrandCorredStart());
+		}
+		
 	}
 	
 	@Test

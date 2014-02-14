@@ -11,6 +11,14 @@ import de.lmu.ifi.bio.crco.test.UnitTest;
 public class IntervalTreeTest {
 
 	@Test
+	public void testSamePosition(){
+		IntervalTree<Interval> tree  = new IntervalTree<Interval>();
+		tree.insert(new Interval(0,100));
+		tree.insert(new Interval(0,100));
+		System.out.println(tree.searchAll(new Interval(50,60)));
+	}
+	
+	@Test
 	public void testGeneral() {
 		IntervalTree<Interval> tree  = new IntervalTree<Interval>();
 		tree.insert(new Interval(0,100));
