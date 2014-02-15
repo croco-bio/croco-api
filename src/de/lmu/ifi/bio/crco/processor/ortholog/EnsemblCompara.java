@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -47,7 +48,7 @@ public class EnsemblCompara {
 		stat.execute("DELETE FROM OrthologKnownGenes");
 		
 		stat.close();
-	
+		
 		
 		EnsemblCompara cmp = new EnsemblCompara();
 		System.out.println("Import source information");
