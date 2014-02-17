@@ -2,7 +2,6 @@ package de.lmu.ifi.bio.crco.connector;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Map;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
 import de.lmu.ifi.bio.crco.data.Entity;
@@ -10,8 +9,8 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
@@ -37,7 +36,7 @@ public interface QueryService {
 	public Integer getNumberOfEdges(Integer groupId) throws Exception;
 	
 	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId ) throws Exception;
-	public Map<Pair<Entity,Entity>,List<Peak>> getBindings(String factor, String target) throws Exception;
+	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception;
 	
 	//ortolog mapping
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception;

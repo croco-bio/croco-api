@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
@@ -25,8 +24,8 @@ import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
@@ -268,7 +267,9 @@ public class RemoteWebService implements QueryService{
 	}
 
 	@Override
-	public Map<Pair<Entity, Entity>, List<Peak>> getBindings(String factor,String target) throws Exception {
-		return (Map<Pair<Entity, Entity>, List<Peak>>)performceOperation(baseUrl,"getBindings",factor,target);
+	public List<BindingEnrichedDirectedNetwork> getBindings(String factor,String target) throws Exception {
+		return (List<BindingEnrichedDirectedNetwork>)performceOperation(baseUrl,"getBindings",factor,target);
 	}
+
+	
 }

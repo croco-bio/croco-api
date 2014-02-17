@@ -29,6 +29,7 @@ import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.DNaseTFBSPeak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
@@ -530,50 +531,7 @@ public class LocalService implements QueryService{
 	}
 
 
-	@Override
-	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId) throws Exception {
-		String where = null;
-		
-		if ( contextId != null){
-			where = String.format("JOIN GeneContext gc on gc.gene = network.gene1 "
-							+ "JOIN GeneContext gc2 on gc2.gene = network.gene2 "
-							+ "where gc.context_id = %d and gc2.context_id = %d and group_id = %d",
-							contextId,contextId,groupId);
-		}else{
-			where = String.format("where group_id = %d",groupId);
-		}
-		String sql =String.format(
-				"SELECT gene1,gene2,binding_chr,binding_start,binding_end,binding_p_value,binding_motif,open_chrom_chr,open_chrom_start,open_chrom_end FROM Network2Binding network %s",
-				where);
-		logger.debug(sql);
-		Statement stat = connection.createStatement();
-		stat.execute(sql);
-		ResultSet res = stat.getResultSet();
-		List<TFBSPeak> ret = new ArrayList<TFBSPeak>();
-		while ( res.next()){
-			String gene1 = res.getString(1);
-			String gene2 = res.getString(2);
-			String bindingChr = res.getString(3);
-			Integer bindingStart = res.getInt(4);
-			Integer bindingEnd = res.getInt(5);
-			Float bindingPValue = res.getFloat(6);
-			String bindingMotifName = res.getString(7);
-			//String openChromChr = res.getString(8);
-			//Integer openChromStart = res.getInt(9);
-			//Integer openChromEnd = res.getInt(10);
-			
-			TFBSPeak tfbsPeak =null;//new TFBSPeak(bindingChr, gene1, gene2, bindingMotifName, bindingPValue, bindingStart, bindingEnd);
-			//Peak openChrom = new Peak(openChromStart,openChromEnd);
-			
-			///DNaseTFBSPeak dPeak = new DNaseTFBSPeak(tfbsPeak,openChrom);
-			ret.add(tfbsPeak);
-		}
-		
-		stat.close();
-		
-		return ret;
-		
-	}
+
 
 	@Override
 	public List<Entity> getEntities(Species species,String bioType,ContextTreeNode context)  throws Exception{
@@ -683,62 +641,132 @@ public class LocalService implements QueryService{
 		if( gene != null) genes.add(gene);
 		return genes;
 	}
+
 	@Override
-	public Map<Pair<Entity,Entity>,List<Peak>>  getBindings(String factor, String target) throws Exception {
+	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception {
 		PreparedStatement stat = null;
 		if ( target != null && factor != null){
 			stat = DatabaseConnection.getConnection().prepareStatement(
-					"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene1 = ? and gene2 = ?"
+					"SELECT nh.group_id,nh.name,nh.network_type," +
+							"gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ," +
+							"open_chrom_start , open_chrom_end " +
+					"FROM Network2Binding n " +
+					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
+					"JOIN Gene g on g.gene =n.gene1 " +
+					"where gene1 = ? and gene2 = ?"
+					//"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene1 = ? and gene2 = ?"
 			);
 			stat.setString(1, factor);
 			stat.setString(2, target);
+		}else{
+			throw new Exception("Target and factor must not be null");
+		}/*
 		}else if ( factor == null && target != null){
 			stat = DatabaseConnection.getConnection().prepareStatement(
-					"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene2 = ?"
+					"SELECT nh.group_id,nh.name,nh.network_type," +
+							"gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ," +
+							" open_chrom_start , open_chrom_end " +
+					"FROM Network2Binding n " +
+					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
+					"JOIN Gene g on g.gene =n.gene1 " +
+					"where gene2 = ?"
+				//	"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene2 = ?"
 			);
 			stat.setString(1, target);
 		}else{
 			throw new Exception("Target and factor must not be null");
 		}
-	
-	
+		*/
+		Map<Integer,BindingEnrichedDirectedNetwork> groupIdToNetworkSummary = new HashMap<Integer,BindingEnrichedDirectedNetwork>();
 		CroCoLogger.getLogger().debug(stat);
 		stat.execute();
 		ResultSet res = stat.getResultSet();
-		Map<Pair<Entity,Entity>,List<Peak>>  peaks = new HashMap<Pair<Entity,Entity>,List<Peak>>();
+		//Map<Pair<Entity,Entity>,List<Peak>>  peaks = new HashMap<Pair<Entity,Entity>,List<Peak>>();
 		while(res.next()){
 			Integer groupId = res.getInt(1);
 			
-			Entity tf = new Entity(res.getString(2));
-			Entity tg = new Entity(res.getString(3));
+		
+			String name = res.getString(2);
+			NetworkType type = NetworkType.values()[res.getInt(3)];
 			
-			Pair<Entity,Entity> e = new Pair<Entity,Entity>(tf,tg);
-			if (!peaks.containsKey(e)){
-				peaks.put(e,new ArrayList<Peak>());
+			if (! groupIdToNetworkSummary.containsKey(groupId)){
+				NetworkHierachyNode nh = new NetworkHierachyNode(0,-1,groupId,name,true,null,type);
+				BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(name,null,false);
+				network.setHierachyNode(nh);
+				groupIdToNetworkSummary.put(groupId,network );
 			}
+			BindingEnrichedDirectedNetwork network = groupIdToNetworkSummary.get(groupId);
 			
-			Integer bindingStart = res.getInt(4);
-			Integer bindingEnd = res.getInt(5);
-			Float bindingPValue = res.getFloat(6);
-			String motifId = res.getString(7);
+			
+			Entity tf = new Entity(res.getString(4));
+			Entity tg = new Entity(res.getString(5));
+			
+			
+			
+			Integer bindingStart = res.getInt(6);
+			Integer bindingEnd = res.getInt(7);
+			Float bindingPValue = res.getFloat(8);
+			String motifId = res.getString(9);
 			TFBSPeak tfbsPeak = new TFBSPeak(null,bindingStart,bindingEnd,motifId,bindingPValue,null);
 			
-			Integer openChromStart = res.getInt(8);
-			Integer openChromEnd = res.getInt(9);
+			Integer openChromStart = res.getInt(10);
+			Integer openChromEnd = res.getInt(11);
 			
 			if ( openChromStart != null){
 				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
-				peak.groupId = groupId;
-				peaks.get(e).add(peak);
+				network.addEdge(tf, tg, groupId, peak);
+				
 			}else{
-				tfbsPeak.groupId = groupId;
-				peaks.get(e).add(tfbsPeak);
+				network.addEdge(tf, tg, groupId, tfbsPeak);
 			}
 		}
 		
 		res.close();
-		return peaks;
+		return new ArrayList<BindingEnrichedDirectedNetwork>(groupIdToNetworkSummary.values());
 	}
-
+	@Override
+	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId) throws Exception {
+		String where = null;
+		
+		if ( contextId != null){
+			where = String.format("JOIN GeneContext gc on gc.gene = network.gene1 "
+							+ "JOIN GeneContext gc2 on gc2.gene = network.gene2 "
+							+ "where gc.context_id = %d and gc2.context_id = %d and group_id = %d and network_file_location not like '%%Faire%%';" ,
+							contextId,contextId,groupId);
+		}else{
+			where = String.format("where group_id = %d",groupId);
+		}
+		String sql =String.format(
+				"SELECT gene1,gene2,binding_chr,binding_start,binding_end,binding_p_value,binding_motif,open_chrom_chr,open_chrom_start,open_chrom_end FROM Network2Binding network %s",
+				where);
+		logger.debug(sql);
+		Statement stat = connection.createStatement();
+		stat.execute(sql);
+		ResultSet res = stat.getResultSet();
+		List<TFBSPeak> ret = new ArrayList<TFBSPeak>();
+		while ( res.next()){
+			String gene1 = res.getString(1);
+			String gene2 = res.getString(2);
+			String bindingChr = res.getString(3);
+			Integer bindingStart = res.getInt(4);
+			Integer bindingEnd = res.getInt(5);
+			Float bindingPValue = res.getFloat(6);
+			String bindingMotifName = res.getString(7);
+			//String openChromChr = res.getString(8);
+			//Integer openChromStart = res.getInt(9);
+			//Integer openChromEnd = res.getInt(10);
+			
+			TFBSPeak tfbsPeak =null;//new TFBSPeak(bindingChr, gene1, gene2, bindingMotifName, bindingPValue, bindingStart, bindingEnd);
+			//Peak openChrom = new Peak(openChromStart,openChromEnd);
+			
+			///DNaseTFBSPeak dPeak = new DNaseTFBSPeak(tfbsPeak,openChrom);
+			ret.add(tfbsPeak);
+		}
+		
+		stat.close();
+		
+		return ret;
+		
+	}
 
 }
