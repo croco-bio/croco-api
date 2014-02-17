@@ -1,11 +1,14 @@
 package de.lmu.ifi.bio.crco.operation;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
@@ -20,12 +23,65 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 public class Shuffle extends GeneralOperation{
 	
 	public static Parameter<Random> RandomGenerator  = new Parameter<Random>("Random generator",new Random(0));
+	public static Parameter<Integer> RandomizeCount  = new Parameter<Integer>("RandomizeCountr",5);
+	
+	
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
 		Network network = this.getNetworks().get(0);
+
+		Random rnd = this.getParameter(RandomGenerator);
+		int k = this.getParameter(RandomizeCount);
+		
+		Network ret = Network.getEmptyNetwork(network.getClass(), network);
+		//copy network
+		for(int edgeId : network.getEdgeIds()){
+			Tuple<Entity, Entity> edge = network.getEdge(edgeId);
+			
+			ret.add(edge.getFirst(),edge.getSecond());
+		}
+		
+		for(int j = 0 ; j < k; j++){
+			int[] edges = ret.getEdgeIds().getInternalSet().toArray();
+			
+			for(int i = 0 ; i< ret.size(); i++){
+				
+				int sourceEdgeId = edges[i];
+				if ( !ret.containsEdgeId(sourceEdgeId)) continue;
+				
+				//very inefficient!
+				int randomEdgeId =  ret.getEdgeIds().getInternalSet().toArray()[rnd.nextInt(ret.size())];
+				
+				
+				if(randomEdgeId ==  sourceEdgeId) continue;
+				Tuple<Entity, Entity> sourceEdge = ret.getEdge(sourceEdgeId);
+				Tuple<Entity, Entity> randomEdge = ret.getEdge(randomEdgeId);
+				
+				if (! ret.containsEdge(sourceEdge.getFirst(),  randomEdge.getSecond()) && ! ret.containsEdge(randomEdge.getFirst(),  sourceEdge.getSecond())){
+					if ( !ret.removeEdge(randomEdgeId) ) throw new OperationNotPossibleException("Could not remove edge:" +ret.getEdge(randomEdgeId) );
+					if ( !ret.removeEdge(sourceEdgeId) ) throw new OperationNotPossibleException("Could not remove edge:" +ret.getEdge(sourceEdgeId) );
+					
+					ret.add(sourceEdge.getFirst(), randomEdge.getSecond());
+					ret.add(randomEdge.getFirst(), sourceEdge.getSecond());
+				}
+				
+				
+				
+			}
+		}
+		if ( ret.size() != network.size()) throw new OperationNotPossibleException("Shuffle went wrong (" + ret.size() + " "  + network.size());
+		
+	
+		HashMap<Entity, Set<Entity>> n1 = network.createFactorTargetNetwork();
+		HashMap<Entity, Set<Entity>> n2 = ret.createFactorTargetNetwork();
+		for(Entity e : n1.keySet()){
+			if ( n1.get(e).size() != n2.get(e).size()) throw new OperationNotPossibleException("Shuffle went wrong (" +e + " " + n1.get(2).size() + " "  + n2.get(e).size());;
+		}
+		
+		return ret;
+		/*
 		
 		Random rnd = this.getParameter(RandomGenerator);
-		
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
 
 		final HashMap<Entity,Integer> inDeg = new HashMap<Entity,Integer>();
@@ -58,43 +114,43 @@ public class Shuffle extends GeneralOperation{
 		};
 		Collections.shuffle(s);
 		Collections.sort(s,cmp);
-
+		
 		List<Entity> factors = new ArrayList<Entity>(outDeg.keySet());
 		Collections.shuffle(factors,rnd);
 		System.out.println(network.size());
 		for( Entity e:factors){
 			int out = outDeg.get(e);
-
-			int k = 0;
+			int z = 0;
+			for(Entity te : s){
+				z+=inDeg.get(te);
+			}
+			System.out.println(z+ " " + ret.size() + " " + (ret.size()+z));
 			if ( e.getIdentifier().equals("ENSG00000167182")){
 				System.out.println(out + " " + s.size() + " " + ret.size());
 			}
-			if ( s.size() > ret.size()) throw new OperationNotPossibleException("Shuffle went wrong!");
+			if ( out > s.size()) throw new OperationNotPossibleException("Shuffle went wrong!");
+			int k= 0;
 			for(int  i = 0 ; i < out ; i++){
-				if ( k >= s.size()) {
-					System.out.println(out + " " + k);
-					System.out.println(e);
-					System.out.println(s);
-					System.out.println(k);
-				}
+	
 				Entity selected = s.get(k);
 				if ( ret.containsEdge(e, selected)) throw new OperationNotPossibleException("Shuffle went wrong, edge already contained");
 				ret.add(e, selected);
 				inDeg.put(selected, inDeg.get(selected)-1);
 				
-		
 				if ( inDeg.get(selected) == 0) {
-		
 					s.remove(k);
 				}else{
 					k++;
 				}
 			}
+			
+			
 		}
-		if ( inDeg.size() != 0) throw new OperationNotPossibleException("Indeg not null");
+		System.out.println(inDeg);
+		if ( s.size() != 0) throw new OperationNotPossibleException("Indeg not null");
 		if ( ret.size() != network.size()) throw new OperationNotPossibleException("Networks have a different size");
 		return ret;
-		
+		*/
 	}
 
 	@Override

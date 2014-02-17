@@ -30,7 +30,7 @@ public class Intersect extends GeneralOperation{
 		}
 	
 		IntersectionAnnotationCheck check = this.getParameter(IntersectionAnnotationCheck);
-	
+		
 		Network ret=Network.getEmptyNetwork(net0.getClass(),net0);
 		ret.setName("Intersection");
 		
@@ -44,9 +44,9 @@ public class Intersect extends GeneralOperation{
 			annotation = net0.getAnnotation(edgeId);
 			
 			for(int i = 0 ; i < networks.size(); i++){
-				if ( networks.get(i).equals(net0)) continue;
-				
+				if ( networks.get(i) == net0) continue;
 				if ( networks.get(i).containsEdge(edge) == false || (check != null && check.check(net0.getAnnotation(edgeId),networks.get(i).getAnnotation(networks.get(i).getEdgeId(edge)) ) == false) ){
+					
 					consistent = false;
 				}else{
 					TIntObjectHashMap<List<Object>> anno = networks.get(i).getAnnotation(networks.get(i).getEdgeId(edge));
