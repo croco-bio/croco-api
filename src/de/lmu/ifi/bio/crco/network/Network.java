@@ -13,6 +13,7 @@ import java.util.Set;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TransferredPeak;
@@ -29,13 +30,28 @@ public abstract class Network {
 			this.type = type;
 		}
 	}
+	// edgeId -> EdgeOption (ordinal) -> value 
+	//number of elements |n| * |options| * |values|
+	protected TIntObjectHashMap<TIntObjectHashMap<List<Object>>> annotation;
+	
+	private EdgeRepository repositoyInstance;
+	private Integer taxId;
+	
 	private boolean edgeRepository;
 	private String name;
 	private NetworkSummary networkSummary;
+	private NetworkHierachyNode hierachyNode;
 	
 	//todo
 	private HashMap<Option,String> networkInfo = new HashMap<Option,String>();
 	protected TIntHashSet edges;
+
+	public NetworkHierachyNode getHierachyNode() {
+		return hierachyNode;
+	}
+	public void setHierachyNode(NetworkHierachyNode hierachyNode) {
+		this.hierachyNode = hierachyNode;
+	}
 
 	public HashMap<Option,String> getOptionValues(){
 		return networkInfo;
@@ -55,15 +71,10 @@ public abstract class Network {
 			}
 			ret.get(edge.getFirst()).add(edge.getSecond());
 		}
+		
 		return ret;
 	}
-	// edgeId -> EdgeOption (ordinal) -> value 
-	//number of elements |n| * |options| * |values|
-	protected TIntObjectHashMap<TIntObjectHashMap<List<Object>>> annotation;
-	
-	private EdgeRepository repositoyInstance;
-	private Integer taxId;
-	
+
 
 	
 	public static Network getEmptyNetwork(Class<? extends Network> clazz, Network network) {
@@ -203,12 +214,12 @@ public abstract class Network {
 		}
 	
 	}
-	public void add(Entity e1, Entity e2){
+	public int add(Entity e1, Entity e2){
 		
-		this.add(e1,e2,new TIntObjectHashMap<List<Object>>());
+		return this.add(e1,e2,new TIntObjectHashMap<List<Object>>());
 		
 	}
-	public void add(Entity e1, Entity e2, Integer groupId){
+	public int add(Entity e1, Entity e2, Integer groupId){
 		
 		List<Object> groupIds = new ArrayList<Object>();
 		groupIds.add(groupId);
@@ -216,16 +227,16 @@ public abstract class Network {
 		TIntObjectHashMap<List<Object>> edgeAnnotation = new TIntObjectHashMap<List<Object>> ();
 		edgeAnnotation.put(EdgeOption.GroupId.ordinal(), groupIds);
 		
-		this.add(e1,e2,edgeAnnotation);
+		return this.add(e1,e2,edgeAnnotation);
 		
 	}
-	public void add(Entity e1, Entity e2, List<Integer> groupIds){
+	public int add(Entity e1, Entity e2, List<Integer> groupIds){
 		TIntObjectHashMap<List<Object>> edgeAnnotation = new TIntObjectHashMap<List<Object>> ();
 		edgeAnnotation.put(EdgeOption.GroupId.ordinal(),(List) groupIds);
 		
-		this.add(e1,e2,edgeAnnotation);
+		return this.add(e1,e2,edgeAnnotation);
 	}
-	public void add(Entity e1, Entity e2, TIntObjectHashMap<List<Object>> edgeAnnotation){
+	public int add(Entity e1, Entity e2, TIntObjectHashMap<List<Object>> edgeAnnotation){
 		int edgeId = createEdge(e1,e2);
 		
 		if ( !this.edges.contains(edgeId)){
@@ -245,6 +256,7 @@ public abstract class Network {
 				}
 			}
 		}
+		return edgeId;
 	}
 
 	public Set<Entity> getTargets(){
@@ -312,7 +324,16 @@ public abstract class Network {
 	public void add(Tuple<Entity, Entity> edge, TIntObjectHashMap<List<Object>> annotation) {
 		this.add(edge.getFirst(),edge.getSecond(),annotation);
 	}
-
+	/**
+	 * Removes an edges (but keeps the edge in the edgeRepository (may cause memory leaks!)
+	 * @param edgeId to remove
+	 */
+	public boolean removeEdge(int edgeId) {
+		boolean remove = this.edges.remove(edgeId);
+		this.annotation.remove(edgeId);
+		return remove;
+	}
+	
 	public boolean containsEdge(Entity entity1, Entity entity2) {
 		return this.containsEdge(this.createEdgeCore(entity1, entity2));
 	}
@@ -350,4 +371,8 @@ public abstract class Network {
 		}
 		return false;
 	}
+	public NetworkHierachyNode getNetworkHierachyNode() {
+		return this.hierachyNode;
+	}
+	
 }

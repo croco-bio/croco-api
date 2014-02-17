@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 
 
@@ -28,21 +29,24 @@ public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
 	public List<TFBSPeak> getBindings(int edgeId){
 		return (List)super.getAnnotation(edgeId, EdgeOption.BindingSite);
 	}
-	public void addEdge(Entity entity1, Entity entity2, List<Integer> groupIds, List<TFBSPeak> possibleBinding){
+	public void addEdge(Entity entity1, Entity entity2, List<Integer> groupIds, List<Peak> possibleBinding){
 	
 		TIntObjectHashMap<List<Object>> annotation = new TIntObjectHashMap<List<Object>>();
 		if ( groupIds!= null && groupIds.size() > 0) annotation.put(EdgeOption.GroupId.ordinal(), (List)groupIds);
-		if ( possibleBinding != null && groupIds.size() > 0) annotation.put(EdgeOption.BindingSite.ordinal(), (List)possibleBinding);
+		if ( possibleBinding != null) annotation.put(EdgeOption.BindingSite.ordinal(), (List)possibleBinding);
 	
 		super.add(entity1,entity2, annotation);
 
 	}
 	
-	public void addEdge(Entity entity1, Entity entity2, Integer groupId, TFBSPeak possibleBinding){
-		List<Integer> groupIds = new ArrayList<Integer>();
-		if ( groupId != null) groupIds.add(groupId); 
-		List<TFBSPeak> possibleBindings = new ArrayList<TFBSPeak>();
-		if (possibleBinding != null) possibleBindings.add(possibleBinding);
+	public void addEdge(Entity entity1, Entity entity2, Integer groupId, Peak possibleBinding){
+		List<Integer> groupIds = null;
+		if ( groupId != null){
+			groupIds = new ArrayList<Integer>();
+			groupIds.add(groupId); 
+		}
+		List<Peak> possibleBindings = new ArrayList<Peak>();
+		possibleBindings.add(possibleBinding);
 		
 		addEdge(entity1,entity2,groupIds,possibleBindings);
 	
