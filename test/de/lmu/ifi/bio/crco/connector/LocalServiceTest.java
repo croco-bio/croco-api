@@ -55,6 +55,11 @@ public class LocalServiceTest {
 		}
 		
 	}
+	@Test
+	public void testGetNetworkInfo() throws Exception{
+		QueryService service = new LocalService();
+		System.out.println(service.getNetworkInfo(10754));
+	}
 	
 	@Test
 	public void testReadNetwork() throws Exception {
