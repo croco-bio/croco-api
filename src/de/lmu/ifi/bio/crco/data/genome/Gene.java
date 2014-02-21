@@ -42,7 +42,9 @@ public class Gene extends Entity {
 	}
 	private Integer taxId;
 
-
+	public void setTaxId(Integer taxId){
+		this.taxId = taxId;
+	}
 	public Integer getTaxId() {
 		return taxId;
 	}
