@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.crco.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Species {
 	
