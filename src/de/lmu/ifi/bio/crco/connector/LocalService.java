@@ -322,7 +322,7 @@ public class LocalService implements QueryService{
 	@Override
 	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception{
 
-		String sql =String.format("SELECT no.option_id,no.value FROM NetworkOption no JOIN OptionDescription op on op.option_id = no.option_id  where group_id =%d",groupId);
+		String sql =String.format("SELECT no.option_id,no.value FROM NetworkOption no  where group_id =%d",groupId);
 		Statement stat = connection.createStatement();
 		stat.execute(sql);
 		logger.debug(sql);
@@ -601,7 +601,7 @@ public class LocalService implements QueryService{
 	public List<Gene> getGene(String id) throws Exception {
 		
 		PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement(
-				"SELECT gene.gene,gene_name,transcript.transcript_id,tss_start,transcript.tss_end,transcript.bio_type,gene.chrom,gene.strand From Gene gene "+
+				"SELECT gene.gene,gene_name,transcript.transcript_id,tss_start,transcript.tss_end,transcript.bio_type,gene.chrom,gene.strand,gene.tax_id From Gene gene "+
 				"JOIN Transcript transcript on transcript.gene = gene.gene " +
 				"where gene.gene = ? or gene.gene_name = ?"
 		);
@@ -627,10 +627,11 @@ public class LocalService implements QueryService{
 				strand = Strand.PLUS;
 			else
 				strand = Strand.MINUS;
-			
+			Integer taxID = Integer.valueOf(res.getInt(9));
 			if( gene == null || !gene.getIdentifier().equals(geneId)){
 				if( gene != null) genes.add(gene);
 				gene = new Gene(chrom,geneId,geneName,strand,null,null);
+				gene.setTaxId(taxID);
 			}
 			
 			Transcript transcript = new Transcript(gene,transcriptId,null,tssStart,bioType);
