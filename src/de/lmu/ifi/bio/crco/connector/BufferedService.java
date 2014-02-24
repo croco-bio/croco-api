@@ -199,11 +199,6 @@ public class BufferedService implements QueryService {
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
 		return service.getNumberOfEdges(groupId);
 	}
-	@Override
-	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId)
-			throws Exception {
-		return service.getTFBSBindings(groupId, contextId);
-	}
 
 	@Override
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)
@@ -252,5 +247,9 @@ public class BufferedService implements QueryService {
 	@Override
 	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception {
 		return service.getBindings(factor, target);
+	}
+	@Override
+	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository)throws Exception {
+		return service.readBindingEnrichedNetwork(groupId, contextId, gloablRepository);
 	}
 }

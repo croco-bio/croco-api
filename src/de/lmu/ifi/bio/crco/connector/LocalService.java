@@ -276,7 +276,63 @@ public class LocalService implements QueryService{
 		return mapping;
 		
 	}
+	@Override
+	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId,Boolean gloablRepository) throws Exception {
+		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		
+		if ( !networkNode.getType().equals(NetworkType.ChIP) && !networkNode.getType().equals(NetworkType.TFBS) &&  !networkNode.getType().equals(NetworkType.OpenChrom) ){
+			throw new Exception(String.format("Network %d has no binding annotations",groupId));
+		}
+		String where = null;
+		
+		if ( contextId != null){
+			where = String.format("JOIN GeneContext gc on gc.gene = network.gene1 "
+							+ "JOIN GeneContext gc2 on gc2.gene = network.gene2 "
+							+ "where gc.context_id = %d and gc2.context_id = %d and group_id = %d" ,
+							contextId,contextId,groupId);
+		}else{
+			where = String.format("where group_id = %d",groupId);
+		}
+		String sql =String.format(
+				"SELECT gene1,gene2,binding_chr,binding_start,binding_end,binding_p_value,binding_motif,open_chrom_start,open_chrom_end FROM Network2Binding network %s",
+				where);
+		logger.debug(sql);
+		Statement stat = connection.createStatement();
+		stat.execute(sql);
+		ResultSet res = stat.getResultSet();
+		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode,gloablRepository);
+		while ( res.next()){
+			Entity tf = new Entity(res.getString(1));
+			Entity tg =new Entity(res.getString(2));
+			String bindingChr = res.getString(3);
+			Integer bindingStart = res.getInt(4);
+			Integer bindingEnd = res.getInt(5);
+			Float bindingPValue = res.getFloat(6);
+			String motifId = res.getString(7);
+			Integer openChromStart = res.getInt(8);
+			Integer openChromEnd = res.getInt(9);
+			
+			Integer toAddGroupId = null;
+			TFBSPeak tfbsPeak = new TFBSPeak(bindingChr,bindingStart,bindingEnd,motifId,bindingPValue,null);
+			
+			if  (! network.containsEdge(tf, tg) ) toAddGroupId = groupId;
+			if ( openChromStart != null){
+				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
+				
+				network.addEdge(tf, tg, toAddGroupId, peak);
+				
+			}else{
+				network.addEdge(tf, tg, toAddGroupId, tfbsPeak);
+			}
+			
 
+		}
+		
+		stat.close();
+		logger.debug(String.format("Number of edges:%d",network.getSize()));
+		return network;
+		
+	}
 	@Override
 	public Network readNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception{
 	
@@ -655,34 +711,16 @@ public class LocalService implements QueryService{
 					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
 					"JOIN Gene g on g.gene =n.gene1 " +
 					"where gene1 = ? and gene2 = ?"
-					//"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene1 = ? and gene2 = ?"
 			);
 			stat.setString(1, factor);
 			stat.setString(2, target);
 		}else{
 			throw new Exception("Target and factor must not be null");
-		}/*
-		}else if ( factor == null && target != null){
-			stat = DatabaseConnection.getConnection().prepareStatement(
-					"SELECT nh.group_id,nh.name,nh.network_type," +
-							"gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ," +
-							" open_chrom_start , open_chrom_end " +
-					"FROM Network2Binding n " +
-					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
-					"JOIN Gene g on g.gene =n.gene1 " +
-					"where gene2 = ?"
-				//	"SELECT  group_id,gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ,  open_chrom_start , open_chrom_end FROM Network2Binding where gene2 = ?"
-			);
-			stat.setString(1, target);
-		}else{
-			throw new Exception("Target and factor must not be null");
 		}
-		*/
 		Map<Integer,BindingEnrichedDirectedNetwork> groupIdToNetworkSummary = new HashMap<Integer,BindingEnrichedDirectedNetwork>();
 		CroCoLogger.getLogger().debug(stat);
 		stat.execute();
 		ResultSet res = stat.getResultSet();
-		//Map<Pair<Entity,Entity>,List<Peak>>  peaks = new HashMap<Pair<Entity,Entity>,List<Peak>>();
 		while(res.next()){
 			Integer groupId = res.getInt(1);
 			
@@ -725,49 +763,6 @@ public class LocalService implements QueryService{
 		res.close();
 		return new ArrayList<BindingEnrichedDirectedNetwork>(groupIdToNetworkSummary.values());
 	}
-	@Override
-	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId) throws Exception {
-		String where = null;
-		
-		if ( contextId != null){
-			where = String.format("JOIN GeneContext gc on gc.gene = network.gene1 "
-							+ "JOIN GeneContext gc2 on gc2.gene = network.gene2 "
-							+ "where gc.context_id = %d and gc2.context_id = %d and group_id = %d and network_file_location not like '%%Faire%%';" ,
-							contextId,contextId,groupId);
-		}else{
-			where = String.format("where group_id = %d",groupId);
-		}
-		String sql =String.format(
-				"SELECT gene1,gene2,binding_chr,binding_start,binding_end,binding_p_value,binding_motif,open_chrom_chr,open_chrom_start,open_chrom_end FROM Network2Binding network %s",
-				where);
-		logger.debug(sql);
-		Statement stat = connection.createStatement();
-		stat.execute(sql);
-		ResultSet res = stat.getResultSet();
-		List<TFBSPeak> ret = new ArrayList<TFBSPeak>();
-		while ( res.next()){
-			String gene1 = res.getString(1);
-			String gene2 = res.getString(2);
-			String bindingChr = res.getString(3);
-			Integer bindingStart = res.getInt(4);
-			Integer bindingEnd = res.getInt(5);
-			Float bindingPValue = res.getFloat(6);
-			String bindingMotifName = res.getString(7);
-			//String openChromChr = res.getString(8);
-			//Integer openChromStart = res.getInt(9);
-			//Integer openChromEnd = res.getInt(10);
-			
-			TFBSPeak tfbsPeak =null;//new TFBSPeak(bindingChr, gene1, gene2, bindingMotifName, bindingPValue, bindingStart, bindingEnd);
-			//Peak openChrom = new Peak(openChromStart,openChromEnd);
-			
-			///DNaseTFBSPeak dPeak = new DNaseTFBSPeak(tfbsPeak,openChrom);
-			ret.add(tfbsPeak);
-		}
-		
-		stat.close();
-		
-		return ret;
-		
-	}
+
 
 }

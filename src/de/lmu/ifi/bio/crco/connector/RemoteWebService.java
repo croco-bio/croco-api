@@ -177,11 +177,6 @@ public class RemoteWebService implements QueryService{
 		return image;
 	}
 	
-	@Override
-	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId)throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
 
 	
 	@Override
@@ -269,6 +264,12 @@ public class RemoteWebService implements QueryService{
 	@Override
 	public List<BindingEnrichedDirectedNetwork> getBindings(String factor,String target) throws Exception {
 		return (List<BindingEnrichedDirectedNetwork>)performceOperation(baseUrl,"getBindings",factor,target);
+	}
+
+	@Override
+	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception {
+		return (BindingEnrichedDirectedNetwork)performceOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
+
 	}
 
 	
