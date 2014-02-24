@@ -15,7 +15,7 @@ import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TransferredPeak;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.TIntHashSetInteratorableWrapper;
@@ -23,7 +23,7 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 
 public abstract class Network {
 	public enum EdgeOption{
-		GroupId(Integer.class), BindingSite(TFBSPeak.class), TransferredSite(TransferredPeak.class);
+		GroupId(Integer.class), BindingSite(Peak.class), TransferredSite(TransferredPeak.class);
 		
 		public Class<?> type;
 		EdgeOption(Class<?> type){
