@@ -73,11 +73,14 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 	@Override
 	public void process(Integer rootId, Integer networkId, File networkFile,File infoFile, File statFile,File annotationFile) throws Exception {
 		//render network
+		File networkImageFile = new File(networkFile.toString().replace(".network.gz", ".network."  +outputFormat ));
+		
+		if ( overwrite == false && networkImageFile.exists()) return;
+		
 		CroCoLogger.getLogger().debug(String.format("Process: %s",networkFile.toString()));
 		Network network = NetworkHierachy.getNetwork(infoFile, networkFile, false);
 		
-		File networkImageFile = new File(networkFile.toString().replace(".network.gz", ".network."  +outputFormat ));
-		if ( overwrite == false && networkImageFile.exists()) return;
+		
 		BufferedImage image = createImage(network,nameMapping, sampleSize,width, height);
 		
 		ImageIO.write(image, outputFormat, networkImageFile);
