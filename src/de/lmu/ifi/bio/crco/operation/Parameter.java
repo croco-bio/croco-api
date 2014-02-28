@@ -4,7 +4,7 @@ package de.lmu.ifi.bio.crco.operation;
 public class Parameter<E extends Object>{
 
 	private String name = null;
-	private Object defaultValue= null;
+	private E defaultValue= null;
 
 
 	public Parameter(String name,E defaultValue){
@@ -14,7 +14,7 @@ public class Parameter<E extends Object>{
 	public Parameter(String name){
 		this.name = name;
 	}
-	public Object getDefaultValue() {
+	public E getDefaultValue() {
 		return defaultValue;
 	}
 

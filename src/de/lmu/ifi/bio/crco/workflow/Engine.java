@@ -1,9 +1,11 @@
 package de.lmu.ifi.bio.crco.workflow;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +16,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.reflections.Reflections;
 
+import de.lmu.ifi.bio.crco.connector.LocalService;
+import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.NetworkOperationNode;
 import de.lmu.ifi.bio.crco.operation.GeneralOperation;
 import de.lmu.ifi.bio.crco.operation.Parameter;
@@ -23,11 +27,11 @@ import de.lmu.ifi.bio.crco.util.Pair;
 
 public class Engine {
 	private HashMap<String,Class<? extends GeneralOperation>> generalOperationLookUp = null;
-	private HashMap<Pair<Class<? extends GeneralOperation>,Parameter>,List<Pair<String,Method>>> parameterAlias= null;
+	private HashMap<Pair<Class<? extends GeneralOperation>,String>,Method> parameterAlias= null;
 	
 	public Engine() throws Exception{
 		generalOperationLookUp = new HashMap<String,Class<? extends GeneralOperation>>();
-		parameterAlias = new  HashMap<Pair<Class<? extends GeneralOperation>,Parameter>,List<Pair<String,Method>>>();
+		parameterAlias = new  HashMap<Pair<Class<? extends GeneralOperation>,String>,Method> ();
 		
 		Reflections reflections = new Reflections("");
 		
@@ -49,12 +53,16 @@ public class Engine {
 			
 			for(Method method : operation.getMethods()){
 				if ( method.isAnnotationPresent(ParameterWrapper.class))  {
-					ParameterWrapper annotations = method.getAnnotation(ParameterWrapper.class);
+					ParameterWrapper annotation = method.getAnnotation(ParameterWrapper.class);
+					parameterAlias.put(new Pair<Class<? extends GeneralOperation>,String>(operation,annotation.alias()), method);
+					//annotations.parameter()
+					//System.out.println(annotations.parameter());
+					
 				//	Pair<Class<? extends GeneralOperation>,Parameter> parameter = new Pair<Class<? extends GeneralOperation>,Parameter(operation,annotations.annotationType());
 					
-					for(String alias : annotations.alias() ) {
-						
-					}
+				//	for(String alias : annotations.alias() ) {
+				//		System.out.println(alias);
+				//	}
 				}
 			}
 			
@@ -65,7 +73,7 @@ public class Engine {
 	}
 	public void parse() throws Exception{
 		SAXReader reader = new SAXReader();
-		File xmlFile = new File("/home/users/pesch/workspace/croco-api/data/workflow/MEL_K562_example.xml");
+		File xmlFile = new File("/home/users/pesch/workspace/croco-api-old/data/workflow/MEL_K562_example.xml");
 		Document document = reader.read(xmlFile);
 		
 		Element root = document.getRootElement();
@@ -117,7 +125,7 @@ public class Engine {
 		return null;
 	}
 	
-	public NetworkOperationNode processOperation(Element operation){
+	public NetworkOperationNode processOperation(Element operation) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, IOException{
 		Attribute operationName = operation.attribute("name");
 		
 		if( !generalOperationLookUp.containsKey(operationName.getValue())){
@@ -130,6 +138,14 @@ public class Engine {
 		}catch(Exception e){
 			throw new RuntimeException(String.format("Can not initialize %s",operationName.getValue()),e);
 		}
+		for(Parameter<?> paremter : generalOperation.getParameters()){
+	
+			if ( paremter.getName().equals("QueryService")) {
+				CroCoLogger.getLogger().debug("Set query service for"  + generalOperation);
+				Parameter<QueryService> p =(Parameter<QueryService>) paremter;
+				generalOperation.setInput(p,new LocalService());
+			}
+		}
 		
 		for(Element child : (List<Element>)operation.elements()){
 			if ( child.getName().equals("inputNetworks")){
@@ -139,7 +155,13 @@ public class Engine {
 			
 			}else if ( child.getName().equals("parameter")){
 				getValue(generalOperation,child.getName(),child.attributeValue("name"));
-				System.out.println(generalOperation + " " + child.attributeValue("name"));
+				String value=child.attributeValue("name");
+				Method method = parameterAlias.get(new Pair<Class<? extends GeneralOperation>,String>(generalOperationClass,value));
+		
+			//	Method realMethod = generalOperation.getClass().getMethod(method.getName(), method.getParameterTypes());
+			
+				method.invoke(generalOperation,"/");
+			//	System.out.println(generalOperation + " " + child.attributeValue("name"));
 			}else{
 				throw new RuntimeException(String.format("Unknown element %s",child));
 			}
