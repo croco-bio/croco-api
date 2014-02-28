@@ -30,15 +30,16 @@ public class ReadNetwork extends GeneralOperation {
 	 * @return Object
 	 * @throws Exception if the connection to the {@link de.lmu.ifi.bio.crco.connector.QueryService} does not work.
 	 */
-	@ParameterWrapper(parameter="NetworkHierachyNode",alias="networkPath")
-	public Object getNetworkPath(String path) throws Exception{
+	@ParameterWrapper(parameter="NetworkHierachyNode",alias="NetworkPath")
+	public void setNetworkPathParameter(String path) throws Exception{
 		QueryService service = this.getParameter(QueryService);
-		return service.getNetworkHierachy(path);
+		
+		this.setInput(NetworkHierachyNode, service.getNetworkHierachy(path));
 	}
-	@ParameterWrapper(parameter="ContextTreeNode",alias="contextTreeNode")
-	public Object getContextTreeNode(String soureID) throws Exception{
+	@ParameterWrapper(parameter="ContextTreeNode",alias="ContextTreeNode")
+	public void setContextTreeNodeParameter(String soureID) throws Exception{
 		QueryService service = this.getParameter(QueryService);
-		return service.getContextTreeNode(soureID);
+		this.setInput(ContextTreeNode, service.getContextTreeNode(soureID));
 	}
 					
 	@Override

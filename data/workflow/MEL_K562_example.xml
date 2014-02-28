@@ -1,0 +1,29 @@
+<croco repository="http://services.bio.ifi.lmu.de/croco/services">
+	<operation name="Intersect">
+		<inputNetworks>
+			<operation name="Intersect">
+				<inputNetworks>
+					<operation name="ReadNetwork">
+						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=1]</parameter>
+					</operation>
+					<operation name="ReadNetwork">
+						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=2]</parameter>
+					</operation>
+				</inputNetworks>
+			</operation>
+			<operation name="Transfer">
+				<!--<parameter name="OrthologMapping">Human,Mouse</parameter>-->
+				<inputNetworks>
+					<operation name="ReadNetwork" operation="Union" >
+						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=1]</parameter>
+					</operation>
+					<operation name="ReadNetwork">
+						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=2]</parameter>
+					</operation>
+				</inputNetworks>
+			</operation>
+		</inputNetworks>
+	</operation>
+</croco>
+
+
