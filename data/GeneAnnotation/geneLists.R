@@ -23,13 +23,13 @@ ensembl = useDataset(mart=mart,dataset = "hsapiens_gene_ensembl")
 
 #Worm
 print("Processing WORM")
-ensembl = useDataset(mart=mart,dataset = "celegans_gene_ensembl")
-linkouts(ensembl,"ensembl_gene_id","description","worm.ensembl.description.txt")
-linkouts(ensembl,"ensembl_gene_id","external_gene_id","worm.ensembl.geneId.txt")
-linkouts(ensembl,"ensembl_gene_id","entrezgene","worm.ensembl.entrezgene.txt")
-linkouts(ensembl,"ensembl_gene_id","uniprot_swissprot","worm.ensembl.uniprot_swissprot.txt")
-linkouts(ensembl,"ensembl_gene_id","wormbase_gene","worm.ensembl.wormbase.txt")
-linkouts(ensembl,"ensembl_gene_id","go_id","worm.ensembl.go_id.txt")
+#ensembl = useDataset(mart=mart,dataset = "celegans_gene_ensembl")
+#linkouts(ensembl,"ensembl_gene_id","description","worm.ensembl.description.txt")
+#linkouts(ensembl,"ensembl_gene_id","external_gene_id","worm.ensembl.geneId.txt")
+#linkouts(ensembl,"ensembl_gene_id","entrezgene","worm.ensembl.entrezgene.txt")
+#linkouts(ensembl,"ensembl_gene_id","uniprot_swissprot","worm.ensembl.uniprot_swissprot.txt")
+#linkouts(ensembl,"ensembl_gene_id","wormbase_gene","worm.ensembl.wormbase.txt")
+#linkouts(ensembl,"ensembl_gene_id","go_id","worm.ensembl.go_id.txt")
 
 #Mouse
 print("Processing MOUSE")
@@ -51,5 +51,5 @@ ensembl = useDataset(mart=mart, dataset = "dmelanogaster_gene_ensembl")
 #linkouts(ensembl,"ensembl_gene_id","entrezgene","fly.ensembl.entrezgene.txt")
 #linkouts(ensembl,"ensembl_gene_id","uniprot_swissprot","fly.ensembl.uniprot_swissprot.txt")
 #linkouts(ensembl,"ensembl_gene_id","go_id","fly.ensembl.go_id.txt")
-
+linkouts(ensembl,"ensembl_gene_id","flybasecgid_gene","fly.ensembl.cgid.txt")
 
