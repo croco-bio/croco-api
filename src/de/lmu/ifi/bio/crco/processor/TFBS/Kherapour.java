@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +26,32 @@ import org.apache.commons.cli.Options;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.genome.Strand;
+import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 import de.lmu.ifi.bio.crco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Promoter;
+import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class Kherapour {
+	public static class KherapourPromoter extends Interval{
+
+		public KherapourPromoter(int start, int end) {
+			super(start,end);
+		}
+		String gene;
+		String ensemblId;
+		String direction;
+		String type;
+		public KherapourPromoter(Integer start, Integer end, String gene, String ensemblId, String direction, String type) {
+			super(start,end);
+			this.gene = gene;
+			this.ensemblId = ensemblId;
+			this.direction = direction;
+			this.type = type;
+		}
+		
+	}
+	
 	public static void main(String[] args) throws Exception{
 		CommandLine lvCmd = null;
 		HelpFormatter lvFormater = new HelpFormatter();
@@ -39,14 +61,12 @@ public class Kherapour {
 		options.addOption(OptionBuilder.withLongOpt("repositoryDir").withDescription("Repository directory").isRequired().hasArgs().create("repositoryDir"));
 		options.addOption(OptionBuilder.withLongOpt("compositeName").withDescription("Composite name").isRequired().hasArgs().create("compositeName"));
 		options.addOption(OptionBuilder.withLongOpt("name").withDescription("Name").isRequired().hasArgs(1).create("name"));
-		options.addOption(OptionBuilder.withLongOpt("promoter").withDescription("Promoter").isRequired().hasArgs(1).create("promoter"));
+		options.addOption(OptionBuilder.withLongOpt("promoter").withDescription("Promoter (500 or 1000)").isRequired().hasArgs(1).create("promoter"));
 		options.addOption(OptionBuilder.withLongOpt("instanceFile").withArgName("FILE").withDescription("Instances").isRequired().hasArgs(1).create("instanceFile"));
 		options.addOption(OptionBuilder.withLongOpt("regionFile").withArgName("FILE").withDescription("Instances").isRequired().hasArgs(1).create("regionFile"));
 		options.addOption(OptionBuilder.withLongOpt("mappingFile").withArgName("FILE").withDescription("Mapping file").isRequired().hasArgs(1).create("mappingFile"));
 		options.addOption(OptionBuilder.withLongOpt("cutOff").withDescription("Confidence cut-off").isRequired().hasArgs(1).create("cutOff"));
 			
-		
-		
 		CommandLine line = null;
 		try{
 			line = parser.parse( options, args );
@@ -70,7 +90,6 @@ public class Kherapour {
 		String promoterSetting = line.getOptionValue("promoter");
 		String composite = line.getOptionValue("compositeName");
 		String name = line.getOptionValue("name");
-		//stat.execute(String.format("INSERT INTO NetworkOption(group_id,value)", Option.))
 	
 		System.out.println("Region file:\t" + regionFile);
 		System.out.println("Instance file:\t" + instanceFile);
@@ -81,19 +100,26 @@ public class Kherapour {
 		System.out.println("Name:\t" + name);
 		
 		File ouputBaseFile = new File(repositoryDir + "/" + composite);
-		ouputBaseFile.mkdirs();
 		
-		HashMap<String,IntervalTree> interval = new HashMap<String,IntervalTree>();
+		Files.createDirectories(ouputBaseFile.toPath());
+		
+
+		
+		HashMap<String,IntervalTree<KherapourPromoter>> interval = new HashMap<String,IntervalTree<KherapourPromoter>>();
 		BufferedReader br = new BufferedReader(new FileReader(regionFile));
 		String currentLine  = null;
-		int k = 0;
+		HashSet<String> notMappedGenes = new HashSet<String>();
 		while ( (currentLine=br.readLine())!=null){
 			String[] tokens = currentLine.split("\\s+");
 			String gene = tokens[0].trim().toUpperCase();
 			String ensembl = map.get(gene);
 			if ( ensembl == null){
-				throw new RuntimeException("No mapping for:\t"  + gene);
+				notMappedGenes.add(gene);
+				continue;
+				//	br.close();
+				//throw new RuntimeException("No mapping for:\t"  + gene);
 			}
+	
 			
 			String chr = tokens[1];
 			Integer start = Integer.valueOf(tokens[2]);
@@ -101,18 +127,23 @@ public class Kherapour {
 			String direction = tokens[4];
 			String type = tokens[5];
 			//TODO:fix
-			Promoter promoter = null;//new Promoter(ensembl,ensembl,start,end,-1,-1,Strand.getStand(direction));
+			Transcript transcript = new Transcript(null, type);
+			
+			KherapourPromoter o = new KherapourPromoter(start,end,gene,ensembl,direction,type);
+			
 			if (! interval.containsKey(chr)){
-				interval.put(chr, new IntervalTree());
+				interval.put(chr, new IntervalTree<KherapourPromoter>());
 			}
-			k++;
-			interval.get(chr).insert(promoter);
+		
+			interval.get(chr).insert(o);
 		}
 		br.close();
+		System.out.println(notMappedGenes);
+		System.out.println("Not mapped genes:" + notMappedGenes.size());
 		
 		br = new BufferedReader(new FileReader(instanceFile));
 		currentLine  = null;
-		k = 0;
+	
 		HashMap<String,Set<String>> network = new HashMap<String,Set<String>>();
 		HashSet<String> notMapped = new HashSet<String>();
 		while ( (currentLine=br.readLine())!=null){
@@ -135,21 +166,20 @@ public class Kherapour {
 			}
 			
 			if ( confidence <confidenceCutOff) continue;
-			List<Promoter> targets = interval.get(chr).searchAll(new Interval(start,end));
+			List<KherapourPromoter> targets = interval.get(chr).searchAll(new Interval(start,end));
 			if ( targets.size() == 0 || targets == null){
 				continue;
 			}
-			for(Promoter target : targets){
-				String gene =null; //TODO:fix
+			for(KherapourPromoter target : targets){
+				String gene =target.ensemblId;
 				if (! network.containsKey(factorEnsembl)){
 					network.put(factorEnsembl, new HashSet<String>());
 				}
 				network.get(factorEnsembl).add(gene);
-				k++;
 			}
 		
 		}
-		
+		System.out.println(notMapped);
 		System.out.println("Number of not mapped factors:\t" + notMapped.size());
 
 		
