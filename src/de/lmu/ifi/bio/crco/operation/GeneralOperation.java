@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import de.lmu.ifi.bio.crco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.data.exceptions.ParameterNotWellDefinedException;
 import de.lmu.ifi.bio.crco.network.Network;
@@ -39,7 +38,7 @@ public abstract class GeneralOperation {
 	}
 
 	/**
-	 * Sets a value for a parmater
+	 * Sets a value for a parameter
 	 * @param parameter -- the parameter
 	 * @param value -- the value
 	 * @return true when successful

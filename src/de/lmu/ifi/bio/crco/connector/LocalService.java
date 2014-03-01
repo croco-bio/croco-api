@@ -35,6 +35,7 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
+import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 
@@ -70,9 +71,11 @@ public class LocalService implements QueryService{
 		
 		NetworkHierachyNode rootNode = networks.get(0);
 		if ( path != null){
+			
 			String[] tokens = path.split("/");
 			
 			for(String token : tokens){
+				if(token.length() == 0) continue;
 				NetworkHierachyNode newRoot = null;
 				for(NetworkHierachyNode child : rootNode.getChildren()){
 					if ( child.getName().equals(token)) {
@@ -336,9 +339,28 @@ public class LocalService implements QueryService{
 	@Override
 	public Network readNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception{
 	
-		
 		logger.debug("Load:\t" + groupId + " with context " + contextId);
 
+		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
+		
+		if ( contextId == null){
+			Statement stat = connection.createStatement();
+			stat.execute(String.format("SELECT network_file_location FROM NetworkHierachy where group_id = %d",groupId));
+			ResultSet res = stat.getResultSet();
+			File networkFile = null;
+			if ( res.next()){
+				networkFile = new File(res.getString(1));
+			}
+			stat.close();
+			
+			if ( networkFile.exists()){
+				return NetworkHierachy.getNetworkReader().setGroupId(groupId).setNetwork(network).readNetwork();
+			}else{
+				CroCoLogger.getLogger().debug(String.format("Network file %s does not exist. Try to read from database",networkFile.toString()));
+			}
+		}
+		
 		String condition = null;
 		
 		if ( contextId != null ){
@@ -352,8 +374,7 @@ public class LocalService implements QueryService{
 		
 		Statement stat = connection.createStatement();
 		
-		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
-		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
+
 		String sql  = String.format("SELECT gene1,gene2 FROM Network network %s", condition);
 	
 		logger.debug(sql);

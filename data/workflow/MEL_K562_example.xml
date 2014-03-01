@@ -1,24 +1,34 @@
 <croco repository="http://services.bio.ifi.lmu.de/croco/services">
-	<operation name="Intersect">
+	<operation name="WriteNetwork">
+		<parameter name="OutputNetworkFile">/tmp/network.croco.gz</parameter>
+		<parameter name="OutputNetworkAnnotationFile">/tmp/network.croco.annotation.gz</parameter>
 		<inputNetworks>
 			<operation name="Intersect">
 				<inputNetworks>
-					<operation name="ReadNetwork">
-						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=1]</parameter>
+					<operation name="Intersect">
+						<inputNetworks>
+							<operation name="ReadNetwork">
+								<parameter name="NetworkPath">/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=1]</parameter>
+							</operation>
+							<operation name="ReadNetwork">
+								<parameter name="NetworkPath">/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=2]</parameter>
+							</operation>
+						</inputNetworks>
 					</operation>
-					<operation name="ReadNetwork">
-						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=2]</parameter>
-					</operation>
-				</inputNetworks>
-			</operation>
-			<operation name="Transfer">
-				<!--<parameter name="OrthologMapping">Human,Mouse</parameter>-->
-				<inputNetworks>
-					<operation name="ReadNetwork" operation="Union" >
-						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=1]</parameter>
-					</operation>
-					<operation name="ReadNetwork">
-						<parameter name="NetworkPath">/OpenChrom/Human/K562/[replicate=2]</parameter>
+					<operation name="Transfer">
+						<parameter name="OrthologMapping">Human,Mouse</parameter>
+						<inputNetworks>
+							<operation name="Intersect">
+								<inputNetworks>
+									<operation name="ReadNetwork" operation="Union" >
+										<parameter name="NetworkPath">/OpenChromTFBS/Mouse/DNase/0.000001/JASPAR/MEL/[replicate=1</parameter>
+									</operation>
+									<operation name="ReadNetwork">
+										<parameter name="NetworkPath">/OpenChromTFBS/Mouse/DNase/0.000001/JASPAR/MEL/[replicate=2]</parameter>
+									</operation>
+								</inputNetworks>
+							</operation>
+						</inputNetworks>
 					</operation>
 				</inputNetworks>
 			</operation>

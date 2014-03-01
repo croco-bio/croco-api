@@ -78,7 +78,7 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 		if ( overwrite == false && networkImageFile.exists()) return;
 		
 		CroCoLogger.getLogger().debug(String.format("Process: %s",networkFile.toString()));
-		Network network = NetworkHierachy.getNetwork(infoFile, networkFile, false);
+		Network network = NetworkHierachy.getNetworkReader().setNetworkInfo(infoFile).setGloablRepository(false).setNetworkFile(networkFile).readNetwork();
 		
 		
 		BufferedImage image = createImage(network,nameMapping, sampleSize,width, height);

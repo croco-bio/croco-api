@@ -19,6 +19,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	private Integer taxId;
 	private NetworkHierachyNode parent;
 	
+	
 	//added for xsteam
 	public NetworkHierachyNode(){}
 	

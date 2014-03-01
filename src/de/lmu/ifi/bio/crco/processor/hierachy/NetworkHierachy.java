@@ -1,9 +1,12 @@
 package de.lmu.ifi.bio.crco.processor.hierachy;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -39,6 +42,7 @@ import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
+import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.crco.stat.PairwiseFeatures;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
@@ -499,12 +503,136 @@ public class NetworkHierachy  {
 	}
 	
 
-	public static Network getNetwork(File infoFile, File networkFile,boolean gloablRepository) throws Exception {
+	
+	private static HashMap<Option,String> readInfoFile(File infoFile) throws IOException{
+		HashMap<Option,String> ret = new HashMap<Option,String> ();
+		BufferedReader br =new BufferedReader(new FileReader(infoFile));
+		String line = null;
+		while(( line = br.readLine())!=null){
+			String[] tokens = line.split(":");
+			Option option = Option.valueOf(tokens[0].trim());
+			String value = tokens[1].trim();
+			ret.put(option, value);
+		}
+		br.close();
+		return ret;
+	}
+
+	public static NetworkReader getNetworkReader(){
+		return new NetworkReader();
+	}
+	public static class NetworkReader{
+		
+		private Network network;
+		private Integer groupId;
+		private Set<Entity> factors;
+		private HashMap<Option,String> infos;
+		private Boolean gloablRepository = false;
+		private File networkFile;
+		
+		public NetworkReader setNetworkInfo(File networkInfoFile) throws IOException{
+			this.infos = readInfoFile(networkInfoFile);
+			return this;
+		}
+		public NetworkReader setNetworkInfo(HashMap<Option,String> infos) throws IOException{
+			this.infos = infos;
+			return this;
+		}
+		public NetworkReader setNetwork(Network network){
+			this.network = network;
+			return this;
+		}
+		public NetworkReader setFactors(Set<Entity> factors){
+			this.factors = factors;
+			return this;
+		}
+		public NetworkReader setGloablRepository(Boolean gloablRepository){
+			this.gloablRepository = gloablRepository;
+			return this;
+		}
+		public NetworkReader setGroupId(Integer groupId){
+			this.groupId = groupId;
+			return this;
+		}
+		public NetworkReader setNetworkFile(File networkFile){
+			this.networkFile = networkFile;
+			return this;
+		}
+		
+		public Network readNetwork() throws Exception {
+			if ( network == null){
+				Integer taxId = null;
+				String name = null;
+				if ( infos != null){
+					try{
+						taxId = Integer.valueOf(infos.get(Option.TaxId));
+					}catch(Exception e){
+						throw new RuntimeException("Can not get taxId for" + networkFile);
+					}
+					name = infos.get(infos.get(Option.NetworkName));
+					if ( name == null) name = infos.get(Option.networkFile);
+				}
+				network = new DirectedNetwork(name,taxId,gloablRepository);
+				network.setNetworkInfo(infos);
+			}
+			if ( networkFile != null){
+				BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
+				String line = null;
+				while((line=br.readLine())!=null){
+					String[] tokens = line.split("\t");
+					Entity factor = new Entity(tokens [0]);
+					
+					if ( factors != null && !factors.contains(factor)) continue;
+					Entity target = new Entity(tokens[1]);
+					if ( groupId != null)
+						network.add(factor, target,groupId);
+					else
+						network.add(factor,target);
+				}
+				br.close();
+			}
+			if ( network == null) CroCoLogger.getLogger().warn("No network read. Neither networkFile nor networkInfo given.");
+			return network;
+		}
+		
+		
+	}
+	/*
+	public static void readNetwork(Network network, File networkFile,Set<Entity> factors, Integer groupId) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
+		String line = null;
+		while((line=br.readLine())!=null){
+			String[] tokens = line.split("\t");
+			Entity factor = new Entity(tokens [0]);
+			if (!factors.contains(factor)) continue;
+			Entity target = new Entity(tokens[1]);
+			if ( groupId != null)
+				network.add(factor, target,groupId);
+			else
+				network.add(factor,target);
+		}
+		br.close();
+	}
+	public static void readNetwork(Network network, File networkFile, Integer groupId) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
+		String line = null;
+		while((line=br.readLine())!=null){
+			String[] tokens = line.split("\t");
+			Entity factor = new Entity(tokens [0]);;
+			Entity target = new Entity(tokens[1]);
+			if ( groupId != null)
+				network.add(factor, target,groupId);
+			else
+				network.add(factor,target);
+		}
+		br.close();
+	}
+	public static Network readNetwork(File infoFile, File networkFile,boolean gloablRepository) throws Exception {
 		HashMap<Option, String> infos = readInfoFile(infoFile);
 		if ( networkFile != null) infos.put(Option.networkFile, networkFile.toString());
-		return getNetwork(networkFile,infos,gloablRepository);
+		return readNetwork(networkFile,infos,gloablRepository);
 	}
-	private static Network getNetwork(File networkFile,HashMap<Option,String> infos, boolean gloablRepository) throws Exception{
+	private static Network readNetwork(File networkFile,HashMap<Option,String> infos, boolean gloablRepository) throws Exception{
 		Integer taxId = null;
 		try{
 			taxId = Integer.valueOf(infos.get(Option.TaxId));
@@ -520,22 +648,15 @@ public class NetworkHierachy  {
 		
 		return network;
 	}
-	private static HashMap<Option,String> readInfoFile(File infoFile) throws IOException{
-		HashMap<Option,String> ret = new HashMap<Option,String> ();
-		BufferedReader br =new BufferedReader(new FileReader(infoFile));
-		String line = null;
-		while(( line = br.readLine())!=null){
-			String[] tokens = line.split(":");
-			Option option = Option.valueOf(tokens[0].trim());
-			String value = tokens[1].trim();
-			ret.put(option, value);
+	*/
+	public static void writeNetworkHierachyFile(Network network, File outputNetworkFile) throws Exception{
+		BufferedWriter bwNetwork =null;
+		if ( outputNetworkFile.getName().endsWith(".gz")){
+			bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(outputNetworkFile)) ));
+		}else{
+			bwNetwork = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(outputNetworkFile)) );
 		}
-		br.close();
-		return ret;
-	}
-	public static void writeNetworkHierachyFile(DirectedNetwork network, File outputNetworkFile) throws Exception{
-		BufferedWriter bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(outputNetworkFile)) ));
-		network.addNetworkInfo(Option.networkFile, outputNetworkFile.toString());
+		
 		for(int edgeId : network.getEdgeIds()){
 			Tuple<Entity, Entity> edge = network.getEdge(edgeId);
 			bwNetwork.write(edge.getFirst().getIdentifier() + "\t" + edge.getSecond().getIdentifier() + "\n");
@@ -543,27 +664,32 @@ public class NetworkHierachy  {
 		bwNetwork.flush();
 		bwNetwork.close();
 	}
-	public static void readNetwork(Network network, File file,Set<Entity> factors) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
-		String line = null;
-		while((line=br.readLine())!=null){
-			String[] tokens = line.split("\t");
-			Entity factor = new Entity(tokens [0]);
-			if (!factors.contains(factor)) continue;
-			Entity target = new Entity(tokens[1]);
-			network.add(factor, target);
+	public static void writeNetworkHierachyAnnotationFile(Network network, File annotationOutputFile) throws FileNotFoundException, IOException {
+		BufferedWriter bwAnnotation =null;
+		if ( annotationOutputFile.getName().endsWith(".gz")){
+			bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationOutputFile)) ));
+		}else{
+			bwAnnotation = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(annotationOutputFile)) );
 		}
-		br.close();
-	}
-	public static void readNetwork(Network network, File file) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
-		String line = null;
-		while((line=br.readLine())!=null){
-			String[] tokens = line.split("\t");
-			Entity factor = new Entity(tokens [0]);;
-			Entity target = new Entity(tokens[1]);
-			network.add(factor, target);
+		bwAnnotation.write("#Factor Target Annotation\n" );
+		for(int edgeId : network.getEdgeIds()){
+			Tuple<Entity, Entity> edge = network.getEdge(edgeId);
+			
+			TIntObjectHashMap<List<Object>> annotation = network.getAnnotation(edgeId);
+			if ( annotation != null){
+				for(int annotationId : annotation.keys()){
+					EdgeOption edgeType = Network.EdgeOption.values()[annotationId];
+					for(  Object  o: annotation.get(annotationId)){
+						bwAnnotation.write(edge.getFirst().getIdentifier() + "\t" + edge.getSecond().getIdentifier() + "\t" + edgeType.name() + "\t" +o.toString() + "\n" );
+											
+					}
+					
+				}
+			}
+			
 		}
-		br.close();
+		
+		bwAnnotation.flush();
+		bwAnnotation.close();
 	}
 }

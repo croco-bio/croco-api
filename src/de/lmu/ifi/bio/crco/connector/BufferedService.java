@@ -30,6 +30,7 @@ import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
+import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 import de.lmu.ifi.bio.crco.util.Tuple;
@@ -92,47 +93,17 @@ public class BufferedService implements QueryService {
 	
 	@Override
 	public Network readNetwork(Integer groupId, Integer contextId, Boolean globalRepository) throws Exception{
-		File networkFile = new File(baseDir + "/network-" + groupId + ".croco.gz");
+		File networkFile = new File(baseDir + "/network-" + groupId + "_" + contextId + ".croco.gz");
 		if ( !networkFile.exists()){
 			Network network = service.readNetwork(groupId,contextId,globalRepository);
-			writeNetwork(networkFile,network);
+			NetworkHierachy.writeNetworkHierachyFile(network, networkFile);
 			return network;
 		}
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
-		return readNetwork(networkFile,globalRepository);
-	}
-	private Network readNetwork(File file,boolean globalRepository)throws IOException {
-		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
-		String header = br.readLine().substring(1);
-		String[] tokens = header.split("\t");
-		String clazz = tokens[0];
-		String name = tokens[1];
-		Integer taxId = Integer.valueOf(tokens[2]);
-	
-		Network ret = new DirectedNetwork(name,taxId,false);
-		String line = null;
-		int k = 0;
-		while((line = br.readLine())!=null){
-			tokens = line.split("\t");
-			Entity e1 = new Entity(tokens[0]);
-			Entity e2 = new Entity(tokens[1]);
-			List<Integer> groupIds = new ArrayList<Integer>();
-			for(int i = 2 ; i< tokens.length; i++){
-				groupIds.add(Integer.valueOf(tokens[i]));
-			}
-		
-			ret.add(e1, e2,groupIds);
-		
-			k++;
-			
-		}
-		br.close();
-		CroCoLogger.getLogger().debug(String.format("Read network has %d edges",ret.getSize()));
-		return ret;
+		return NetworkHierachy.getNetworkReader().setGloablRepository(globalRepository).setGroupId(groupId).setNetworkFile(networkFile).readNetwork();
 		
 	}
-	
+	/*
 	private void writeNetwork(File file, Network network) throws Exception{
 		OutputStreamWriter writer = new OutputStreamWriter(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(file))));
 		 
@@ -153,19 +124,6 @@ public class BufferedService implements QueryService {
 		writer.flush();
 		writer.close();
 	
-	}
-	/*
-	public static<E extends Object> void write(E e, File file) throws IOException{
-		XStream xstream = new XStream();;
-		FileWriter fw = new FileWriter(file);
-		xstream.toXML(e, fw);
-		fw.close();
-	}
-	
-	public static<E extends Object> E read(File file) throws IOException{
-		XStream xstream = new XStream();;
-		Object o = xstream.fromXML(file);
-		return (E) o;
 	}
 	*/
 	@Override
