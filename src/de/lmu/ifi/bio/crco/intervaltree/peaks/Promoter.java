@@ -6,6 +6,11 @@ import java.util.Set;
 import de.lmu.ifi.bio.crco.data.genome.Transcript;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 
+/**
+ * Represents a gene promoter. A gene can have multiple transcription start sides thus multiple core promoter regions. 
+ * @author pesch
+ *
+ */
 public class Promoter extends Interval {
 
 	private int start;

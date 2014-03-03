@@ -1,6 +1,11 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
 
+/**
+ * Represents a TFBS and a general Peak (used for DNase/TFBS peaks)
+ * @author pesch
+ *
+ */
 public class DNaseTFBSPeak extends Peak {
 	public TFBSPeak getTfbsPeak() {
 		return tfbsPeak;

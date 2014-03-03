@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 
 
-/*
+/**
 Copyright (c) 2006, Danny Yoo (dyoo@hkn.eecs.berkeley.edu)
 
 All rights reserved.

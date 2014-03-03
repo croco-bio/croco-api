@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.crco.intervaltree;
+package de.lmu.ifi.bio.crco.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
-import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 
 public class GenomeCoordinationMapper {

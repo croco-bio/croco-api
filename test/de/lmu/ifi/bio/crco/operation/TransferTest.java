@@ -24,10 +24,8 @@ public class TransferTest {
 	public void transferFlyHuman() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
 
-		Species human = service.getSpecies("Human").get(0);
-		Species fly = service.getSpecies("fruit fly").get(0);
 		
-		List<OrthologMappingInformation> orthologMappingInformatons = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, human, fly);
+		List<OrthologMappingInformation> orthologMappingInformatons = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Fly);
 		assertEquals(1,orthologMappingInformatons.size());
 		OrthologMappingInformation mapping = orthologMappingInformatons.get(0);
 		List<OrthologMappingInformation> mappings = new ArrayList<OrthologMappingInformation>();
@@ -50,9 +48,8 @@ public class TransferTest {
 	public void transferHumanCow() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
 
-		Species human = service.getSpecies("Human").get(0);
-		Species bovine = service.getSpecies("Cow").get(0);
-		List<OrthologMappingInformation> orthologMappingInformatons = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, human, bovine);
+
+		List<OrthologMappingInformation> orthologMappingInformatons = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, Species.Human, new Species(9913));
 		assertEquals(1,orthologMappingInformatons.size());
 		OrthologMappingInformation mapping = orthologMappingInformatons.get(0);
 		List<OrthologMappingInformation> mappings = new ArrayList<OrthologMappingInformation>();

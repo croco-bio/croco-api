@@ -9,7 +9,13 @@ import java.util.Properties;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.CroCoProperties;
 
-
+/**
+ * The database connection. The class provides only the static method <code>getConnection<code> which
+ * hold a global  <code>java.sql.Connection</code> object.
+ * 
+ * @author pesch
+ *
+ */
 public class DatabaseConnection {
 	private static Connection connection;
 	
@@ -18,6 +24,12 @@ public class DatabaseConnection {
 	
 	private DatabaseConnection(){}
 	
+	/**
+	 * Returns the connection using the default connet.config config
+	 * @return the connection
+	 * @throws SQLException when the connection can not be established.
+	 * @throws IOException when the connet.config can not be read
+	 */
 	public static Connection getConnection() throws SQLException, IOException {
 		return getConnection(CroCoProperties.getInstance().getProperties());
 	}

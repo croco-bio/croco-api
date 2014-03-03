@@ -233,14 +233,7 @@ public class BufferedService implements QueryService {
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
 		return service.getContextTreeNode(sourceId);
 	}
-	@Override
-	public List<Species> getSpecies(String prefix) throws Exception {
-		return service.getSpecies( prefix);
-	}
-	@Override
-	public Species getSpecies(Integer taxId) throws Exception {
-		return service.getSpecies(taxId);
-	}
+
 	@Override
 	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
 		return service.getRenderedNetwork(groupId);

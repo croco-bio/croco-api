@@ -8,6 +8,11 @@ import java.util.Set;
 import de.lmu.ifi.bio.crco.intervaltree.Interval;
 import de.lmu.ifi.bio.crco.util.Pair;
 
+/**
+ * A general peak consisting of chromsom, start, end and score information
+ * @author pesch
+ *
+ */
 public class Peak extends Interval {
 	public Float score = null;
 	public Float getScore() {

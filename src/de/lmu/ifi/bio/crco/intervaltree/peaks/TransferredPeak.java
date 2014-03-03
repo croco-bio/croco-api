@@ -1,6 +1,10 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
-
+/**
+ * A genome transferred peak
+ * @author pesch
+ *
+ */
 public class TransferredPeak extends Peak{
 	private Peak from;
 	private Peak to;

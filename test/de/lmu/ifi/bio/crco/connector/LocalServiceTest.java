@@ -113,17 +113,7 @@ public class LocalServiceTest {
 		System.out.println(entities.size());
 	}
 	
-	@Test
-	public void getSpecies() throws Exception{
-		Logger logger = CroCoLogger.getLogger();
-		Connection connection = DatabaseConnection.getConnection();
-		
-		QueryService service = new LocalService(logger,connection);
-		
-		for(Species specie : service.getSpecies("human") ) {
-			System.out.println(specie);
-		}
-	}
+
 	/*
 	@Test
 	public void readIdMapping() throws Exception{

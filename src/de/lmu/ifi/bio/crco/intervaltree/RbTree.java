@@ -1,7 +1,7 @@
 package de.lmu.ifi.bio.crco.intervaltree;
 
 
-/*
+/**
 Copyright (c) 2006, Danny Yoo (dyoo@hkn.eecs.berkeley.edu)
 
 All rights reserved.

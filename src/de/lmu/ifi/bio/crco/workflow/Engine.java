@@ -25,6 +25,11 @@ import de.lmu.ifi.bio.crco.operation.ParameterWrapper;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 
+/**
+ * A workflow prototype.
+ * @author pesch
+ *
+ */
 public class Engine {
 	private HashMap<String,Class<? extends GeneralOperation>> generalOperationLookUp = null;
 	private HashMap<Pair<Class<? extends GeneralOperation>,String>,Method> parameterAlias= null;

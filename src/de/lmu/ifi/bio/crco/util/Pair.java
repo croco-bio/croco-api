@@ -1,6 +1,12 @@
 package de.lmu.ifi.bio.crco.util;
 
-
+/**
+ * An ordered pair of objects
+ * @author pesch
+ *
+ * @param <FIRST>
+ * @param <SECOND>
+ */
 public class Pair<FIRST,SECOND> implements Tuple<FIRST,SECOND>, Comparable<Pair<FIRST,SECOND>> {
 	
 	

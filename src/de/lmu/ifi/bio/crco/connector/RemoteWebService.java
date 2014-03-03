@@ -34,6 +34,11 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 
+/**
+ * Uses a web services to query the network repository.
+ * @author pesch
+ *
+ */
 public class RemoteWebService implements QueryService{
 	private String baseUrl;
 	public RemoteWebService(String baseUrl){
@@ -249,16 +254,6 @@ public class RemoteWebService implements QueryService{
 
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
 		return (ContextTreeNode)performceOperation(baseUrl,"getContextTreeNode",sourceId);
-	}
-
-	@Override
-	public List<Species> getSpecies(String prefix) throws Exception {
-		return (List)performceOperation(baseUrl,"getSpecies",prefix);
-	}
-
-	@Override
-	public Species getSpecies(Integer taxId) throws Exception {
-		return (Species)performceOperation(baseUrl,"getSpecies",taxId);
 	}
 
 	@Override

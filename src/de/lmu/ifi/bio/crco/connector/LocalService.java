@@ -38,7 +38,11 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 
-
+/**
+ * Uses a direct database connection to query the database.
+ * @author pesch
+ *
+ */
 public class LocalService implements QueryService{
 	private Connection connection;
 	private Logger logger;
@@ -364,26 +368,6 @@ public class LocalService implements QueryService{
 	}
 
 	@Override
-	public List<Species> getSpecies(String prefix) throws Exception {
-		Statement stat = connection.createStatement();
-		String sql = String.format("SELECT distinct(tax_id),name FROM Taxonomy where name like '%s%%'  ",prefix);
-		logger.debug(sql);
-		stat.execute(sql);
-	
-		List<Species> species = new ArrayList<Species>();
-		ResultSet res = stat.getResultSet();
-		while(res.next()){
-			String name = res.getString(2);
-			Integer taxId = res.getInt(1);
-			species.add(new Species(taxId,name));
-		}
-		res.close();
-		stat.close();
-		return species;
-	}
-
-
-	@Override
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception {
 		List<OrthologMappingInformation> ret = new ArrayList<OrthologMappingInformation>();
 		Statement stat = connection.createStatement();
@@ -434,24 +418,6 @@ public class LocalService implements QueryService{
 	}
 
 
-	@Override
-	public Species getSpecies(Integer taxId) throws Exception {
-		Statement stat = connection.createStatement();
-		String sql = String.format("SELECT distinct(tax_id),name FROM Taxonomy where tax_id = %d  and type like 'scientific name' ",taxId);
-		logger.debug(sql);
-		stat.execute(sql);
-	
-		Species ret = null;
-		ResultSet res = stat.getResultSet();
-		if(res.next()){
-			
-			String name = res.getString(2);
-			ret = new Species(taxId,name);
-		}
-		res.close();
-		stat.close();
-		return ret;
-	}
 
 	@Override
 	public List<ContextTreeNode> getChildren(ContextTreeNode parent) throws Exception {

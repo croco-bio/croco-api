@@ -1,6 +1,10 @@
 package de.lmu.ifi.bio.crco.intervaltree.peaks;
 
-
+/**
+ * A TFBS prediction peak
+ * @author pesch
+ *
+ */
 public class TFBSPeak extends Peak {
 	
 	private String motifId;

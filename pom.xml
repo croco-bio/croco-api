@@ -5,6 +5,7 @@
 	<artifactId>croco-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CroCo</name>
+	
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
@@ -18,7 +19,11 @@
 		</resources>
 
 		<plugins>
-		
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+      </plugin>
 		
 		<!-- When used as dependency for Cytoscape ... -->
       <plugin>
@@ -65,6 +70,7 @@
 		</plugins>
 
 	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>mysql</groupId>

@@ -10,13 +10,13 @@ import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
-import de.lmu.ifi.bio.crco.intervaltree.GenomeCoordinationMapper;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TransferredPeak;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.GenomeCoordinationMapper;
 import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**

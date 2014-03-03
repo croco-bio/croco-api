@@ -17,22 +17,42 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.util.Pair;
 
-
+/**
+ * Provides various queries to the croco-repo
+ * @author pesch
+ *
+ */
 public interface QueryService {
 	//find networks
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception;
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option,String>> options) throws Exception;
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception;
 	
-	//get network information
+	/**
+	 * Returns network annotations for a specific network id
+	 * @param groupId the network id
+	 * @return a list of options
+	 * @throws Exception
+	 */
 	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception;
-	//get entity information
-	public List<Entity> getEntities(Species species,String annotation, ContextTreeNode context) throws Exception;
 
-	//read networks
+
+	/**
+	 * Reads a specific network with possible context restrictions on the nodes e.g. include only nodes with certain GO annotation.
+	 * @param groupId the network identifier
+	 * @param contextId the context ID, or null (no context restrictions)
+	 * @param globalRepository edge repository strategy
+	 * @return the Network
+	 * @throws Exception
+	 */
 	public Network readNetwork(Integer groupId, Integer contextId, Boolean globalRepository) throws Exception;	
 	
-	//get properties
+	/**
+	 * Returns the number of edges for a specific network id
+	 * @param groupId the network id
+	 * @return the number of edges
+	 * @throws Exception
+	 */
 	public Integer getNumberOfEdges(Integer groupId) throws Exception;
 	
 	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId ) throws Exception;
@@ -51,10 +71,32 @@ public interface QueryService {
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception;
 	
 	//find species
-	public List<Species> getSpecies(String prefix) throws Exception;
-	public Species getSpecies(Integer taxId) throws Exception;
+	//public List<Species> getSpecies(String prefix) throws Exception;
+
+	/**
+	 * Retrieves a rendered network image for a given network
+	 * @param groupId the network groupId identifier
+	 * @return the image
+	 * @throws Exception
+	 */
 	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception;
 	
-	//get gene with all annotaiton
+
+	/**
+	 * Finds genes by gene id
+	 * @param id the gene id
+	 * @return a list of genes
+	 * @throws Exception
+	 */
 	public List<Gene> getGene(String id) throws Exception;
+	
+	/**
+	 * Returns entities (genes) for a specific specific species with specific annotations
+	 * @param species the species of interest
+	 * @param bioType the ensembl biotype e.g. protein_coding, or null
+	 * @param context the node context, or null
+	 * @return list of entities
+	 * @throws Exception
+	 */
+	public List<Entity> getEntities(Species species,String annotation, ContextTreeNode context) throws Exception;
 }

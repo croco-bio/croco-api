@@ -16,6 +16,7 @@ import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.NetworkOperationNode;
+import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.NetworkSummary;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
@@ -77,7 +78,7 @@ public class OperationUtilTest {
 		
 		Transfer transferOp = new Transfer();
 		
-		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, service.getSpecies(9606), service.getSpecies(10090)).get(0);
+		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse).get(0);
 		List<OrthologMappingInformation>  mappings = new ArrayList<OrthologMappingInformation>();
 		mappings.add(mapping);
 		
@@ -100,7 +101,7 @@ public class OperationUtilTest {
 	@Test
 	public void transferTest() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
-		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, service.getSpecies(9606), service.getSpecies(10090)).get(0);
+		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse).get(0);
 
 		OrthologMapping orthologs = service.getOrthologMapping(mapping);
 		
