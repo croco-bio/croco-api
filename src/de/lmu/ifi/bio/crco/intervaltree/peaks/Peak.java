@@ -73,6 +73,19 @@ public class Peak extends Interval {
 		return false;
 		
 	}
+	public boolean equals(String chrPrefix, Peak peak){
+		if ( peak.getChrom() != null || this.chrom != null){
+			if ( peak.getChrom() == null) return false;
+			if ( this.getChrom() == null) return false;
+			if (! peak.getChrom().equals((chrPrefix!=null?chrPrefix:"") + "" +this.getChrom())) return false;
+		}
+			
+		if (  peak.getStart() == this.getStart() && peak.getEnd() == this.getEnd()) 
+			return true;
+		
+		return false;
+		
+	}
 	
 	public static Pair<Peak,Integer> getMaxBindingSupportOverlap(List<Peak> peaks1, List<Peak> peaks2,int shift){
 		

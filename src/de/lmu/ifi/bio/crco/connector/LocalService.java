@@ -324,7 +324,7 @@ public class LocalService implements QueryService{
 			
 			if  (! network.containsEdge(tf, tg) ) toAddGroupId = groupId;
 			if ( openChromStart != null){
-				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
+				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(bindingChr,openChromStart,openChromEnd));
 				
 				network.addEdge(tf, tg, toAddGroupId, peak);
 				

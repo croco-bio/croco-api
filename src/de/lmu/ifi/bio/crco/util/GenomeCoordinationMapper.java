@@ -17,12 +17,17 @@ import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 
 public class GenomeCoordinationMapper {
 	
-	public static HashMap<Peak,Peak> map(File liftOverExec, File cainFile, Set<Peak> toTransfer, Float minMatch) throws Exception{
+	public static HashMap<Peak,Peak> map(File liftOverExec, File cainFile, Set<Peak> toTransfer, Float minMatch, String chrPrefix) throws Exception{
 		
 		File peakFile = File.createTempFile("liftOver.in.", ".tmp");
 		BufferedWriter bw = new BufferedWriter(new FileWriter(peakFile));
 		for(Peak peak  : toTransfer){
-			bw.write(peak.getChrom() + "\t" + peak.getStart() + "\t" + peak.getEnd() + "\n");
+			if ( peak.getChrom() == null) {
+				CroCoLogger.getLogger().warn("No chromosome name given for peak");
+				continue;
+			}
+		
+			bw.write( (chrPrefix!=null?chrPrefix:"") + peak.getChrom() + "\t" + peak.getStart() + "\t" + peak.getEnd() + "\n");
 		}
 		bw.flush();
 		bw.close();
@@ -30,6 +35,8 @@ public class GenomeCoordinationMapper {
 		File outputMatched = File.createTempFile("liftOver.out.matched", ".tmp");
 		File outputNotMatched = File.createTempFile("liftOver.out.notmatched", ".tmp");
 		CroCoLogger.getLogger().info(String.format("Start lift over with %d peaks",toTransfer.size()));
+		CroCoLogger.getLogger().debug(String.format("Match tmp file: %s",outputMatched.toString()));
+		CroCoLogger.getLogger().debug(String.format("No match tmp file: %s",outputNotMatched.toString()));
 		
 		liftOver(liftOverExec,cainFile,peakFile,outputMatched,outputNotMatched,minMatch);
 		
@@ -39,6 +46,7 @@ public class GenomeCoordinationMapper {
 		while( (currentLine = br.readLine())!=null){
 			String[] tokens = currentLine.split("\t");
 			String chrom = tokens[0];
+			
 			Integer start = Integer.valueOf(tokens[1]);
 			Integer end = Integer.valueOf(tokens[2]);
 			mappedPeakList.add(new Peak(chrom,start,end));
@@ -60,14 +68,12 @@ public class GenomeCoordinationMapper {
 		int j = 0, k = 0;
 		
 		HashMap<Peak,Peak> ret = new HashMap<Peak,Peak> ();
-	//	System.out.println(toTransfer.size());
-	//	System.out.println(mappedPeakList.size());
-//		System.out.println(notMappedPeakList.size());
+
 		if ( mappedPeakList.size()+notMappedPeakList.size() != toTransfer.size() ) {
 			throw new RuntimeException("Number of mappings is strange. Can not create mapping.");
 		}else{
 			for(Peak peak : toTransfer){
-				if (j < notMappedPeakList.size() && peak.equals(notMappedPeakList.get(j))){
+				if (j < notMappedPeakList.size() && peak.equals(chrPrefix,notMappedPeakList.get(j))){
 					j++;
 				}else{
 					//from -> to
@@ -77,9 +83,9 @@ public class GenomeCoordinationMapper {
 			}
 		}
 		
-		peakFile.delete();
-		outputMatched.delete();
-		outputNotMatched.delete();
+	//	peakFile.delete();
+	//	outputMatched.delete();
+	//	outputNotMatched.delete();
 		
 		return ret;
 	}

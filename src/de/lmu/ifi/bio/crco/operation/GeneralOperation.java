@@ -50,7 +50,7 @@ public abstract class GeneralOperation {
 			if ( p.equals(parameter)) {in=true; break;}
 		}
 		if ( in == false) {
-			CroCoLogger.getLogger().warn(String.format("Unknown parameter %s for %s",parameter.toString(),this.getClass().getSimpleName()));
+			CroCoLogger.getLogger().warn(String.format("Unknown parameter %s for %s",parameter.getClass().getSimpleName(),this.getClass().getSimpleName()));
 			return false;
 		}
 		passedParameters.put(parameter, value);

@@ -21,8 +21,13 @@ public class DNaseTFBSPeak extends Peak {
 	}
 	private TFBSPeak tfbsPeak;
 	private Peak openChromPeak;
-	public DNaseTFBSPeak(TFBSPeak tfbsPeak, Peak openChromPeak){
-		super((int)tfbsPeak.getLow(),(int)tfbsPeak.getHigh());
+	public DNaseTFBSPeak(String chrom, TFBSPeak tfbsPeak, Peak openChromPeak){
+		super(chrom,(int)tfbsPeak.getLow(),(int)tfbsPeak.getHigh());
+		this.tfbsPeak = tfbsPeak;
+		this.openChromPeak = openChromPeak;
+	}
+	public DNaseTFBSPeak( TFBSPeak tfbsPeak, Peak openChromPeak){
+		super(tfbsPeak.getChrom(),(int)tfbsPeak.getLow(),(int)tfbsPeak.getHigh());
 		this.tfbsPeak = tfbsPeak;
 		this.openChromPeak = openChromPeak;
 	}

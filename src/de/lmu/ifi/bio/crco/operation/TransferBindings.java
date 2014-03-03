@@ -11,7 +11,6 @@ import java.util.List;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TransferredPeak;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
@@ -21,13 +20,17 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**
  * Transfers bindings (genome positions) from one genome to another given a genome alignment (also cross-species).
- * @author robert
+ * @author rpesch
  *
  */
 public class TransferBindings extends GeneralOperation {
 	public static Parameter<File> ChainFileFile = new Parameter<File>("ChainFileFile");
 	public static Parameter<File> LiftOverExec = new Parameter<File>("LiftOverExec");
 	public static Parameter<Float> MinMatch = new Parameter<Float>("LiftOver Min. match score");
+	/**
+	 * ENCODE chain file use chr prefixes for chromosomes 
+	 */
+	public static Parameter<String> chrPrefix = new Parameter<String>("Prefix for chromosome");
 
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
@@ -36,24 +39,26 @@ public class TransferBindings extends GeneralOperation {
 		File chainFile = this.getParameter(ChainFileFile);
 		File liftOver = this.getParameter(LiftOverExec);
 		Float minMatch = this.getParameter(MinMatch);
-		
+		String prefix = this.getParameter(chrPrefix);
+
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
 		
 		List<Peak> bindingSites = new ArrayList<Peak>();
 		for(int edgeId : network.getEdgeIds()){
-			List<TFBSPeak> sites =network.getAnnotation(edgeId, EdgeOption.BindingSite,TFBSPeak.class);
+			List<Peak> sites =network.getAnnotation(edgeId, EdgeOption.BindingSite,Peak.class);
+		
 			bindingSites.addAll(sites);
 		}
 		CroCoLogger.getLogger().debug("Number of binding sites:\t" +bindingSites.size() );
 		HashMap<Peak, Peak> mappedSites = null;
 		try{
-			mappedSites = GenomeCoordinationMapper.map(liftOver, chainFile, new HashSet<Peak>(bindingSites), minMatch);
+			mappedSites = GenomeCoordinationMapper.map(liftOver, chainFile, new HashSet<Peak>(bindingSites), minMatch,prefix);
 		}catch(Exception e){
 			throw new OperationNotPossibleException("Can not map bindings",e);
 		}
 		CroCoLogger.getLogger().debug(String.format("Number of mapped sites: %d",mappedSites.size()));
 		for(int edgeId : network.getEdgeIds()){
-			List<TFBSPeak> sites = network.getAnnotation(edgeId, EdgeOption.BindingSite,TFBSPeak.class);
+			List<Peak> sites = network.getAnnotation(edgeId, EdgeOption.BindingSite,Peak.class);
 			List<TransferredPeak> mappings = new ArrayList<TransferredPeak>();
 			for(Peak site : sites){
 				if ( mappedSites.containsKey(site)) {
@@ -102,6 +107,7 @@ public class TransferBindings extends GeneralOperation {
 		para.add(ChainFileFile);
 		para.add(LiftOverExec);
 		para.add(MinMatch);
+		para.add(chrPrefix);
 		return para;
 	}
 

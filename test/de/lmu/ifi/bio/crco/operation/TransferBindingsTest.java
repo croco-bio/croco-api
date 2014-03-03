@@ -13,7 +13,7 @@ import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TransferredPeak;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
@@ -39,11 +39,11 @@ public class TransferBindingsTest {
 			assertNotNull(e);
 			assertNotNull(net.getBindings(edgeId));
 		}
-		
 		TransferBindings transfer = new TransferBindings();
 		transfer.setInput(TransferBindings.ChainFileFile, new File("/mnt/raid8/bio/biosoft/ENCODE/ALIGNMENT/MM9-HG19/mm9.hg19.all.chain"));
-		transfer.setInput(TransferBindings.LiftOverExec, new File("/home/users/pesch/workspace/croco-api/data/tools/linux.x86_64/liftOver"));
+		transfer.setInput(TransferBindings.LiftOverExec, new File("data/tools/linux.x86_64/liftOver"));
 		transfer.setInput(TransferBindings.MinMatch, 0.9f);
+		transfer.setInput(TransferBindings.chrPrefix, "chr");
 		transfer.setInputNetwork(net);
 		
 		Network transferredBindings = transfer.operate();
@@ -51,7 +51,7 @@ public class TransferBindingsTest {
 		int k =0;
 		for(int edgeId : transferredBindings.getEdgeIds()){
 			List<TransferredPeak> transferredPeaks = transferredBindings.getAnnotation(edgeId, EdgeOption.TransferredSite, TransferredPeak.class);
-			List<TFBSPeak> bindings = transferredBindings.getAnnotation(edgeId, EdgeOption.BindingSite, TFBSPeak.class);
+			List<Peak> bindings = transferredBindings.getAnnotation(edgeId, EdgeOption.BindingSite, Peak.class);
 			if (transferredPeaks != null ) k++;
 			assertTrue(transferredPeaks != null ||bindings != null );
 		}
