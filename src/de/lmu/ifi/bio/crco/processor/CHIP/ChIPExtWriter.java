@@ -200,7 +200,6 @@ public class ChIPExtWriter {
 				bwInfo.write(String.format("%s: %s\n",Option.numberOfPeak.name(),GenomeUtil.countPeaks(chipBindings)));
 				bwInfo.flush();
 				bwInfo.close();
-				if ( true ) continue;
 				File networkFile = new File(aggreatedDir + "/" +  fileBaseName+ ".network.gz");
 				
 				File annotationFile = new File(aggreatedDir + "/" +  fileBaseName + ".annotation.gz");
