@@ -26,6 +26,22 @@ public class Transfer extends GeneralOperation{
 	public static Parameter<OrthologRepository> OrthologRepository = new Parameter<OrthologRepository>("OrthologRepository");
 	public static Parameter<List<OrthologMappingInformation>> OrthologMappingInformation = new Parameter<List<OrthologMappingInformation>>("List of OrthologMappingInformation");
 	
+	@ParameterWrapper(parameter="OrthologMappingInformation",alias="OrthologMapping")
+	public void setOrthologMapping(String mapping) throws Exception{
+		String[] species = mapping.split(",");
+		if ( species.length != 2) throw new Exception("OrthologMapping format species1,species2 e.g. Human,Mouse");
+		Species s1 = null;
+		Species s2 = null;
+		for(Species s : Species.knownSpecies){
+			if ( s.getName().equals(species[0]) || s.getShortName().equals(species[0]) ) s1 = s;
+			if ( s.getName().equals(species[1]) || s.getShortName().equals(species[1]) ) s2 = s;
+			
+		}
+		if ( s1 == null || s2 == null) throw new Exception("No ortholog mapping for:" + mapping);
+		List<de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation> oMappings = this.getParameter(OrthologRepository).getService().getOrthologMappingInformation(null, s1, s2);
+		this.setInput(OrthologMappingInformation, oMappings);
+	}
+	
 	private Pair<Species,Species> getSourceAndTargetSpeciesRepresentation(OrthologMappingInformation orthologMappingInformation, Integer sourceTaxId ){
 		Species sourceSpeciesRepresentation = null;
 		Species targetSpeciesRepresentation = null;
@@ -38,6 +54,7 @@ public class Transfer extends GeneralOperation{
 		}
 		return new Pair<Species,Species>(sourceSpeciesRepresentation,targetSpeciesRepresentation);
 	}
+	
 	
 	@Override
 	protected Network doOperation(){
@@ -130,7 +147,7 @@ public class Transfer extends GeneralOperation{
 		//Species species = this.getParameter(Parameter.Specie,Species.class);
 		List<OrthologMappingInformation> orthologs = this.getParameter(OrthologMappingInformation);
 		if ( orthologs == null){
-			throw new OperationNotPossibleException("No mapping given");
+			throw new OperationNotPossibleException("No ortholog mapping given");
 		}
 		
 		OrthologRepository repository = this.getParameter(OrthologRepository);;

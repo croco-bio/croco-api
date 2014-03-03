@@ -14,6 +14,16 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class ReadNetworkTest {
 	@Test
+	public void testReadNetworkWrapper() throws Exception{
+		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		
+		ReadNetwork reader = new ReadNetwork();
+		reader.setInput(ReadNetwork.QueryService, service);
+		reader.setNetworkPathParameter("/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=2]");
+		System.out.println(reader.getParameter(ReadNetwork.NetworkHierachyNode).getGroupId());
+	}
+	
+	@Test
 	public void readNetwork() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
 

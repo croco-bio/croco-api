@@ -37,38 +37,19 @@ public class ReadBindingNetwork extends GeneralOperation {
 			globalRepository = false;
 		}
 		
+		BindingEnrichedDirectedNetwork network =null;
 		
-		BindingEnrichedDirectedNetwork net =new BindingEnrichedDirectedNetwork(node,globalRepository);
-		
-		int k = 0 ;
 		try{
-			 List<TFBSPeak> bindings = null;
 			if ( contextTreeNode == null)
-				bindings = service.getTFBSBindings(node.getGroupId(),null);
+				network = service.readBindingEnrichedNetwork(node.getGroupId(),null,globalRepository);
 			else
-				bindings = service.getTFBSBindings(node.getGroupId(),contextTreeNode.getId());
-			 for(TFBSPeak binding : bindings){
-			/*
-				 List<Entity> factors = binding.getFactors(); 
-				 for(Entity factor : factors){
-					 Entity target = binding.getTarget();
-					 Tuple<Entity, Entity> edge = net.createEdgeCore(factor,  target);
-					 if ( net.containsEdge(edge)){
-						 net.addEdge(factor,target, null, binding);
-					 }else{
-						 net.addEdge(factor,target, node.getGroupId(), binding);
-				 	}
-			 	}*/
-			 }
-			 
-			 k+=bindings.size();
+				network = service.readBindingEnrichedNetwork(node.getGroupId(),contextTreeNode.getId(),globalRepository);
+		
 		}catch(Exception e){
 			throw new OperationNotPossibleException("Can not get binding sites for experiment:" +node.toString(),e);
 		}
 	
-		CroCoLogger.getLogger().debug(String.format("Number of bindings: %d; Network size: %d",k,net.size()));
-		
-		return net;
+		return network;
 	}
 
 	@Override

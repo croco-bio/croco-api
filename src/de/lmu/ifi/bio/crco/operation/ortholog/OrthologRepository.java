@@ -23,6 +23,9 @@ public class OrthologRepository {
 	}
 	private static OrthologRepository instance;
 	
+	public QueryService getService() {
+		return service;
+	}
 	private HashMap<OrthologMappingInformation,OrthologMapping> orthologMapping;
 	
 	/**

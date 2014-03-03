@@ -55,7 +55,12 @@ public enum Option {
 	 public enum OptionType{
 		 Experiment,NetworkSimilarity;
 	 }
-	 
+	 public static Option getOption(String name){
+		 for(Option o : Option.values()){
+			 if ( o.name().equals(name)) return o;
+		 }
+		 return null;
+	 }
 	 Option(OptionType optionType,String description,String...alias){
 		 this.optionType = optionType;
 		 this.description = description;

@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -158,11 +157,10 @@ public class FIMOHandler extends TFBSHandler {
 		if ( outputDir.exists()){
 			CroCoLogger.getLogger().warn(String.format("Composite %s already in repository %s",ConsoleParameter.compositeName.getValue(cmdLine),ConsoleParameter.repositoryDir.getValue(cmdLine).toString()));
 		}else {
-			try{
-				 Files.createDirectories(outputDir.toPath());
-			}catch(IOException ex){
+			
+			if ( !	outputDir.mkdirs()){
+	
 				CroCoLogger.getLogger().fatal(String.format("Cannnot create composite %s in repository %s",ConsoleParameter.compositeName.getValue(cmdLine),ConsoleParameter.repositoryDir.getValue(cmdLine).toString()));
-				ex.printStackTrace();
 				System.exit(1);
 			}
 		}

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
@@ -26,10 +27,11 @@ public class BufferedLocalServiceTest {
 		
 		
 		BufferedService service = new BufferedService(new LocalService(logger,connection),new File("/tmp/"));
+		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("TFBS/Human/1.0E-6").getChildren().get(0);
 		
 		service.clean();
-		Network network1 = service.readNetwork(2219,null,false);
-		Network network2 = service.readNetwork(2219,null,false);
+		Network network1 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
+		Network network2 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
 		
 		assertTrue(network1.getSize() > 0);
 		assertEquals(network1.getSize(),network2.getSize());

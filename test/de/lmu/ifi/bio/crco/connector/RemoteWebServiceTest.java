@@ -23,10 +23,11 @@ public class RemoteWebServiceTest {
 	public void testGetOrthologMapping() throws Exception{
 		RemoteWebService service = new RemoteWebService("http://localhost:8080/croco-web/services/");
 		
-		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(null,Species.Human, Species.Worm);
+		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(null,Species.Human, Species.Mouse);
 		OrthologMapping mapping = service.getOrthologMapping(orthologMappings.get(0));
 		assertEquals(16957,mapping.getSize());
 	}
+	
 	
 	@Test
 	public void testGetOrthologMappingInformation() throws Exception{

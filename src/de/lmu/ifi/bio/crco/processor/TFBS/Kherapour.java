@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -101,8 +100,8 @@ public class Kherapour {
 		
 		File ouputBaseFile = new File(repositoryDir + "/" + composite);
 		
-		Files.createDirectories(ouputBaseFile.toPath());
-		
+		//Files.createDirectories(ouputBaseFile.toPath()); only java 1.7
+		ouputBaseFile.mkdirs();
 
 		
 		HashMap<String,IntervalTree<KherapourPromoter>> interval = new HashMap<String,IntervalTree<KherapourPromoter>>();

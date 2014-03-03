@@ -55,7 +55,7 @@ public interface QueryService {
 	 */
 	public Integer getNumberOfEdges(Integer groupId) throws Exception;
 	
-	public List<TFBSPeak> getTFBSBindings(Integer groupId, Integer contextId ) throws Exception;
+	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository ) throws Exception;
 	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception;
 	
 	//ortolog mapping

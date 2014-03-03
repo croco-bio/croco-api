@@ -70,7 +70,7 @@ public class OperationUtil {
 	 */
 	public static Network process(QueryService service, NetworkOperationNode operation, ProgressInformation pi) throws Exception  {
 		List<Network> ret = new ArrayList<Network>();
-		if ( pi.isKill()) return null;
+		if ( pi != null && pi.isKill()) return null;
 		for(NetworkOperationNode child : operation.getChildren()){
 			
 			if ( pi != null)pi.nextStep(child.getOperator());

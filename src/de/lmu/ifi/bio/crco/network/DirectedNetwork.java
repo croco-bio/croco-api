@@ -13,6 +13,9 @@ public class DirectedNetwork extends Network{
 	public DirectedNetwork(String name,Integer taxId, boolean globalRepository){
 		super(name, taxId,globalRepository);
 	}
+	public DirectedNetwork(NetworkHierachyNode networkHierachyNode, boolean globalRepository){
+		super(networkHierachyNode,globalRepository);
+	}
 	
 	
 	public DirectedNetwork(String name,Integer taxId){
@@ -24,9 +27,7 @@ public class DirectedNetwork extends Network{
 	}
 
 
-	public DirectedNetwork(NetworkHierachyNode node, boolean globalRepository) {
-		super(node,globalRepository);
-	}
+
 
 
 	@Override
