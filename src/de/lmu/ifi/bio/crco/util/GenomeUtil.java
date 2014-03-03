@@ -39,6 +39,7 @@ public class GenomeUtil {
 		else
 			data = new BufferedReader(new FileReader(peakFile));
 		String dataLine = null;
+		int k = 0;
 		while (( dataLine = data.readLine())!=null){
 			if ( dataLine.startsWith("##gff-version")) gff = true;
 			if ( dataLine.startsWith("#")) continue;
@@ -60,10 +61,24 @@ public class GenomeUtil {
 				peaks.put(chromosom, new IntervalTree<Peak>());
 			}
 			peaks.get(chromosom).insert(peak);
+			k++;
 		}
+		//sanity check
+		if ( countPeaks(peaks) != k) throw new RuntimeException("Number of peaks differs");
 		data.close();
 		return peaks;
 	}
+	public static int countPeaks(HashMap<String,IntervalTree<Peak>> peaks){ 
+		int k = 0;
+		for(Entry<String, IntervalTree<Peak>> e : peaks.entrySet()){
+			for(Peak p : e.getValue().getObjects()){
+				if ( p == null) continue;
+				k++;
+			}
+		}
+		return k;
+	}
+	
 	public static class TFBSGeneEnrichment{
 		public Gene gene;
 		public Transcript closestTranscriptUpstream;

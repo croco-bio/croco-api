@@ -26,7 +26,6 @@ public class GeneSetFilter extends GeneralOperation {
 		Network ret = Network.getEmptyNetwork(network.getClass(), network);
 		ret.setName(ret.getName() + "(filter)");
 		Set<Entity> ofInterest = new HashSet<Entity>(this.getParameter(genes));
-		System.out.println(ofInterest);
 		FilterType type = this.getParameter(filterType);
 		
 		HashMap<Entity,Set<Entity>> neighbours = new HashMap<Entity,Set<Entity>>();

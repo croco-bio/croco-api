@@ -184,6 +184,7 @@ public class ChIPExtWriter {
 			//	bwInfo.write(String.format("%s: %s\n",Option.AntibodyTarget.name(), antibody));
 			//	bwInfo.write(String.format("%s: %s\n",Option.AntibodyTargetMapped.name(), targetMapped));
 				bwInfo.write(String.format("%s: %s\n",Option.FactorList.name(),targetMapped));
+				bwInfo.write(String.format("%s: %s\n",Option.ENCODEName.name(),file.getName()));
 				
 				
 				for(Option option : Option.values()) {
@@ -194,10 +195,12 @@ public class ChIPExtWriter {
 						}
 					}
 				}
+		
+				HashMap<String, IntervalTree<Peak>> chipBindings = GenomeUtil.createPeakIntervalTree(file,chromIndex,startIndex,endIndex,7,maxSize); //max size == we want to ignore very long peaks
+				bwInfo.write(String.format("%s: %s\n",Option.numberOfPeak.name(),GenomeUtil.countPeaks(chipBindings)));
 				bwInfo.flush();
 				bwInfo.close();
-				
-				HashMap<String, IntervalTree<Peak>> chipBindings = GenomeUtil.createPeakIntervalTree(file,chromIndex,startIndex,endIndex,7,maxSize); //max size == we want to ignore very long peaks
+				if ( true ) continue;
 				File networkFile = new File(aggreatedDir + "/" +  fileBaseName+ ".network.gz");
 				
 				File annotationFile = new File(aggreatedDir + "/" +  fileBaseName + ".annotation.gz");

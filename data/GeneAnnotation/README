@@ -1,5 +1,11 @@
 GTF annotations needs to be downloaded from the following locations: 
 ftp://ftp.ensembl.org/pub/release-74/gtf/homo_sapiens/Homo_sapiens.GRCh37.73.gtf.gz
-ftp://ftp.ensembl.org/pub/release-74/gtf/mus_musculus/Mus_musculus.GRCm38.73.gtf.gz
+ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz
+#ftp://ftp.ensembl.org/pub/release-74/gtf/mus_musculus/Mus_musculus.GRCm38.73.gtf.gz
 ftp://ftp.ensembl.org/pub/release-74/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.73.gtf.gz
 ftp://ftp.ensembl.org/pub/release-74/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP5.73.gtf.gz
+
+The older NCBIM37 (mm9) mouse build is used due to its compactibility to the available ENCODE data (the ENCODE partners also alignment reads against mm9).
+
+
+

@@ -187,6 +187,7 @@ public class DNaseTFBSExtWriter {
 				bwInfo.write(String.format("%s: %s\n",Option.OpenChromType.name(),openChromExpType));
 				bwInfo.write(String.format("%s: %s\n",Option.Upstream.name(), upstream + ""));
 				bwInfo.write(String.format("%s: %s\n",Option.Downstream.name(), downstream +""));
+				bwInfo.write(String.format("%s: %s\n",Option.ENCODEName.name(),file.getName()));
 				
 				String cell = expNet.get("Cell");
 				String age= expNet.get("Age");
@@ -224,6 +225,7 @@ public class DNaseTFBSExtWriter {
 				BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
 				
 				HashMap<String, IntervalTree<Peak>> openChromPeaks = GenomeUtil.createPeakIntervalTree(file,0,1,2,7,null); 
+				bwInfo.write(String.format("%s: %s\n",Option.numberOfPeak.name(),GenomeUtil.countPeaks(openChromPeaks)));
 				
 				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,false);
 				

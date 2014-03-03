@@ -29,12 +29,12 @@ HUMAN_UNIPROBE_SCAN="$HUMAN_TFBS_SCAN_DIR/scan/human_10K_promoter_uniprobe"
 #TFBS id mappings
 
 HUMAN_TFBS_MAPPING_DIR="/Volumes/MyPassport/TFBS/mapping"
-HUMAN_JASPAR_MAPPING="$UMAN_TFBS_MAPPING_DIR/JASPAR_CORE_2009_vertebrates.mapping.human"
-HUMAN_TRANSFAC_MAPPING="$UMAN_TFBS_MAPPING_DIR/matrix_human.mapping"
-HUMAN_WEI_MAPPING="$UMAN_TFBS_MAPPING_DIR/wei2010_human_mws.mapping"
-HUMAN_WANG_MAPPING="$UMAN_TFBS_MAPPING_DIR/Wang.mapping"
-HUMAN_KHERADPOUR_MAPPING="$UMAN_TFBS_MAPPING_DIR/Kheradpour_human.mapping"
-HUMAN_UNIPROBE_MAPPING="$UMAN_TFBS_MAPPING_DIR/uniprobe_human.mapping"
+HUMAN_JASPAR_MAPPING="$HUMAN_TFBS_MAPPING_DIR/JASPAR_CORE_2009_vertebrates.mapping.human"
+HUMAN_TRANSFAC_MAPPING="$HUMAN_TFBS_MAPPING_DIR/matrix_human.mapping"
+HUMAN_WEI_MAPPING="$HUMAN_TFBS_MAPPING_DIR/wei2010_human_mws.mapping"
+HUMAN_WANG_MAPPING="$HUMAN_TFBS_MAPPING_DIR/Wang.mapping"
+HUMAN_KHERADPOUR_MAPPING="$HUMAN_TFBS_MAPPING_DIR/Kheradpour_human.mapping"
+HUMAN_UNIPROBE_MAPPING="$HUMAN_TFBS_MAPPING_DIR/uniprobe_human.mapping"
 
 HUMAN_EXPERIMENTAL_FILES=`find /home/users/pesch/Databases/ENCODE/CHIPSEQ-PEAKS/Human -name data.unmodified`
 HUMAN_EXPERIMENT_MAPPING="/home/users/pesch/Databases/ENCODE/DNASE-PEAKS/Human/wgEncodeUwDnas/data.unmodified"
@@ -67,6 +67,7 @@ TYPE="protein_coding"
 E5=0.00001
 E6=0.000001
 
+REPOSITORY_HOME=""
 
 
 

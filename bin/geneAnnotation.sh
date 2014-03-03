@@ -8,14 +8,11 @@
 source setEnvironment.sh
 
 java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotation.GeneAnnotation \
-  -taxId 9606 \
-  -gtfFile $HUMAN_GTF_FILE  \
-  -geneLinkOutFiles $HUMAN_GENE_LINKOUT_FILES \
-  -descriptionFile $HUMAN_GENE_DESCRIPTION_FILE \
-  -geneNameFile $HUMAN_GENE_NAME_FILE  -clean
- # -chromsoms $HUMAN_CHROMOSOMS -clean
-
-
+  -taxId 7227\
+  -gtfFile $FLY_GTF_FILE  \
+  -geneLinkOutFiles $FLY_GENE_LINKOUT_FILES \
+  -descriptionFile $FLY_GENE_DESCRIPTION_FILE \
+  -geneNameFile $FLY_GENE_NAME_FILE -clean
 
 java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotation.GeneAnnotation \
   -taxId 10090 \
@@ -24,8 +21,6 @@ java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotatio
   -descriptionFile $MOUSE_GENE_DESCRIPTION_FILE \
   -geneNameFile $MOUSE_GENE_NAME_FILE 
 #  -chromsoms $MOUSE_CHROMOSOMS
-
-
 
 java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotation.GeneAnnotation \
   -taxId 6239 \
@@ -36,10 +31,13 @@ java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotatio
 #  -chromsoms $WORM_CHROSOMS
 
 
-java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotation.GeneAnnotation \
-  -taxId 7227\
-  -gtfFile $FLY_GTF_FILE  \
-  -geneLinkOutFiles $FLY_GENE_LINKOUT_FILES \
-  -descriptionFile $FLY_GENE_DESCRIPTION_FILE \
-  -geneNameFile $FLY_GENE_NAME_FILE 
 #  -chromsoms $FLY_CHROMOSOMS
+
+java -Xmx4G -Xms4G -cp $CP -Xmx2G -Xms2G de.lmu.ifi.bio.crco.processor.Annotation.GeneAnnotation \
+  -taxId 9606 \
+  -gtfFile $HUMAN_GTF_FILE  \
+  -geneLinkOutFiles $HUMAN_GENE_LINKOUT_FILES \
+  -descriptionFile $HUMAN_GENE_DESCRIPTION_FILE \
+  -geneNameFile $HUMAN_GENE_NAME_FILE   
+ # -chromsoms $HUMAN_CHROMOSOMS 
+

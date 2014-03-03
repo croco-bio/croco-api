@@ -42,7 +42,11 @@ public enum Option {
 	 explainability(OptionType.NetworkSimilarity,"Fraction of explainable interactions"),
 	 networkDegreeOverlap(OptionType.NetworkSimilarity,"Network degree overlap"),
 	 
-	 numberOfInteractions(OptionType.Experiment,"Number of interactions");
+	 numberOfInteractions(OptionType.Experiment,"Number of interactions"), 
+	 
+	 ENCODEName(OptionType.Experiment,"Encode file id"),
+	 numberOfPeak(OptionType.Experiment,"Number of called peaks");
+	 
 	 
 	 public OptionType optionType;
 	 public String description;
