@@ -402,12 +402,22 @@ public class LocalService implements QueryService{
 	}
 	@Override
 	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception{
-
-		String sql =String.format("SELECT no.option_id,no.value FROM NetworkOption no  where group_id =%d",groupId);
 		Statement stat = connection.createStatement();
+		
+		String sql = String.format("SELECT has_network FROM NetworkHierachy where group_id = %d;",groupId);
+		stat.execute(sql);
+		ResultSet res = stat.getResultSet();
+		
+		boolean hasNetwork = false;
+		if (res.next() ){
+			hasNetwork = res.getBoolean(1);
+		}
+		res.close();
+		
+		sql =String.format("SELECT no.option_id,no.value FROM NetworkOption no  where group_id =%d",groupId);
 		stat.execute(sql);
 		logger.debug(sql);
-		ResultSet res = stat.getResultSet();
+		res = stat.getResultSet();
 		List<Pair<Option,String>> options = new ArrayList<Pair<Option,String>>();
 		while(res.next()) {
 			Integer optionId = res.getInt(1);
@@ -420,11 +430,12 @@ public class LocalService implements QueryService{
 		}
 		
 		res.close();
-		Integer interaction = this.getNumberOfEdges(groupId) ;
-		if ( interaction != null)
-			options.add(new Pair<Option,String>(Option.numberOfInteractions,interaction+""));
-		
 		stat.close();
+		
+		if ( hasNetwork){
+			Integer interaction = this.getNumberOfEdges(groupId) ;
+			if ( interaction != null)options.add(new Pair<Option,String>(Option.numberOfInteractions,interaction+""));
+		}
 		
 		return options;
 	}
@@ -749,6 +760,10 @@ public class LocalService implements QueryService{
 		
 		res.close();
 		return new ArrayList<BindingEnrichedDirectedNetwork>(groupIdToNetworkSummary.values());
+	}
+	@Override
+	public Long getVersion() {
+		return version;
 	}
 
 

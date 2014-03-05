@@ -19,6 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -124,6 +126,7 @@ public class NetworkHierachy  {
 	 * @throws Exception
 	 */
 	public void processHierachy(File repositoryDir, CroCoRepositoryProcessor networkFileHandler, CroCoRepositoryProcessor folderHandler ) throws Exception{ 
+		
 		Stack<Integer> parentIds = new Stack<Integer>();
 		Stack<File> files = new Stack<File>();
 		
@@ -164,8 +167,9 @@ public class NetworkHierachy  {
 					}
 					br.close();
 				}
-				
-				for(File f : file.listFiles()) {
+				List<File> currentFiles = Arrays.asList(file.listFiles()); //sort lexci.
+				Collections.sort(currentFiles);
+				for(File f : currentFiles) {
 					if ( ignoreList.contains(f.getName())){
 						CroCoLogger.getLogger().debug(String.format("Ignore sub folder: %s", f.toString()));
 						continue;
@@ -597,58 +601,7 @@ public class NetworkHierachy  {
 		
 		
 	}
-	/*
-	public static void readNetwork(Network network, File networkFile,Set<Entity> factors, Integer groupId) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
-		String line = null;
-		while((line=br.readLine())!=null){
-			String[] tokens = line.split("\t");
-			Entity factor = new Entity(tokens [0]);
-			if (!factors.contains(factor)) continue;
-			Entity target = new Entity(tokens[1]);
-			if ( groupId != null)
-				network.add(factor, target,groupId);
-			else
-				network.add(factor,target);
-		}
-		br.close();
-	}
-	public static void readNetwork(Network network, File networkFile, Integer groupId) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
-		String line = null;
-		while((line=br.readLine())!=null){
-			String[] tokens = line.split("\t");
-			Entity factor = new Entity(tokens [0]);;
-			Entity target = new Entity(tokens[1]);
-			if ( groupId != null)
-				network.add(factor, target,groupId);
-			else
-				network.add(factor,target);
-		}
-		br.close();
-	}
-	public static Network readNetwork(File infoFile, File networkFile,boolean gloablRepository) throws Exception {
-		HashMap<Option, String> infos = readInfoFile(infoFile);
-		if ( networkFile != null) infos.put(Option.networkFile, networkFile.toString());
-		return readNetwork(networkFile,infos,gloablRepository);
-	}
-	private static Network readNetwork(File networkFile,HashMap<Option,String> infos, boolean gloablRepository) throws Exception{
-		Integer taxId = null;
-		try{
-			taxId = Integer.valueOf(infos.get(Option.TaxId));
-		}catch(Exception e){
-			throw new RuntimeException("Can not get taxId for" + networkFile);
-		}
-		String name = infos.get(infos.get(Option.NetworkName));
-		if ( name == null) name = infos.get(Option.networkFile);
-		Network network = new DirectedNetwork(name,taxId,gloablRepository);
-		network.setNetworkInfo(infos);
-		
-		if ( networkFile != null) readNetwork(network,networkFile);
-		
-		return network;
-	}
-	*/
+
 	public static void writeNetworkHierachyFile(Network network, File outputNetworkFile) throws Exception{
 		BufferedWriter bwNetwork =null;
 		if ( outputNetworkFile.getName().endsWith(".gz")){

@@ -24,6 +24,8 @@ import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.DNaseTFBSPeak;
+import de.lmu.ifi.bio.crco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
@@ -45,6 +47,12 @@ public class RemoteWebService implements QueryService{
 		this.baseUrl = baseUrl;
 	
 	}
+
+	public static Long getServiceVersion(String baseUrl) throws IOException{
+		return (Long) performceOperation(baseUrl,"getVersion");
+		
+	}
+	
 	/**
 	 * Dummy object for null values;
 	 * @author pesch
@@ -83,10 +91,9 @@ public class RemoteWebService implements QueryService{
 		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
 		
 		for(Object parameter: parameters){
-			
 			out.writeObject(parameter);
-			
 		}
+		
 		out.close();
 		
 		ObjectInputStream in = null;
@@ -98,7 +105,6 @@ public class RemoteWebService implements QueryService{
 		}
 		Object object = null;
 		CroCoLogger.getLogger().debug(String.format("Reading results"));
-		
 		
 		try {
 			object =  in.readObject() ;
@@ -113,11 +119,9 @@ public class RemoteWebService implements QueryService{
 	}
 	@Override
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation)throws Exception {
-
 		
 		InputStream is = getStreamedData(baseUrl,"getOrthologMapping",orthologMappingInformation);
 	
-		
 		BufferedReader br = null;
 		try{
 			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(is)));
@@ -143,11 +147,112 @@ public class RemoteWebService implements QueryService{
 		
 		return  ret;//(OrthologMapping)performceOperation(baseUrl,"getOrthologMapping",orthologMappingInformation);
 	}
+	//TODO: merge with NetworkHierachy readAnnotation
+	private Float getValue(String value){
+		if ( value.trim().equals("NaN"))
+			return null;
+		if ( value.trim().equals("-"))
+			return null;
+		if( value.trim().equals(".") )
+			return null;
+		if( value.trim().length() == 0)
+			return null;
+		if ( Float.valueOf(value).intValue() == -1){
+			return null;
+		}
+		return Float.valueOf(value);
+	}
+	//TODO: merge with NetworkHierachy readAnnotation
+	@Override
+	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception {
+
+		if ( contextId != null){
+			return (BindingEnrichedDirectedNetwork)performceOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
+		}
+		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
+		InputStream is = getStreamedData(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
+		BufferedReader br = null;
+		try{
+			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(is)));
+		}catch(Exception e){
+			 byte[] tmp = new byte[1014];
+			is.read(tmp);
+			String errorMessage =new String(tmp).trim(); 
+			throw new CroCoException(String.format("Can not read network %d. Message from server: %s",groupId,errorMessage));
+		}
+		String line = null;
+		while((line=br.readLine())!=null){
+			String[] tokens = line.split("\t");
+			String type = tokens[0];
+			
+			String factor = tokens[1];
+			String target = tokens[2];
+			String bindingPartner = null;
+			Float bindingPValue = null;
+			String chrom = null;
+			Integer bindingStart = null;
+			Integer bindingEnd = null;
+	
+			Integer openChromStart = null;
+			Integer openChromEnd = null;
+			
+			Float openChromPValue = null;
+			Peak peak = null;
+			if ( type.equals("TFBS") || type.equals("TBFS") ){
+				bindingPartner = tokens[3];
+				bindingPValue = Float.valueOf(tokens[7]);
+				chrom = tokens[8];
+				bindingStart = Integer.valueOf(tokens[9]);
+				bindingEnd = Integer.valueOf(tokens[10]);
+				peak = new TFBSPeak(chrom,bindingStart,bindingEnd,bindingPartner,bindingPValue,null);
+			}else if ( type.equals("CHIP")){
+				bindingPartner = tokens[3];
+				bindingPValue = getValue(tokens[6]);
+				if ( bindingPValue != null){
+					bindingPValue = (float) Math.pow(bindingPValue, -10);
+				}
+				chrom = tokens[7];
+				bindingStart = Integer.valueOf(tokens[8]);
+				bindingEnd = Integer.valueOf(tokens[9]);	
+				peak = new TFBSPeak(chrom,bindingStart,bindingEnd,bindingPartner,bindingPValue,null);
+			}else if ( type.equals("OpenChromTFBS")){
+				bindingPartner = tokens[3];
+				bindingPValue = getValue(tokens[7]);
+				chrom = tokens[8];
+				bindingStart = Integer.valueOf(tokens[9]);
+				bindingEnd = Integer.valueOf(tokens[10]);
+				
+				openChromStart = Integer.valueOf(tokens[11]);
+				openChromEnd = Integer.valueOf(tokens[12]);
+			
+				openChromPValue = null;
+				TFBSPeak tfbs = new TFBSPeak(chrom,bindingStart,bindingEnd,bindingPartner,bindingPValue,null);
+				peak = new DNaseTFBSPeak(tfbs,new Peak(chrom,openChromStart,openChromEnd));
+			}else{
+				br.close();
+				throw new IOException("Unknown type:" + type);
+			}
+			network.addEdge(new Entity(factor), new Entity(target), groupId, peak);
+		}
+		
+		br.close();
+		
+		is.close();
+		
+		return network;
+	}
+	
 	@Override
 	public Network readNetwork(Integer groupId, Integer contextId,Boolean globalRepository) throws Exception {
+	
+		if ( contextId != null){
+			return 	 (Network)performceOperation(baseUrl,"readNetwork",groupId,contextId,false);
+		}
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),globalRepository);
+		
 		
 		InputStream is = getStreamedData(baseUrl,"readNetwork",groupId,contextId,globalRepository);
 	
@@ -171,9 +276,10 @@ public class RemoteWebService implements QueryService{
 		br.close();
 		
 		is.close();
-		
+
 		return network;
 	}
+	
 	@Override
 	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
 		InputStream is = getStreamedData(baseUrl,"getRenderedNetwork",groupId);
@@ -181,8 +287,6 @@ public class RemoteWebService implements QueryService{
 		is.close();
 		return image;
 	}
-	
-
 	
 	@Override
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
@@ -261,11 +365,12 @@ public class RemoteWebService implements QueryService{
 		return (List<BindingEnrichedDirectedNetwork>)performceOperation(baseUrl,"getBindings",factor,target);
 	}
 
-	@Override
-	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception {
-		return (BindingEnrichedDirectedNetwork)performceOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
 
+
+	@Override
+	public Long getVersion() {
+		return version;
 	}
 
-	
+
 }

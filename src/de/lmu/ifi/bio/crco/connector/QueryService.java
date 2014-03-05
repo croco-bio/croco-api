@@ -9,7 +9,6 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
@@ -23,7 +22,14 @@ import de.lmu.ifi.bio.crco.util.Pair;
  *
  */
 public interface QueryService {
-	//find networks
+	final static long version = 1l;
+	
+	/**
+	 * The current QueryService version
+	 * @return long value
+	 */
+	public Long getVersion();
+	
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception;
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option,String>> options) throws Exception;
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception;

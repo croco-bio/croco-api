@@ -203,4 +203,8 @@ public class BufferedService implements QueryService {
 	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository)throws Exception {
 		return service.readBindingEnrichedNetwork(groupId, contextId, gloablRepository);
 	}
+	@Override
+	public Long getVersion() {
+		return version;
+	}
 }
