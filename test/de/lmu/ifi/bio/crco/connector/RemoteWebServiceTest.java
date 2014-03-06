@@ -65,15 +65,20 @@ public class RemoteWebServiceTest {
 		System.out.println(networks);
 		assertTrue(networks != null);
 	}
-
 	@Test
 	public void testReadNetwork() throws Exception{
 		
 		RemoteWebService service = new RemoteWebService("http://localhost:8080/croco-web/services/");
+		Network networks = service.readNetwork(10761,null,true);
+		assertTrue(networks.getSize() > 0);
+		System.out.println(networks.getTaxId());
+	}
+	@Test
+	public void testReadNetworkWithContext() throws Exception{
+		
+		RemoteWebService service = new RemoteWebService("http://localhost:8080/croco-web/services/");
 		ContextTreeNode contextNode = service.getContextTreeNode("GO:0032502");
-		System.out.println(contextNode);
 		Network networks = service.readNetwork(10761, contextNode.getContextId(),true);
-		System.out.println(networks.getSize());
 		assertTrue(networks.getSize() > 0);
 	
 	}
