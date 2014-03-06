@@ -40,6 +40,7 @@ import org.apache.commons.cli.Options;
 
 import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.data.Entity;
+import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.NetworkType;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
@@ -533,9 +534,15 @@ public class NetworkHierachy  {
 		private HashMap<Option,String> infos;
 		private Boolean gloablRepository = false;
 		private File networkFile;
+		private NetworkHierachyNode node;
 		
 		public NetworkReader setNetworkInfo(File networkInfoFile) throws IOException{
 			this.infos = readInfoFile(networkInfoFile);
+			return this;
+		}
+	
+		public NetworkReader setNetworkHierachyNode(NetworkHierachyNode node){
+			this.node = node;
 			return this;
 		}
 		public NetworkReader setNetworkInfo(HashMap<Option,String> infos) throws IOException{
@@ -554,10 +561,12 @@ public class NetworkHierachy  {
 			this.gloablRepository = gloablRepository;
 			return this;
 		}
+		
 		public NetworkReader setGroupId(Integer groupId){
 			this.groupId = groupId;
 			return this;
 		}
+		
 		public NetworkReader setNetworkFile(File networkFile){
 			this.networkFile = networkFile;
 			return this;
@@ -565,23 +574,34 @@ public class NetworkHierachy  {
 		
 		public Network readNetwork() throws Exception {
 			if ( network == null){
-				Integer taxId = null;
-				String name = null;
-				if ( infos != null){
-					try{
-						taxId = Integer.valueOf(infos.get(Option.TaxId));
-					}catch(Exception e){
-						throw new RuntimeException("Can not get taxId for" + networkFile);
+				if ( node != null){
+					if ( infos != null){
+						CroCoLogger.getLogger().warn("networkInfo and network hierachy node given (use hierachy node");
 					}
-					name = infos.get(infos.get(Option.NetworkName));
-					if ( name == null) name = infos.get(Option.networkFile);
+					network = new DirectedNetwork(node,gloablRepository);
+				}else{
+					Integer taxId = null;
+					String name = null;
+					if ( infos != null){
+						try{
+							System.out.println(infos);
+							taxId = Integer.valueOf(infos.get(Option.TaxId));
+						}catch(Exception e){
+							throw new RuntimeException("Can not get taxId for" + networkFile);
+						}
+						name = infos.get(infos.get(Option.NetworkName));
+						if ( name == null) name = infos.get(Option.networkFile);
+					}
+					network = new DirectedNetwork(name,taxId,gloablRepository);
+					network.setNetworkInfo(infos);
 				}
-				network = new DirectedNetwork(name,taxId,gloablRepository);
-				network.setNetworkInfo(infos);
 			}
+	
 			if ( networkFile != null){
+			    
 				BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
 				String line = null;
+			
 				while((line=br.readLine())!=null){
 					String[] tokens = line.split("\t");
 					Entity factor = new Entity(tokens [0]);
@@ -595,7 +615,10 @@ public class NetworkHierachy  {
 				}
 				br.close();
 			}
-			if ( network == null) CroCoLogger.getLogger().warn("No network read. Neither networkFile nor networkInfo given.");
+			if ( network == null) 
+				CroCoLogger.getLogger().warn("No network read. Neither networkFile nor networkInfo given.");
+			else
+				CroCoLogger.getLogger().warn("Network read with " + network.getSize()  + " edges");
 			return network;
 		}
 		
