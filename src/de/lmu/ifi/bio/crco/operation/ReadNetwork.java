@@ -84,6 +84,7 @@ public class ReadNetwork extends GeneralOperation {
 		
 		
 		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode);
+		if ( node.getGroupId() == null) throw new OperationNotPossibleException("No group id given");
 		Network network = null;
 		try{
 			Integer contextId = null;
@@ -93,6 +94,7 @@ public class ReadNetwork extends GeneralOperation {
 		}catch(Exception e){
 			throw new OperationNotPossibleException("Could not read network",e);
 		}
+		
 		return network;
 	}
 	@Override

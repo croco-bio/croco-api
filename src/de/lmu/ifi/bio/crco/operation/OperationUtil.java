@@ -81,7 +81,6 @@ public class OperationUtil {
 		
 		GeneralOperation operator = operation.getOperator();
 		if ( pi != null)pi.nextStep(operator);
-
 		operator.setInputNetwork(ret);
 
 		Network network= operator.operate();
