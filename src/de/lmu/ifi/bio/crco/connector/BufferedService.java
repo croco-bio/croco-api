@@ -100,7 +100,8 @@ public class BufferedService implements QueryService {
 			return network;
 		}
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
-		return NetworkHierachy.getNetworkReader().setGloablRepository(globalRepository).setGroupId(groupId).setNetworkFile(networkFile).readNetwork();
+		
+		return NetworkHierachy.getNetworkReader().setGloablRepository(globalRepository).setNetworkFile(networkFile).setNetworkHierachyNode(service.getNetworkHierachyNode(groupId)).readNetwork();
 		
 	}
 	/*

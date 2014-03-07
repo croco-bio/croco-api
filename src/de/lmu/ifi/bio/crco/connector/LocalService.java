@@ -347,7 +347,6 @@ public class LocalService implements QueryService{
 
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
-		
 		if ( contextId == null){
 			Statement stat = connection.createStatement();
 			stat.execute(String.format("SELECT network_file_location FROM NetworkHierachy where group_id = %d",groupId));
@@ -357,9 +356,8 @@ public class LocalService implements QueryService{
 				networkFile = new File(res.getString(1));
 			}
 			stat.close();
-			
 			if ( networkFile.exists()){
-				return NetworkHierachy.getNetworkReader().setGroupId(groupId).setNetwork(network).readNetwork();
+				return NetworkHierachy.getNetworkReader().setGroupId(groupId).setNetwork(network).setNetworkFile(networkFile).readNetwork();
 			}else{
 				CroCoLogger.getLogger().debug(String.format("Network file %s does not exist. Try to read from database",networkFile.toString()));
 			}
@@ -394,7 +392,7 @@ public class LocalService implements QueryService{
 
 		}
 		res.close();
-			
+
 		logger.debug(String.format("Number of edges:%d",network.getSize()));
 		stat.close();
 		return network;
