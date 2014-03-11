@@ -21,21 +21,27 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 @Category(IntegrationTest.class)
 public class BufferedLocalServiceTest {
 	@Test
-	public void testReadNetwork() throws Exception{
+	public void testReadNetworkLocalService() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		
 		
 		BufferedService service = new BufferedService(new LocalService(logger,connection),new File("/tmp/"));
-		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("TFBS/Human/1.0E-6").getChildren().get(0);
+		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
 		
 		service.clean();
 		Network network1 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
+		for(int edgeId : network1.getEdgeIds()){
+			assertEquals(testNetworkNode.getGroupId(),network1.getAnnotation(edgeId,Network.EdgeOption.GroupId).get(0));
+		}
+		
 		Network network2 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
+		for(int edgeId : network2.getEdgeIds()){
+			assertEquals(testNetworkNode.getGroupId(),network1.getAnnotation(edgeId,Network.EdgeOption.GroupId).get(0));
+		}
 		
 		assertTrue(network1.getSize() > 0);
 		assertEquals(network1.getSize(),network2.getSize());
-		
 		
 		for(int edgeId : network1.getEdgeIds()){
 			if (! network2.containsEdgeId(edgeId)){
@@ -44,6 +50,35 @@ public class BufferedLocalServiceTest {
 		}
 	
 	}
+	@Test
+	public void testReadNetworkRemoteService() throws Exception{
+		
+		
+		BufferedService service = new BufferedService(new RemoteWebService(RemoteWebServiceTest.url_local),new File("/tmp/"));
+		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
+		
+		service.clean();
+		Network network1 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
+		for(int edgeId : network1.getEdgeIds()){
+			assertEquals(testNetworkNode.getGroupId(),network1.getAnnotation(edgeId,Network.EdgeOption.GroupId).get(0));
+		}
+		
+		Network network2 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
+		for(int edgeId : network2.getEdgeIds()){
+			assertEquals(testNetworkNode.getGroupId(),network2.getAnnotation(edgeId,Network.EdgeOption.GroupId).get(0));
+		}
+		
+		assertTrue(network1.getSize() > 0);
+		assertEquals(network1.getSize(),network2.getSize());
+		
+		for(int edgeId : network1.getEdgeIds()){
+			if (! network2.containsEdgeId(edgeId)){
+				assertFalse(true);
+			}
+		}
+	
+	}
+	
 	
 	@Test
 	public void testGetOrtholog() throws Exception{

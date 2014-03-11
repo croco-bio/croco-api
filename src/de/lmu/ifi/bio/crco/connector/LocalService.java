@@ -37,6 +37,7 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.CroCoProperties;
 import de.lmu.ifi.bio.crco.util.Pair;
 
 /**
@@ -353,7 +354,7 @@ public class LocalService implements QueryService{
 			ResultSet res = stat.getResultSet();
 			File networkFile = null;
 			if ( res.next()){
-				networkFile = new File(res.getString(1));
+				networkFile = new File(	CroCoProperties.getInstance().getValue("service.Networks") + "/" + res.getString(1));
 			}
 			stat.close();
 			if ( networkFile.exists()){
@@ -636,7 +637,7 @@ public class LocalService implements QueryService{
 		ResultSet res = stat.getResultSet();
 		if ( res.next()) {
 			String f = res.getString(1);
-			if (f!= null) networkFile=new File(f);
+			if (f!= null) networkFile=new File(CroCoProperties.getInstance().getValue("service.Networks") + "/" + f);
 		}
 		res.close();
 		stat.close();
@@ -701,7 +702,7 @@ public class LocalService implements QueryService{
 		if ( target != null && factor != null){
 			stat = DatabaseConnection.getConnection().prepareStatement(
 					"SELECT nh.group_id,nh.name,nh.network_type," +
-							"gene1,gene2, binding_start , binding_end, binding_p_value      , binding_motif ," +
+							"binding_start , binding_end, binding_p_value      , binding_motif ," +
 							"open_chrom_start , open_chrom_end " +
 					"FROM Network2Binding n " +
 					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
@@ -733,19 +734,19 @@ public class LocalService implements QueryService{
 			BindingEnrichedDirectedNetwork network = groupIdToNetworkSummary.get(groupId);
 			
 			
-			Entity tf = new Entity(res.getString(4));
-			Entity tg = new Entity(res.getString(5));
+			Entity tf = new Entity(factor);
+			Entity tg = new Entity(target);
 			
 			
 			
-			Integer bindingStart = res.getInt(6);
-			Integer bindingEnd = res.getInt(7);
-			Float bindingPValue = res.getFloat(8);
-			String motifId = res.getString(9);
+			Integer bindingStart = res.getInt(4);
+			Integer bindingEnd = res.getInt(5);
+			Float bindingPValue = res.getFloat(6);
+			String motifId = res.getString(7);
 			TFBSPeak tfbsPeak = new TFBSPeak(null,bindingStart,bindingEnd,motifId,bindingPValue,null);
 			
-			Integer openChromStart = res.getInt(10);
-			Integer openChromEnd = res.getInt(11);
+			Integer openChromStart = res.getInt(8);
+			Integer openChromEnd = res.getInt(9);
 			
 			if ( openChromStart != null){
 				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));

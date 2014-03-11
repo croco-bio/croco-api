@@ -40,8 +40,8 @@ public class OperationUtilTest {
 		
 		Network retNetwork = OperationUtil.process(service, root);
 		assertTrue(retNetwork.getSize()>0);
-		
 	}
+	
 	
 	@Test
 	public void intersectUnion() throws Exception{

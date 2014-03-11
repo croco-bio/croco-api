@@ -27,12 +27,14 @@ public class CroCoProperties {
 		instance = new CroCoProperties(is);
 	}
 	public static void init(File file) throws IOException{
+		System.out.println("Open:" + file);
 		instance = new CroCoProperties(new FileInputStream(file));
 	}
 	
 	public static CroCoProperties getInstance() throws IOException{
 		if ( instance == null){
 			InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("resources/connet.config");
+			System.out.println("Open: resources/connet.config");
 			if ( stream == null){ //last try
 				File file = new File("connet.config");
 				if ( file.exists()){

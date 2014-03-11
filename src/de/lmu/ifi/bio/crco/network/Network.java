@@ -158,7 +158,8 @@ public abstract class Network {
 		return (List<E>) this.annotation.get(edge).get(edgeOption.ordinal());
 	}
 	public List<Object> getAnnotation(int edge, EdgeOption edgeOption){
-		return this.annotation.get(edge).get(edgeOption.ordinal());
+		if ( this.annotation.contains(edge) && this.annotation.get(edge).contains(edgeOption.ordinal())) return this.annotation.get(edge).get(edgeOption.ordinal());
+		return null;
 	}
 	private void initEdgeRepository(){
 		if (edgeRepository ){

@@ -2,11 +2,14 @@ package de.lmu.ifi.bio.crco.connector;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -43,13 +46,16 @@ import de.lmu.ifi.bio.crco.util.Pair;
  */
 public class RemoteWebService implements QueryService{
 	private String baseUrl;
+	private boolean debug = false;
 	public RemoteWebService(String baseUrl){
 		this.baseUrl = baseUrl;
 	
 	}
-
+	public void enableDebugging(){
+		this.debug = true;
+	}
 	public static Long getServiceVersion(String baseUrl) throws IOException{
-		return (Long) performceOperation(baseUrl,"getVersion");
+		return (Long) performceOperation(false,baseUrl,"getVersion");
 		
 	}
 	
@@ -77,28 +83,45 @@ public class RemoteWebService implements QueryService{
 		
 		return conn.getInputStream();
 	}
-	
-	public static Object performceOperation(String baseUrl, String method, Object...parameters) throws IOException{
+	private static Object performceOperation(String baseUrl, String method, Object...parameters) throws IOException{
+		return performceOperation(false,baseUrl,method,parameters);
+	}
+	private static Object performceOperation(Boolean debug, String baseUrl, String method, Object...parameters) throws IOException{
 		URL url = new URL(String.format("%s/%s",baseUrl  , method));
 		
-		CroCoLogger.getLogger().debug(String.format("Query remote method %s",method));
+		CroCoLogger.getLogger().debug(String.format("Query remote url %s",url));
 		
 		URLConnection conn = url.openConnection();
 		conn.setDoOutput(true);
 		
 		XStream xstream = new XStream();
 		
-		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
 		
+		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
+	
 		for(Object parameter: parameters){
 			out.writeObject(parameter);
 		}
 		
+		
 		out.close();
+		InputStream conInput = conn.getInputStream();
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		byte[] buffer = new byte[1024];
+		int len;
+		StringBuffer content = new StringBuffer();
+		while ((len = conInput.read(buffer)) > -1 ) {
+			content.append(new String(buffer));
+		    baos.write(buffer, 0, len);
+		}
+		baos.flush();
+		CroCoLogger.getLogger().trace(content);
 		
 		ObjectInputStream in = null;
 		try{
-			 in = xstream.createObjectInputStream(conn.getInputStream());
+			 in = xstream.createObjectInputStream( new ByteArrayInputStream(baos.toByteArray()));
 		}catch(StreamException e){
 			CroCoLogger.getLogger().fatal("Cannot create object:" + e.getMessage());
 			return null;

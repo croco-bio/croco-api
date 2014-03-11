@@ -543,6 +543,7 @@ public class NetworkHierachy  {
 	
 		public NetworkReader setNetworkHierachyNode(NetworkHierachyNode node){
 			this.node = node;
+			this.groupId = node.getGroupId();
 			return this;
 		}
 		public NetworkReader setNetworkInfo(HashMap<Option,String> infos) throws IOException{

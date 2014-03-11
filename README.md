@@ -11,3 +11,6 @@ mvn package
 
 Copy java dependencies to target
 mvn dependency:copy-dependencies
+
+Generate javadoc
+mvn javadoc:javadoc

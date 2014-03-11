@@ -73,7 +73,7 @@ public class IntersectTest {
 		
 	}
 	@Test
-	public void testSimpleIntersectionGlobakRepo() throws Exception{
+	public void testSimpleIntersectionGlobalRepo() throws Exception{
 		//local repository
 		Network network1 = new DirectedNetwork("test",9606,true);
 		network1.add(new Gene("a"), new Gene("b"), 0);
@@ -81,13 +81,15 @@ public class IntersectTest {
 		
 		
 		Network network2 = new DirectedNetwork("test",9606,true);
-		network2.add(new Gene("a"), new Gene("b"), 0);
+		network2.add(new Gene("a"), new Gene("b"), 1);
 		
 		Intersect intersect = new Intersect();
 		intersect.setInputNetwork(network1,network2);
 		Network intersected = intersect.doOperation();
 		assertEquals(1,intersected.getSize());
-		
+		for(int edgeId : intersected.getEdgeIds()){
+			assertEquals(2,intersected.getAnnotation(edgeId,Network.EdgeOption.GroupId).size());
+		}
 	}
 	
 	@Test
