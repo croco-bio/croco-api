@@ -1,4 +1,5 @@
-<croco repository="http://services.bio.ifi.lmu.de/croco/services">
+<!DOCTYPE croco SYSTEM "croco.dtd">
+<croco>
 	<operation name="WriteNetwork">
 		<parameter name="OutputNetworkFile">/tmp/network.croco.gz</parameter>
 		<parameter name="OutputNetworkAnnotationFile">/tmp/network.croco.annotation.gz</parameter>
@@ -20,7 +21,7 @@
 						<inputNetworks>
 							<operation name="Intersect">
 								<inputNetworks>
-									<operation name="ReadNetwork" operation="Union" >
+									<operation name="ReadNetwork">
 										<parameter name="NetworkPath">/M. Musculus/Context-Specific Networks/Open Chromatin (TFBS)/DNase I Hypersensitive/High Confidence/JASPAR/MEL/[replicate=1</parameter>
 									</operation>
 									<operation name="ReadNetwork">

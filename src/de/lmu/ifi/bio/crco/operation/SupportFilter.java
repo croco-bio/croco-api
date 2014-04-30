@@ -17,7 +17,11 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 public class SupportFilter extends GeneralOperation{
 	public static Parameter<Integer> Support = new Parameter<Integer>("Support");
 	
-	
+	/**
+	 * The Support parameter
+	 * @param number -- minimum number of supports for an edge e.g. 2
+	 * @throws Exception
+	 */
 	@ParameterWrapper(parameter="Support",alias="Support")
 	public void setContextTreeNodeParameter(String number) throws Exception{
 		Integer sup = null;

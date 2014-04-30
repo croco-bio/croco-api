@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.Species;
@@ -19,13 +21,18 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**
  * Transfers a network using orthologs
- * @author robert
+ * @author rpesch
  *
  */
 public class Transfer extends GeneralOperation{
 	public static Parameter<OrthologRepository> OrthologRepository = new Parameter<OrthologRepository>("OrthologRepository");
 	public static Parameter<List<OrthologMappingInformation>> OrthologMappingInformation = new Parameter<List<OrthologMappingInformation>>("List of OrthologMappingInformation");
 	
+	/**
+	 * The OrthologMapping parameter
+	 * @param mapping -- two comma separated species names either (Human, Mouse, Fly, or Worm), or two comma separated tax ids for species in the ENSEMBL Compara. e.g. Human,Mouse, or 9606,10090 
+	 * @throws Exception
+	 */
 	@ParameterWrapper(parameter="OrthologMappingInformation",alias="OrthologMapping")
 	public void setOrthologMapping(String mapping) throws Exception{
 		String[] species = mapping.split(",");
@@ -35,8 +42,20 @@ public class Transfer extends GeneralOperation{
 		for(Species s : Species.knownSpecies){
 			if ( s.getName().equals(species[0]) || s.getShortName().equals(species[0]) ) s1 = s;
 			if ( s.getName().equals(species[1]) || s.getShortName().equals(species[1]) ) s2 = s;
-			
 		}
+	
+		
+		if ( s1 == null || s2 == null) {
+			Pattern p = Pattern.compile("\\d+");
+			Matcher m1 = p.matcher(species[0]);
+			Matcher m2 = p.matcher(species[1]);
+			
+			if ( m1.matches() && m2.matches()){
+				s1  =new Species( Integer.valueOf(species[0]));
+				s2 = new Species (Integer.valueOf(species[1]));
+			}
+		}
+		
 		if ( s1 == null || s2 == null) throw new Exception("No ortholog mapping for:" + mapping);
 		List<de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation> oMappings = this.getParameter(OrthologRepository).getService().getOrthologMappingInformation(null, s1, s2);
 		this.setInput(OrthologMappingInformation, oMappings);

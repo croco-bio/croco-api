@@ -12,7 +12,7 @@ import de.lmu.ifi.bio.crco.operation.intersect.IntersectionAnnotationCheck;
 import de.lmu.ifi.bio.crco.util.Tuple;
 /**
  * Intersect networks
- * @author robert
+ * @author rpesch
  *
  */
 public class Intersect extends GeneralOperation{

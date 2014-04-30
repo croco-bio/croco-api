@@ -5,18 +5,15 @@ import java.util.List;
 
 import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
-import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
-import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**
  * Reads a network with binding site annotations
- * @author robert
+ * @author rpesch
  *
  */
 public class ReadBindingNetwork extends ReadNetwork {

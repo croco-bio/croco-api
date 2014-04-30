@@ -9,7 +9,7 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**
  * Difference between a given network and a set of (n) networks
- * @author robert
+ * @author rpesch
  *
  */
 public class Difference extends GeneralOperation{

@@ -20,15 +20,11 @@ import de.lmu.ifi.bio.crco.util.Pair;
 public class ReadNetwork extends GeneralOperation {
 	
 	public static Parameter<Boolean> GlobalRepository = new Parameter<Boolean>("GlobalRepository",false);
-	/**
-	 * Available Wrappers: {@link de.lmu.ifi.bio.crco.operation.ReadNetwork#getNetworkPath}
-	 *@tt.wrapper bla bla
-	 */
 	public static Parameter<NetworkHierachyNode> NetworkHierachyNode = new Parameter<NetworkHierachyNode>("NetworkHierachyNode",null);
 	public static Parameter<ContextTreeNode> ContextTreeNode = new Parameter<ContextTreeNode>("ContextTreeNode",null);
 	
 	/**
-	 * @tt.wrapper Wrapper for {@link de.lmu.ifi.bio.crco.connector.NetworkHierachyNode}
+	 * Wrapper for {@link de.lmu.ifi.bio.crco.connector.NetworkHierachyNode}
 	 * @param path string
 	 * @return Object
 	 * @throws Exception if the connection to the {@link de.lmu.ifi.bio.crco.connector.QueryService} does not work.

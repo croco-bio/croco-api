@@ -18,14 +18,15 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.reflections.Reflections;
-
-import com.google.common.io.Files;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import de.lmu.ifi.bio.crco.connector.BufferedService;
-import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.connector.RemoteWebService;
 import de.lmu.ifi.bio.crco.data.NetworkOperationNode;
@@ -89,12 +90,18 @@ public class Engine {
 		}
 		CroCoLogger.getLogger().info(String.format("Found %d possible operation",generalOperationLookUp.size()));
 	}
-	public void parse(File xmlFile) throws Exception{
+	public void parse(File xmlFile,boolean validation) throws Exception{
 		SAXReader reader = new SAXReader();
-		Document document = reader.read(xmlFile);
-		
+		reader.setValidation(validation);
+		Document document = null;
+		try{
+			document = reader.read(xmlFile);
+		}catch(DocumentException e){
+			CroCoLogger.getLogger().fatal(e.getMessage());
+			CroCoLogger.getLogger().debug("Stacktrace:",e);
+			throw new RuntimeException(e.getMessage());
+		}
 		Element root = document.getRootElement();
-		String repository = root.attribute("repository").getValue();
 		if ( root.elements("operation").size() !=1){
 			throw new RuntimeException("Only one root operation allowed");
 		}
@@ -157,7 +164,7 @@ public class Engine {
 				}catch(InvocationTargetException e){
 					CroCoLogger.getLogger().fatal("Could not perform operation because of " + e.getCause().getMessage()) ;
 					CroCoLogger.getLogger().debug("Stacktrace", e);
-					System.exit(1);
+					throw new RuntimeException(e.getCause().getMessage());
 				}
 			//	System.out.println(generalOperation + " " + child.attributeValue("name"));
 			}else{
@@ -178,6 +185,8 @@ public class Engine {
 		options.addOption(OptionBuilder.withLongOpt("input").withArgName("FILE").withDescription("Input XML file").isRequired().hasArgs(1).create("input"));
 		options.addOption(OptionBuilder.withLongOpt("url").withArgName("URL").withDescription("Service URL (default http://services.bio.ifi.lmu.de/croco/services)").hasArgs(1).create("url"));
 		options.addOption(OptionBuilder.withLongOpt("bufferDir").withArgName("DIR").withDescription("Buffer dir (default ./croco_data)").hasArgs(1).create("bufferDir"));
+		options.addOption(OptionBuilder.withLongOpt("noDTDValidation").withDescription("Distable workflow DTD validation").create("noDTDValidation"));
+		
 		
 		CommandLine line = null;
 		try{
@@ -195,7 +204,7 @@ public class Engine {
 		if ( line.hasOption("tmpDir")){
 			tmpDir = new File(line.getOptionValue("tmpDir"));
 		}
-		
+		Boolean validate = !line.hasOption("noDTDValidation");
 		if ( !tmpDir.mkdir() || ! tmpDir.isDirectory()){
 			CroCoLogger.getLogger().info("Cannot create buffer dir (" + tmpDir + ")");
 		}
@@ -222,7 +231,7 @@ public class Engine {
 		}
 		
 		Engine engine = new Engine(bwService);
-		engine.parse(xmlFile);
+		engine.parse(xmlFile,validate);
 		
 		CroCoLogger.getLogger().info("Workflow finished.");
 	}

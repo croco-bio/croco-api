@@ -11,7 +11,7 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 /**
  * Options can be applied to any network. Network operation do implement this abstract class.
- * @author robert
+ * @author rpesch
  *
  */
 public abstract class GeneralOperation {

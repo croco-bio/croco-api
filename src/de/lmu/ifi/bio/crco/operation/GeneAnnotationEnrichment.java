@@ -14,7 +14,7 @@ import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**
  * Adds to a network gene names
- * @author robert
+ * @author rpesch
  *
  */
 public class GeneAnnotationEnrichment extends GeneralOperation {

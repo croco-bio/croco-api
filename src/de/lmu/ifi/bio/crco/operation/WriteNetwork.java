@@ -12,16 +12,30 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
+/**
+ * Writes a network to a file.
+ * @author pesch
+ *
+ */
 public class WriteNetwork extends GeneralOperation {
 	public static Parameter<File> NetworkOutputFile = new Parameter<File>("NetworkOutputFile");
 	public static Parameter<File> NetworkAnnotationFile = new Parameter<File>("NetworkAnnotationFile");
 	
 	
-	
+	/**
+	 * The OutputNetworkFile parameters
+	 * @param path -- the file e.g. /tmp/network.gz
+	 * @throws Exception
+	 */
 	@ParameterWrapper(parameter="NetworkOutputFile",alias="OutputNetworkFile")
 	public void setNetworkOutputFile(String path) throws Exception{
 		this.setInput(NetworkOutputFile, new File(path));
 	}
+	/**
+	 * The OutputNetworkAnnotationFile parameter
+	 * @param path -- the file e.g /tmp/network.details.gz
+	 * @throws Exception
+	 */
 	@ParameterWrapper(parameter="NetworkAnnotationFile",alias="OutputNetworkAnnotationFile")
 	public void setContextTreeNodeParameter(String path) throws Exception{
 		this.setInput(NetworkAnnotationFile, new File(path));
