@@ -332,12 +332,6 @@ public class RemoteWebService implements QueryService{
 		return (List)performceOperation(baseUrl,"getNetworkInfo",groupId);
 	}
 
-	@Override
-	public List<Entity> getEntities(Species species, String annotation, ContextTreeNode context) throws Exception {
-		return (List)performceOperation(baseUrl,"getEntities",annotation,context);
-	}
-
-
 
 	@Override
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
@@ -358,12 +352,6 @@ public class RemoteWebService implements QueryService{
 	}
 
 	@Override
-	public List<Species> getPossibleTransferSpecies() throws Exception {
-		return (List)performceOperation(baseUrl,"getPossibleTransferSpecies");
-	}
-
-
-	@Override
 	public List<ContextTreeNode> getContextTreeNodes(String name) throws Exception {
 		return (List)performceOperation(baseUrl,"getContextTreeNodes",name);
 	}
@@ -378,10 +366,6 @@ public class RemoteWebService implements QueryService{
 		return (ContextTreeNode)performceOperation(baseUrl,"getContextTreeNode",sourceId);
 	}
 
-	@Override
-	public List<Gene> getGene(String id) throws Exception {
-		return (List<Gene>)performceOperation(baseUrl,"getGene",id);
-	}
 
 	@Override
 	public List<BindingEnrichedDirectedNetwork> getBindings(String factor,String target) throws Exception {
@@ -393,6 +377,10 @@ public class RemoteWebService implements QueryService{
 	@Override
 	public Long getVersion() {
 		return version;
+	}
+	@Override
+	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {
+		return (List<Gene>)performceOperation(baseUrl,"getGenes",species,onlyCoding,context);
 	}
 
 

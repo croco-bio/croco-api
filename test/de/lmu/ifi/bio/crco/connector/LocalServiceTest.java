@@ -46,13 +46,19 @@ public class LocalServiceTest {
 		//service.findNetwork(options );
 	}
 	@Test
-	public void getGene() throws Exception{
+	public void getGenes() throws Exception{
 		QueryService service = new LocalService();
-		List<Gene> genes = service.getGene("ENSG00000169032");
-		assertEquals(genes.size(),1);
-		for(Transcript transcript : genes.get(0).getTranscripts()){
-			System.out.println(transcript.getStrandCorredStart());
+		List<Gene> genes = service.getGenes(Species.Human,true,null);
+		assertEquals(genes.size(),22553);
+		for(Gene gene : genes){
+			if (gene.getName().equals("TP53")){
+				for(Transcript transcript: gene.getTranscripts()){
+					assertNotNull(transcript.getStrandCorredStart() );
+				}
+			}
 		}
+		
+		
 		
 	}
 	@Test
@@ -104,14 +110,7 @@ public class LocalServiceTest {
 		NetworkHierachyNode root = service.getNetworkHierachy(null);
 		System.out.println(root.getChildren());
 	}
-	@Test
-	public void testGetEntity() throws Exception{
-		Connection connection = DatabaseConnection.getConnection();
-		
-		QueryService service = new LocalService(connection);
-		List<Entity> entities = service.getEntities(new Species(9606),null,null);
-		System.out.println(entities.size());
-	}
+
 	
 
 	/*

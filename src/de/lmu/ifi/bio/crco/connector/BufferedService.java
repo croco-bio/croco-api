@@ -148,11 +148,6 @@ public class BufferedService implements QueryService {
 			throws Exception {
 		return this.service.getNetworkInfo(groupId);
 	}
-	@Override
-	public List<Entity> getEntities(Species species, String annotation,
-			ContextTreeNode context) throws Exception {
-		return this.service.getEntities(species,annotation,context);
-	}
 
 	@Override
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
@@ -168,10 +163,6 @@ public class BufferedService implements QueryService {
 	@Override
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2)throws Exception {
 		return service.getOrthologMappingInformation(database, species1, species2);
-	}
-	@Override
-	public List<Species> getPossibleTransferSpecies() throws Exception {
-		return service.getPossibleTransferSpecies();
 	}
 
 	@Override
@@ -192,10 +183,7 @@ public class BufferedService implements QueryService {
 	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
 		return service.getRenderedNetwork(groupId);
 	}
-	@Override
-	public List<Gene> getGene(String id) throws Exception {
-		return service.getGene(id);
-	}
+	
 	@Override
 	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception {
 		return service.getBindings(factor, target);
@@ -207,5 +195,9 @@ public class BufferedService implements QueryService {
 	@Override
 	public Long getVersion() {
 		return version;
+	}
+	@Override
+	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {
+		return service.getGenes(species,onlyCoding,context);
 	}
 }

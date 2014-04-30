@@ -88,7 +88,7 @@ public class LocalService implements QueryService{
 						break;
 					}
 				}
-				if ( newRoot == null) throw new Exception(String.format("Network not found for path %s stopped at %s (id: %d)",path,token,rootNode.getGroupId()));
+				if ( newRoot == null) throw new Exception(String.format("Network not found for path %s stopped at %s (id: %d).",path,token,rootNode.getGroupId()));
 				rootNode = newRoot;
 			}
 		}
@@ -485,26 +485,6 @@ public class LocalService implements QueryService{
 		return ret;
 	}
 
-	@Override
-	public List<Species> getPossibleTransferSpecies() throws SQLException {
-		String sql =String.format(
-				"SELECT distinct(tx.tax_id),tax.name from (SELECT distinct(tax_id_1) as tax_id FROM OrthologMappingInformation UNION SELECT distinct(tax_id_2) as tax_id FROM OrthologMappingInformation) as tx JOIN Taxonomy tax on tax.tax_id = tx.tax_id  and type like 'scientific name';"
-		);
-		Statement stat = connection.createStatement();
-		logger.debug(sql);
-		stat.execute(sql);
-		ResultSet res = stat.getResultSet();
-		List<Species> ret = new ArrayList<Species>();
-		while(res.next()){
-			Integer taxId = res.getInt(1);
-			String name = res.getString(2);
-			ret.add(new Species(taxId,name));
-		}
-		
-		return ret;
-	}
-
-
 
 	@Override
 	public List<ContextTreeNode> getChildren(ContextTreeNode parent) throws Exception {
@@ -586,41 +566,7 @@ public class LocalService implements QueryService{
 
 
 
-	@Override
-	public List<Entity> getEntities(Species species,String bioType,ContextTreeNode context)  throws Exception{
-		
-		
-		String sql ="SELECT gene.gene,gene.gene_name type FROM Gene gene ";
-		if ( context != null){
-			sql += String.format("JOIN GeneContext context on context.gene = gene.gene and context_id=%d ",context.getContextId());
-		}
-		if ( bioType != null){
-			sql += String.format("JOIN Transcript transcript on gene.gene = transcript.gene ");
-		}
-		if ( species != null)
-			sql+=String.format("where tax_id=%d",species.getTaxId());
-		if ( bioType != null){
-			if ( species == null) 
-				sql+="where ";
-			else
-				sql+=" and ";
-			sql+=String.format("bio_type like '%s' GROUP by gene.gene", bioType);
-		}
-		
-		logger.debug(sql);
-		Statement stat = connection.createStatement();
-		stat.execute(sql);
-		ResultSet res = stat.getResultSet();
-		List<Entity> ret = new ArrayList<Entity>();
-		while(res.next()){
-			String gene = res.getString(1);
-			String name = res.getString(2);
-			ret.add(new Gene(gene,name));
-		}
-		
-		stat.close();
-		return ret;
-	}
+
 	public Logger getLogger() {
 		return logger;
 	}
@@ -650,21 +596,34 @@ public class LocalService implements QueryService{
 		}
 		return ret;
 	}
+	
+
 	@Override
-	public List<Gene> getGene(String id) throws Exception {
+	public List<Gene> getGenes(Species species,Boolean onlyCoding,ContextTreeNode context) throws Exception {
 		
-		PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement(
-				"SELECT gene.gene,gene_name,transcript.transcript_id,tss_start,transcript.tss_end,transcript.bio_type,gene.chrom,gene.strand,gene.tax_id From Gene gene "+
-				"JOIN Transcript transcript on transcript.gene = gene.gene " +
-				"where gene.gene = ? or gene.gene_name = ?"
-		);
-		CroCoLogger.getLogger().debug(stat.toString());
-		stat.setString(1, id);
-		stat.setString(2, id);
+		String sql ="SELECT gene.gene,gene_name,transcript.transcript_id,tss_start,transcript.tss_end,transcript.bio_type,gene.chrom,gene.strand,gene.tax_id From Gene gene "+
+				"JOIN Transcript transcript on transcript.gene = gene.gene ";
+		if ( context != null){
+			sql += String.format("JOIN GeneContext context on context.gene = gene.gene and context_id=%d ",context.getContextId());
+		}
+		if ( species != null || onlyCoding || context != null ){
+			sql+="where";
+		}
+		if ( species != null)sql+=String.format(" tax_id=%d",species.getTaxId());
+		if ( onlyCoding  ){
+			if ( species != null) sql +=" and ";
+			sql+=String.format(" bio_type like 'protein_coding'");
+		}
+		
+		
+		Statement stat = DatabaseConnection.getConnection().createStatement();
+		
+		CroCoLogger.getLogger().debug(sql.toString());
+		stat.execute(sql);
 		
 		List<Gene> genes= new ArrayList<Gene>();
 		Gene gene = null;
-		stat.execute();
+		
 		ResultSet res = stat.getResultSet();
 		
 		while(res.next()){
@@ -672,7 +631,6 @@ public class LocalService implements QueryService{
 			String geneName = res.getString(2);
 			String transcriptId = res.getString(3);
 			Integer tssStart = res.getInt(4);
-		//	Integer end = res.getInt(5);
 			String bioType = res.getString(6);
 			String chrom = res.getString(7);
 			Strand strand = null;
@@ -706,7 +664,6 @@ public class LocalService implements QueryService{
 							"open_chrom_start , open_chrom_end " +
 					"FROM Network2Binding n " +
 					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
-					"JOIN Gene g on g.gene =n.gene1 " +
 					"where gene1 = ? and gene2 = ?"
 			);
 			stat.setString(1, factor);
@@ -715,8 +672,10 @@ public class LocalService implements QueryService{
 			throw new Exception("Target and factor must not be null");
 		}
 		Map<Integer,BindingEnrichedDirectedNetwork> groupIdToNetworkSummary = new HashMap<Integer,BindingEnrichedDirectedNetwork>();
+		long start = System.currentTimeMillis();
 		CroCoLogger.getLogger().debug(stat);
 		stat.execute();
+		CroCoLogger.getLogger().debug("Time:" + (System.currentTimeMillis()-start)/1000 + " sec.");
 		ResultSet res = stat.getResultSet();
 		while(res.next()){
 			Integer groupId = res.getInt(1);

@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
-import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
@@ -68,16 +67,12 @@ public interface QueryService {
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception;
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception;
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2) throws Exception;
-	//TODO: Refactor (actually not needed anymore!)
-	public List<Species> getPossibleTransferSpecies() throws Exception;
-	
+
 	//context information
 	public List<ContextTreeNode> getContextTreeNodes(String name) throws Exception;
 	public List<ContextTreeNode> getChildren(ContextTreeNode node) throws Exception;
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception;
 	
-	//find species
-	//public List<Species> getSpecies(String prefix) throws Exception;
 
 	/**
 	 * Retrieves a rendered network image for a given network
@@ -89,20 +84,12 @@ public interface QueryService {
 	
 
 	/**
-	 * Finds genes by gene id
-	 * @param id the gene id
-	 * @return a list of genes
-	 * @throws Exception
-	 */
-	public List<Gene> getGene(String id) throws Exception;
-	
-	/**
-	 * Returns entities (genes) for a specific specific species with specific annotations
-	 * @param species the species of interest
+	 * Returns genes with specific properties
+	 * @param species the species of interest, or null
 	 * @param bioType the ensembl biotype e.g. protein_coding, or null
 	 * @param context the node context, or null
 	 * @return list of entities
 	 * @throws Exception
 	 */
-	public List<Entity> getEntities(Species species,String annotation, ContextTreeNode context) throws Exception;
+	public List<Gene> getGenes(Species species,Boolean onlyCoding, ContextTreeNode context) throws Exception;
 }
