@@ -123,7 +123,8 @@ public class RemoteWebService implements QueryService{
 		try{
 			 in = xstream.createObjectInputStream( new ByteArrayInputStream(baos.toByteArray()));
 		}catch(StreamException e){
-			CroCoLogger.getLogger().fatal("Cannot create object:" + e.getMessage());
+			CroCoLogger.getLogger().fatal(String.format("Cannnot read xstream. Message from server: %s",content));
+			
 			return null;
 		}
 		Object object = null;
@@ -132,11 +133,7 @@ public class RemoteWebService implements QueryService{
 		try {
 			object =  in.readObject() ;
 		} catch (Exception e) {
-			byte[] tmp = new byte[1024];
-			conn.getInputStream().read(tmp);
-			String errorMessage = new String(tmp).trim();
-			CroCoLogger.getLogger().fatal(String.format("Cannnot read result from web service. Message from server %s",errorMessage));
-			e.printStackTrace();
+			CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Message from server: %s",content));
 		}
 		return object;
 	}

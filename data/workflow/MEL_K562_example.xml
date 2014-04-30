@@ -8,10 +8,10 @@
 					<operation name="Intersect">
 						<inputNetworks>
 							<operation name="ReadNetwork">
-								<parameter name="NetworkPath">/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=1]</parameter>
+								<parameter name="NetworkPath">/H. Sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I Hypersensitive/High Confidence/JASPAR/K562/[replicate=1]</parameter>
 							</operation>
 							<operation name="ReadNetwork">
-								<parameter name="NetworkPath">/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=2]</parameter>
+								<parameter name="NetworkPath">/H. Sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I Hypersensitive/High Confidence/JASPAR/K562/[replicate=2]</parameter>
 							</operation>
 						</inputNetworks>
 					</operation>
@@ -21,10 +21,10 @@
 							<operation name="Intersect">
 								<inputNetworks>
 									<operation name="ReadNetwork" operation="Union" >
-										<parameter name="NetworkPath">/OpenChromTFBS/Mouse/DNase/0.000001/JASPAR/MEL/[replicate=1</parameter>
+										<parameter name="NetworkPath">/M. Musculus/Context-Specific Networks/Open Chromatin (TFBS)/DNase I Hypersensitive/High Confidence/JASPAR/MEL/[replicate=1</parameter>
 									</operation>
 									<operation name="ReadNetwork">
-										<parameter name="NetworkPath">/OpenChromTFBS/Mouse/DNase/0.000001/JASPAR/MEL/[replicate=2]</parameter>
+										<parameter name="NetworkPath">/M. Musculus/Context-Specific Networks/Open Chromatin (TFBS)/DNase I Hypersensitive/High Confidence/JASPAR/MEL/[replicate=2]</parameter>
 									</operation>
 								</inputNetworks>
 							</operation>

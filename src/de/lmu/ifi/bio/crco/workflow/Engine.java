@@ -22,6 +22,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.reflections.Reflections;
 
+import com.google.common.io.Files;
+
 import de.lmu.ifi.bio.crco.connector.BufferedService;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
@@ -144,7 +146,6 @@ public class Engine {
 				//getValue(generalOperation,child.getName(),child.attributeValue("name"));
 				String methodName=child.attributeValue("name");
 				String value = child.getData().toString();
-				
 				Method method = parameterAlias.get(new Pair<Class<? extends GeneralOperation>,String>(generalOperationClass,methodName));
 				if ( method == null){
 				
@@ -176,9 +177,7 @@ public class Engine {
 		Options options = new Options();
 		options.addOption(OptionBuilder.withLongOpt("input").withArgName("FILE").withDescription("Input XML file").isRequired().hasArgs(1).create("input"));
 		options.addOption(OptionBuilder.withLongOpt("url").withArgName("URL").withDescription("Service URL (default http://services.bio.ifi.lmu.de/croco/services)").hasArgs(1).create("url"));
-		options.addOption(OptionBuilder.withLongOpt("tmpDir").withArgName("DIR").withDescription("Temporary dir (default ./network)").hasArgs(1).create("tmpDir"));
-		
-		
+		options.addOption(OptionBuilder.withLongOpt("bufferDir").withArgName("DIR").withDescription("Buffer dir (default ./croco_data)").hasArgs(1).create("bufferDir"));
 		
 		CommandLine line = null;
 		try{
@@ -192,10 +191,15 @@ public class Engine {
 		if ( line.hasOption("url")){
 			remoteUrl = line.getOptionValue("url");
 		}
-		File tmpDir = new File("tmp");
+		File tmpDir = new File("croco_data");
 		if ( line.hasOption("tmpDir")){
 			tmpDir = new File(line.getOptionValue("tmpDir"));
 		}
+		
+		if ( !tmpDir.mkdir() || ! tmpDir.isDirectory()){
+			CroCoLogger.getLogger().info("Cannot create buffer dir (" + tmpDir + ")");
+		}
+		CroCoLogger.getLogger().info("Temp dir:" + tmpDir);
 		try{
 			Long version = RemoteWebService.getServiceVersion(remoteUrl);
 			if( !version.equals(QueryService.version)){
@@ -209,9 +213,6 @@ public class Engine {
 		}
 		
 		RemoteWebService service = new RemoteWebService(remoteUrl);
-		
-		
-		
 		BufferedService bwService = new BufferedService(service,tmpDir);
 		
 		File xmlFile =new File(line.getOptionValue("input"));
