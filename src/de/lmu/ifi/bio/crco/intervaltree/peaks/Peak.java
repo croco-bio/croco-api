@@ -245,4 +245,8 @@ public class Peak extends Interval {
 		}
 		return false;
 	}
+
+	public static int getMiddle(Peak binding) {
+		return (binding.getEnd()+binding.getStart())/2;
+	}
 }

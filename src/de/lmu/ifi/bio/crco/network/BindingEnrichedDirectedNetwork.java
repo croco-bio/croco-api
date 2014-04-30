@@ -26,7 +26,7 @@ public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
 		super(name, taxId, false);
 	}
 
-	public List<TFBSPeak> getBindings(int edgeId){
+	public List<Peak> getBindings(int edgeId){
 		return (List)super.getAnnotation(edgeId, EdgeOption.BindingSite);
 	}
 	public void addEdge(Entity entity1, Entity entity2, List<Integer> groupIds, List<Peak> possibleBinding){

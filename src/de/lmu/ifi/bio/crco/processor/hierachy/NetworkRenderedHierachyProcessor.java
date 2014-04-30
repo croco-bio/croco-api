@@ -22,6 +22,7 @@ import org.apache.commons.collections15.Transformer;
 
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.data.Entity;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.operation.converter.JUNGConverter;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy.CroCoRepositoryProcessor;
@@ -62,7 +63,7 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 		//load gene id to gene name mapping for all species
 		LocalService service = new LocalService();
 		nameMapping = new HashMap<String,String>();
-		List<Entity> knownEntities = service.getEntities(null, "protein_coding", null);
+		List<Gene> knownEntities = service.getGenes(null, true, null);
 		System.out.println(knownEntities.size());
 		for(Entity entity : knownEntities){
 			nameMapping.put(entity.getIdentifier(), entity.getName());

@@ -10,7 +10,7 @@ public class TFBSPeak extends Peak {
 	private String motifId;
 	private Float pValue;
 	
-	public float getpValue() {
+	public Float getpValue() {
 		return pValue;
 	}
 
