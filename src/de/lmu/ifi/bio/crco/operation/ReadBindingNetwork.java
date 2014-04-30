@@ -19,12 +19,7 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  * @author robert
  *
  */
-public class ReadBindingNetwork extends GeneralOperation {
-	public static Parameter<NetworkHierachyNode> NetworkHierachyNode  = new Parameter<NetworkHierachyNode>("NetworkHierachyNode");
-	public static Parameter<QueryService> QueryService = new Parameter<QueryService>("QueryService");
-	public static Parameter<Boolean> GlobalRepository = new Parameter<Boolean>("GlobalRepository");
-	public static Parameter<ContextTreeNode> ContextTreeNode = new Parameter<ContextTreeNode>("ContextTreeNode");
-
+public class ReadBindingNetwork extends ReadNetwork {
 	
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
@@ -55,7 +50,6 @@ public class ReadBindingNetwork extends GeneralOperation {
 	@Override
 	public void accept(List<Network> networks) throws OperationNotPossibleException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

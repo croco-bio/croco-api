@@ -10,6 +10,7 @@ import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
+import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class WriteNetwork extends GeneralOperation {
 	public static Parameter<File> NetworkOutputFile = new Parameter<File>("NetworkOutputFile");
@@ -31,6 +32,7 @@ public class WriteNetwork extends GeneralOperation {
 		Network network = this.getNetworks().get(0);
 		
 		try {
+			CroCoLogger.getLogger().info(String.format("Write network to %s",networkOutputFile));
 			NetworkHierachy.writeNetworkHierachyFile(network, networkOutputFile);
 		} catch (Exception e) {
 			throw new OperationNotPossibleException("Could not write network",e);
@@ -39,6 +41,7 @@ public class WriteNetwork extends GeneralOperation {
 		File annotationOutputFile = this.getParameter(NetworkAnnotationFile);
 		if ( annotationOutputFile != null){
 			try {
+				CroCoLogger.getLogger().info(String.format("Write network annotation to %s",networkOutputFile));
 				NetworkHierachy.writeNetworkHierachyAnnotationFile(network, annotationOutputFile);
 			} catch (IOException e) {
 				throw new OperationNotPossibleException("Could not write network annotation",e);

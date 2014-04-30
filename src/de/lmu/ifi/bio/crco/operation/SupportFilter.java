@@ -1,11 +1,13 @@
 package de.lmu.ifi.bio.crco.operation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
+import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 /**
  * Filters edges based on the number of times they have been observed
@@ -14,7 +16,21 @@ import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
  */
 public class SupportFilter extends GeneralOperation{
 	public static Parameter<Integer> Support = new Parameter<Integer>("Support");
-
+	
+	
+	@ParameterWrapper(parameter="Support",alias="Support")
+	public void setContextTreeNodeParameter(String number) throws Exception{
+		Integer sup = null;
+		try{
+			sup = Integer.valueOf(number);
+		}catch(NumberFormatException e){
+			throw new OperationNotPossibleException(String.format("%s cannot be coverted to an integer number",number),e);
+		}
+		this.setInput(Support,sup);
+		
+	}
+		
+	
 	@Override
 	public Network doOperation() {
 		Network network = this.getNetworks().get(0); //this.getParameter(Network.class, 0);
@@ -49,7 +65,7 @@ public class SupportFilter extends GeneralOperation{
 	}
 	@Override
 	public void checkParameter() throws OperationNotPossibleException {
-		// TODO Auto-generated method stub
+		if ( this.getParameter(Support) == null) throw new OperationNotPossibleException("Value for support not set.");
 	}
 
 }

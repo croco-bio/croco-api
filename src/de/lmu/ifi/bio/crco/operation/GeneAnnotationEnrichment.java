@@ -8,6 +8,7 @@ import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.Tuple;
 
@@ -17,7 +18,6 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class GeneAnnotationEnrichment extends GeneralOperation {
-	public static Parameter<QueryService> QueryService = new Parameter<QueryService>("QueryService");
 
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
@@ -26,7 +26,7 @@ public class GeneAnnotationEnrichment extends GeneralOperation {
 		Species species = new Species(network.getTaxId());
 		HashMap<String,String> idNameMapping = new HashMap<String,String>();
 		try{
-			List<Entity> entities = service.getEntities(species, null, null);
+			List<Gene> entities = service.getGenes(species,false,null);
 			for(Entity entity: entities){
 				idNameMapping.put(entity.getIdentifier(), entity.getName());
 			}

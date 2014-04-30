@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.data.exceptions.ParameterNotWellDefinedException;
 import de.lmu.ifi.bio.crco.network.Network;
@@ -14,6 +15,8 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
  *
  */
 public abstract class GeneralOperation {
+	public static Parameter<QueryService> QueryService = new Parameter<QueryService>("QueryService");
+	
 	
 	HashMap<Parameter<?>,Object> passedParameters = new HashMap<Parameter<?>,Object>();
 	

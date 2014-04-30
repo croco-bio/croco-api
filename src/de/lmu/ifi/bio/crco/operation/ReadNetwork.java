@@ -18,7 +18,7 @@ import de.lmu.ifi.bio.crco.util.Pair;
  * @author rpesch
  */
 public class ReadNetwork extends GeneralOperation {
-
+	
 	public static Parameter<Boolean> GlobalRepository = new Parameter<Boolean>("GlobalRepository",false);
 	/**
 	 * Available Wrappers: {@link de.lmu.ifi.bio.crco.operation.ReadNetwork#getNetworkPath}
@@ -26,7 +26,6 @@ public class ReadNetwork extends GeneralOperation {
 	 */
 	public static Parameter<NetworkHierachyNode> NetworkHierachyNode = new Parameter<NetworkHierachyNode>("NetworkHierachyNode",null);
 	public static Parameter<ContextTreeNode> ContextTreeNode = new Parameter<ContextTreeNode>("ContextTreeNode",null);
-	public static Parameter<QueryService> QueryService = new Parameter<QueryService>("QueryService");
 	
 	/**
 	 * @tt.wrapper Wrapper for {@link de.lmu.ifi.bio.crco.connector.NetworkHierachyNode}
@@ -38,6 +37,7 @@ public class ReadNetwork extends GeneralOperation {
 	public void setNetworkPathParameter(String query) throws Exception{
 		CroCoLogger.getLogger().debug("Query for network:"+query);
 		QueryService service = this.getParameter(QueryService);
+		if ( service == null) throw new RuntimeException("Query service not set");
 		Pattern pattern = Pattern.compile("(\\w+)=(\\w+)");
 		Matcher matcher = pattern.matcher(query);
 		List<Pair<Option,String>> options = new ArrayList<Pair<Option,String>>();
@@ -49,6 +49,7 @@ public class ReadNetwork extends GeneralOperation {
 			
 		}
 		String path = query.substring(0,query.lastIndexOf("/"));
+	
 		de.lmu.ifi.bio.crco.data.NetworkHierachyNode node = service.getNetworkHierachy(path);
 		if ( node.hasNetwork()) 
 			this.setInput(NetworkHierachyNode, node);

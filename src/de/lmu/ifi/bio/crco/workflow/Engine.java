@@ -22,8 +22,10 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.reflections.Reflections;
 
+import de.lmu.ifi.bio.crco.connector.BufferedService;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
+import de.lmu.ifi.bio.crco.connector.RemoteWebService;
 import de.lmu.ifi.bio.crco.data.NetworkOperationNode;
 import de.lmu.ifi.bio.crco.operation.GeneralOperation;
 import de.lmu.ifi.bio.crco.operation.OperationUtil;
@@ -34,21 +36,23 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 
 /**
- * A workflow prototype.
+ * A workflow engine prototype.
  * @author pesch
  *
  */
 public class Engine {
+	private static String url ="http://services.bio.ifi.lmu.de/croco/service";
+	private QueryService service = null;
+	
 	public File getFile(String path){
 		return new File(path);
 	}
 	
 	private HashMap<String,Class<? extends GeneralOperation>> generalOperationLookUp = null;
-	private HashMap<Class<? extends GeneralOperation>,HashMap<String,List<Method>>> parameterLookUp = null;
 	private HashMap<Pair<Class<? extends GeneralOperation>,String>,Method> parameterAlias= null;
-	private QueryService service;
 	
-	public Engine() throws Exception{
+	public Engine(QueryService service) throws Exception{
+		this.service = service;
 		generalOperationLookUp = new HashMap<String,Class<? extends GeneralOperation>>();
 		parameterAlias = new  HashMap<Pair<Class<? extends GeneralOperation>,String>,Method> ();
 		
@@ -75,14 +79,6 @@ public class Engine {
 				if ( method.isAnnotationPresent(ParameterWrapper.class))  {
 					ParameterWrapper annotation = method.getAnnotation(ParameterWrapper.class);
 					parameterAlias.put(new Pair<Class<? extends GeneralOperation>,String>(operation,annotation.alias()), method);
-					//annotations.parameter()
-					//System.out.println(annotations.parameter());
-					
-				//	Pair<Class<? extends GeneralOperation>,Parameter> parameter = new Pair<Class<? extends GeneralOperation>,Parameter(operation,annotations.annotationType());
-					
-				//	for(String alias : annotations.alias() ) {
-				//		System.out.println(alias);
-				//	}
 				}
 			}
 			
@@ -96,63 +92,23 @@ public class Engine {
 		Document document = reader.read(xmlFile);
 		
 		Element root = document.getRootElement();
+		String repository = root.attribute("repository").getValue();
 		if ( root.elements("operation").size() !=1){
 			throw new RuntimeException("Only one root operation allowed");
 		}
 		
 		Element rootOperation = (Element) root.elements("operation").get(0);
 		
-		service = new LocalService();
 		NetworkOperationNode rootNode = processOperation(rootOperation);
 		OperationUtil.process(service, rootNode);
 	}
-	private Object getValue(GeneralOperation generalOperation, String name, String value){
-		/*
-		Reflections reflections = new Reflections(generalOperation.getClass().getName());
-		Set<Method> methods = reflections.getMethodsAnnotatedWith(ParemterWrapper.class);
-		System.out.println(generalOperation.getClass().getName() + " " + methods);
-		*/
-		
-	/*
-		for(Parameter<?> parameter : generalOperation.getParameters()){
-			if ( parameter.getName().equals(name)){ //no wrapper is needed
-				if ( parameter.getClazz().equals(Integer.class)){
-					return Integer.valueOf(value);
-				}else if ( parameter.getClazz().equals(Float.class)){
-					return Float.valueOf(value);
-				}else if ( parameter.getClazz().equals(Double.class)){
-					return Double.valueOf(value);
-				}else if ( parameter.getClazz().equals(String.class)){
-					return value;
-				}else{
-					throw new RuntimeException(String.format("Can not cast value %s to %s for parameter %s. Use a parameter alias.",value,parameter.getClazz().toString()));
-				}
-			}
 
-			/*
-			if ( parameter.getAlias().equals(name)){
-				Wrapper wrapper = null;
-				try{
-					parameter.getWrapper().getClass().newInstance();
-				}catch(Exception e){
-					throw new RuntimeException(
-							String.format("Parameter %s can not be procssed by operation %d, due to initilization issues for wrapper",
-									name,generalOperation.toString(),parameter.getWrapper().toString()
-									),e
-								);
-				}
-			}*/
-		
-		
-		return null;
-	}
-  
-	public NetworkOperationNode processOperation(Element operation) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, IOException{
+	public NetworkOperationNode processOperation(Element operation) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,  SQLException, IOException{
 		Attribute operationName = operation.attribute("name");
 		CroCoLogger.getLogger().debug(String.format("Init %s",operationName.getValue()));
 		
 		if( !generalOperationLookUp.containsKey(operationName.getValue())){
-			throw new RuntimeException(String.format("Unknown operation %s",operationName.getName()));
+			throw new RuntimeException(String.format("Unknown operation %s:",operationName.getValue()));
 		}
 		Class<? extends GeneralOperation> generalOperationClass =  generalOperationLookUp.get(operationName.getValue());
 		GeneralOperation generalOperation =null;
@@ -162,22 +118,22 @@ public class Engine {
 			throw new RuntimeException(String.format("Can not initialize %s",operationName.getValue()),e);
 		}
 		NetworkOperationNode node = new NetworkOperationNode(null,-1,generalOperation);
+		if  ( generalOperation.getParameters() != null){
+			for(Parameter<?> paremter : generalOperation.getParameters()){
 		
-		for(Parameter<?> paremter : generalOperation.getParameters()){
-	
-			if ( paremter.getName().equals("QueryService")) {
-				CroCoLogger.getLogger().debug("Set query service for"  + generalOperation);
-				Parameter<QueryService> p =(Parameter<QueryService>) paremter;
-				generalOperation.setInput(p,service);
+				if ( paremter.getName().equals("QueryService")) {
+					CroCoLogger.getLogger().debug("Set query service for"  + generalOperation);
+					Parameter<QueryService> p =(Parameter<QueryService>) paremter;
+					generalOperation.setInput(p,service);
+				}
+				if ( paremter.getName().equals("OrthologRepository")) {
+					CroCoLogger.getLogger().debug("Set query service for"  + generalOperation);
+					Parameter<OrthologRepository> p =(Parameter<OrthologRepository>) paremter;
+					generalOperation.setInput(p,OrthologRepository.getInstance(service));
+				}
+				
 			}
-			if ( paremter.getName().equals("OrthologRepository")) {
-				CroCoLogger.getLogger().debug("Set query service for"  + generalOperation);
-				Parameter<OrthologRepository> p =(Parameter<OrthologRepository>) paremter;
-				generalOperation.setInput(p,OrthologRepository.getInstance(service));
-			}
-			
 		}
-		
 		for(Element child : (List<Element>)operation.elements()){
 			if ( child.getName().equals("inputNetworks")){
 				for(Element childOperation : (List<Element>) child.elements("operation")){
@@ -191,10 +147,17 @@ public class Engine {
 				
 				Method method = parameterAlias.get(new Pair<Class<? extends GeneralOperation>,String>(generalOperationClass,methodName));
 				if ( method == null){
+				
 					throw new RuntimeException("Unknown parameter name "+ methodName);
 				}
 				CroCoLogger.getLogger().debug(String.format("Set %s with %s on %s",method,value,generalOperation.getClass().getSimpleName()));
-				method.invoke(generalOperation,value);
+				try{
+					method.invoke(generalOperation,value);
+				}catch(InvocationTargetException e){
+					CroCoLogger.getLogger().fatal("Could not perform operation because of " + e.getCause().getMessage()) ;
+					CroCoLogger.getLogger().debug("Stacktrace", e);
+					System.exit(1);
+				}
 			//	System.out.println(generalOperation + " " + child.attributeValue("name"));
 			}else{
 				throw new RuntimeException(String.format("Unknown element %s",child));
@@ -212,7 +175,11 @@ public class Engine {
 	
 		Options options = new Options();
 		options.addOption(OptionBuilder.withLongOpt("input").withArgName("FILE").withDescription("Input XML file").isRequired().hasArgs(1).create("input"));
-
+		options.addOption(OptionBuilder.withLongOpt("url").withArgName("URL").withDescription("Service URL (default http://services.bio.ifi.lmu.de/croco/services)").hasArgs(1).create("url"));
+		options.addOption(OptionBuilder.withLongOpt("tmpDir").withArgName("DIR").withDescription("Temporary dir (default ./network)").hasArgs(1).create("tmpDir"));
+		
+		
+		
 		CommandLine line = null;
 		try{
 			line = parser.parse( options, args );
@@ -221,16 +188,42 @@ public class Engine {
 			lvFormater.printHelp(120, "java " + Engine.class.getName(), "", options, "", true);
 			System.exit(1);
 		}
+		String remoteUrl = url;
+		if ( line.hasOption("url")){
+			remoteUrl = line.getOptionValue("url");
+		}
+		File tmpDir = new File("tmp");
+		if ( line.hasOption("tmpDir")){
+			tmpDir = new File(line.getOptionValue("tmpDir"));
+		}
+		try{
+			Long version = RemoteWebService.getServiceVersion(remoteUrl);
+			if( !version.equals(QueryService.version)){
+				CroCoLogger.getLogger().fatal(String.format("Local and remote API are incompactible. Update your API (local version %f; remote version %f.",QueryService.version,version));
+				System.exit(1);
+			}
+		}catch(IOException e){
+			CroCoLogger.getLogger().fatal(String.format("Cannot connect to %s croco-repo",remoteUrl));
+			CroCoLogger.getLogger().debug("Stacktrace:",e);
+			System.exit(1);	
+		}
+		
+		RemoteWebService service = new RemoteWebService(remoteUrl);
+		
+		
+		
+		BufferedService bwService = new BufferedService(service,tmpDir);
+		
 		File xmlFile =new File(line.getOptionValue("input"));
 		if (! xmlFile.exists()){
 			CroCoLogger.getLogger().fatal(String.format("input XML file %s does not exist",xmlFile.toString()));
 			System.exit(1);
 		}
 		
-		Engine engine = new Engine();
+		Engine engine = new Engine(bwService);
 		engine.parse(xmlFile);
 		
-		CroCoLogger.getLogger().info("XML file processed");
+		CroCoLogger.getLogger().info("Workflow finished.");
 	}
 	
 	
