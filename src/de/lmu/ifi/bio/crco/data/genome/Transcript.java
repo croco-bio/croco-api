@@ -12,7 +12,9 @@ public class Transcript extends Entity{
 	private Gene parentGene;
 	private Protein protein;
 	private Integer tssStart;
-	
+	public Transcript(){
+		
+	}
 	public Transcript(Gene parentGene, String transcriptId) {
 		super(transcriptId);
 		this.parentGene = parentGene;
