@@ -587,7 +587,6 @@ public class LocalService implements QueryService{
 		}
 		res.close();
 		stat.close();
-		System.out.println(networkFile);
 		BufferedImage ret= null;
 		if ( networkFile != null){
 			File imageFile = new File(networkFile.toString().replace("network.gz","network.png"));
@@ -595,7 +594,6 @@ public class LocalService implements QueryService{
 				ret =  ImageIO.read(imageFile);
 			}
 		}
-		System.out.println(ret);
 		return ret;
 	}
 
