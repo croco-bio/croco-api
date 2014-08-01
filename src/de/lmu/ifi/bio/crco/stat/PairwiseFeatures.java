@@ -67,10 +67,10 @@ public class PairwiseFeatures {
 
 		@Override
 		public void process(Integer rootId, Integer networkId, File networkFile, File infoFile, File statFile,File annotationFile) throws Exception {
-			//CroCoLogger.getLogger().debug("Read " + networkFile);
 			Network network = NetworkHierachy.getNetworkReader().setNetworkInfo(infoFile).setGloablRepository(false).readNetwork();
 			network.addNetworkInfo(Option.networkFile, networkFile.toString());
 			networks.add(network);
+		
 		}
 
 		@Override
@@ -249,7 +249,6 @@ public class PairwiseFeatures {
 		 List<Pair<Entity,Entity>> ret = new ArrayList<Pair<Entity,Entity>>();
 		 Set<String> factorList1 = getFactorList(sourceNetwork.getOptionValue(Option.FactorList));
 		 Set<String> factorList2 = getFactorList(network.getOptionValue(Option.FactorList));
-		 
 		 for(String factor1 :factorList1 ){
 				
 			 if (! sourceNetwork.getTaxId().equals(network.getTaxId())){
@@ -301,7 +300,6 @@ public class PairwiseFeatures {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile,true));
 			
 		NetworkCollector collector = new NetworkCollector(); 
-		
 		Network sourceNetwork =  NetworkHierachy.getNetworkReader().setNetworkInfo(networkInfo).setGloablRepository(false).setNetworkFile(networkFile).readNetwork();
 		String sourceNetworkName =sourceNetwork.getOptionValue(Option.networkFile).replace(repositoryDir.toString(), "") ;
 		
@@ -314,6 +312,7 @@ public class PairwiseFeatures {
 
 		CroCoLogger.getLogger().info("Number of networks: " + networks.size());
 		for(int i = 0 ; i< networks.size() ; i++){
+			
 			CroCoLogger.getLogger().info(String.format("State: %d of %d",i,networks.size()));
 
 			Network network = networks.get(i); //Network with network infos but without edges
@@ -330,14 +329,15 @@ public class PairwiseFeatures {
 			}
 				
 			File targetNetworkFile = new File(networks.get(i).getOptionValue(Option.networkFile).toString());
-			Network tmpNetwork = NetworkHierachy.getNetworkReader().setNetworkFile(targetNetworkFile).setGloablRepository(false).setFactors(targetNetworkFactors).readNetwork();
+			Network tmpNetwork = NetworkHierachy.getNetworkReader().setNetworkInfo(networks.get(i).getNetworkInfo()).setGloablRepository(false).setFactors(targetNetworkFactors).setNetworkFile(new File(networks.get(i).getOptionValue(Option.networkFile))).readNetwork();
+			CroCoLogger.getLogger().info(String.format("Network size: %d", tmpNetwork.getSize()));
 			
 			if (! tmpNetwork.getTaxId().equals(sourceNetwork.getTaxId())){
 				tmpNetwork = transfer( sourceNetwork,tmpNetwork);
 				tmpNetwork.setNetworkInfo(network.getNetworkInfo());
 			}
 			if ( tmpNetwork.size() == 0){
-				CroCoLogger.getLogger().warn("No edges in network" + tmpNetwork.getOptionValues() + "\t" + targetNetworkFile);
+				CroCoLogger.getLogger().warn("No edges in network" +"\t" + targetNetworkFile);
 				continue;
 			}
 			network = tmpNetwork;

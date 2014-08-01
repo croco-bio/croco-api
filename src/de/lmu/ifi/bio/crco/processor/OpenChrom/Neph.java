@@ -24,7 +24,7 @@ public class Neph {
 	private static CroCoOption<File> NephResultDir_Parameter = new CroCoOption<File>("NephResultDir",new ConsoleParameter.FolderExistHandler()).isRequired().setDescription("Flat file networks").setArgs(1);
 	private static CroCoOption<File> mapping_parameter = new CroCoOption<File>("mapping",new ConsoleParameter.FileExistHandler()).isRequired().setArgs(1).setDescription("Gene name to ensembl mapping");
 	
-	
+	private static String NETWORK_FILE_NAME="genes-regulate-genes.txt";
 	public static void main(String[] args) throws Exception{
 		Locale.setDefault(Locale.US);
 		ConsoleParameter parameter = new ConsoleParameter();
@@ -71,8 +71,8 @@ public class Neph {
 				
 			
 				
-				File networkFile = new File(file.toString()  + "/genes.regulate.genes");
-				HashMap<String, Set<String>> network =new FileUtil.MappingFileReader(0,1,networkFile).readNNMappingFile();
+				File networkFile = new File(file.toString()  + "/" + NETWORK_FILE_NAME);
+				HashMap<String, Set<String>> network =new FileUtil.MappingFileReader(1,0,networkFile).readNNMappingFile();
 			
 			
 				BufferedWriter bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(outputDir + "/" +cellLine + ".network.gz")) ));

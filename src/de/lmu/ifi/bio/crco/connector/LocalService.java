@@ -587,6 +587,7 @@ public class LocalService implements QueryService{
 		}
 		res.close();
 		stat.close();
+		System.out.println(networkFile);
 		BufferedImage ret= null;
 		if ( networkFile != null){
 			File imageFile = new File(networkFile.toString().replace("network.gz","network.png"));
@@ -594,10 +595,11 @@ public class LocalService implements QueryService{
 				ret =  ImageIO.read(imageFile);
 			}
 		}
+		System.out.println(ret);
 		return ret;
 	}
-	
 
+	
 	@Override
 	public List<Gene> getGenes(Species species,Boolean onlyCoding,ContextTreeNode context) throws Exception {
 		
@@ -631,6 +633,7 @@ public class LocalService implements QueryService{
 			String geneName = res.getString(2);
 			String transcriptId = res.getString(3);
 			Integer tssStart = res.getInt(4);
+			Integer tssEnd = res.getInt(5);
 			String bioType = res.getString(6);
 			String chrom = res.getString(7);
 			Strand strand = null;
@@ -645,7 +648,7 @@ public class LocalService implements QueryService{
 				gene.setTaxId(taxID);
 			}
 			
-			Transcript transcript = new Transcript(gene,transcriptId,null,tssStart,bioType);
+			Transcript transcript = new Transcript(gene,transcriptId,null,tssStart,tssEnd,bioType);
 			gene.addTranscript(transcript);
 		}
 		
@@ -723,6 +726,7 @@ public class LocalService implements QueryService{
 	public Long getVersion() {
 		return version;
 	}
+
 
 
 }

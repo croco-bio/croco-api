@@ -46,10 +46,13 @@ import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
+import de.lmu.ifi.bio.crco.processor.OpenChrom.Neph;
 import de.lmu.ifi.bio.crco.stat.PairwiseFeatures;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
 import de.lmu.ifi.bio.crco.util.Tuple;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
 
 /**
  * Processes the file based network hierarchy.
@@ -57,32 +60,27 @@ import de.lmu.ifi.bio.crco.util.Tuple;
  *
  */
 public class NetworkHierachy  {
+	private static CroCoOption<File> TMP_DIR = new CroCoOption<File>("tmpDir",new ConsoleParameter.FileExistHandler()).isRequired().setArgs(1).setDescription("Gene name to ensembl mapping");
+	
+	
 	/**
 	 * Imports a file based croco hierarchy into a SQL database.
 	 * @param args
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception{
-		HelpFormatter lvFormater = new HelpFormatter();
-		CommandLineParser parser = new BasicParser();
 	
-		Options options = new Options();
-		options.addOption(OptionBuilder.withLongOpt("repositoryDir").withDescription("Repository directory").isRequired().hasArgs(1).create("repositoryDir"));
-		options.addOption(OptionBuilder.withLongOpt("tmpDir").withDescription("Temporary directory").hasArgs(1).create("tmpDir"));
-		
-		CommandLine line = null;
-		try{
-			line = parser.parse( options, args );
-		}catch(Exception e){
-			System.err.println( e.getMessage());
-			lvFormater.printHelp(120, "java " + NetworkHierachy.class.getName(), "", options, "", true);
-			System.exit(1);
-		}
+		ConsoleParameter parameter = new ConsoleParameter();
+		parameter.register(
+				ConsoleParameter.repositoryDir,
+				TMP_DIR
+		);
+		CommandLine cmdLine = parameter.parseCommandLine(args, NetworkHierachy.class);
 		
 		
-		File repositoryDir = new File(line.getOptionValue("repositoryDir"));
+		File repositoryDir = new File(cmdLine.getOptionValue("repositoryDir"));
 		File tmpDir = null;
-		if ( line.hasOption("tmpDir")) tmpDir = new File(line.getOptionValue("tmpDir"));
+		if ( cmdLine.hasOption("tmpDir")) tmpDir = new File(cmdLine.getOptionValue("tmpDir"));
 		File networkFile =File.createTempFile("networks.", ".croco",tmpDir) ;
 		File statFile =File.createTempFile("stat.", ".croco",tmpDir) ;
 		File annotationFile = File.createTempFile("annotation.", ".croco",tmpDir);
@@ -113,9 +111,12 @@ public class NetworkHierachy  {
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}finally{
+			
 			connection.close();
+			/*
 			networkFile.delete();
 			statFile.delete();
+			*/
 		}
 
 	}
@@ -385,7 +386,7 @@ public class NetworkHierachy  {
 			hierachy.setInt(4,Integer.valueOf(infoAnnotations.get(Option.TaxId)));
 			hierachy.setBoolean(5, true);
 			hierachy.setInt(6, NetworkType.valueOf(infoAnnotations.get(Option.NetworkType)).ordinal());
-			hierachy.setString(7, networkFile.toString());
+			hierachy.setString(7,  networkFile.toString().replace(repositoryDir.toString(), "") );
 			for(Entry<Option, String>e  : infoAnnotations.entrySet()){
 				if ( e.getKey().equals(Option.FactorList)) continue;
 				if ( e.getKey().equals(Option.NetworkName)) continue;
@@ -403,7 +404,7 @@ public class NetworkHierachy  {
 			hierachy.addBatch();
 			addtoNetwork(networkId,networkFile);
 			if ( annotationFile != null && annotationFile.exists()){
-				addToAnnotation(networkId,annotationFile);
+			//	addToAnnotation(networkId,annotationFile);
 			}
 			
 			
@@ -503,23 +504,19 @@ public class NetworkHierachy  {
 		
 	}
 
-	public static void processHierachy(){
-		
-	}
-	
-
-	
 	private static HashMap<Option,String> readInfoFile(File infoFile) throws IOException{
 		HashMap<Option,String> ret = new HashMap<Option,String> ();
 		BufferedReader br =new BufferedReader(new FileReader(infoFile));
 		String line = null;
 		while(( line = br.readLine())!=null){
+			
 			String[] tokens = line.split(":");
 			Option option = Option.valueOf(tokens[0].trim());
 			String value = tokens[1].trim();
 			ret.put(option, value);
 		}
 		br.close();
+		
 		return ret;
 	}
 
@@ -585,7 +582,6 @@ public class NetworkHierachy  {
 					String name = null;
 					if ( infos != null){
 						try{
-							System.out.println(infos);
 							taxId = Integer.valueOf(infos.get(Option.TaxId));
 						}catch(Exception e){
 							throw new RuntimeException("Can not get taxId for" + networkFile);
@@ -594,12 +590,10 @@ public class NetworkHierachy  {
 						if ( name == null) name = infos.get(Option.networkFile);
 					}
 					network = new DirectedNetwork(name,taxId,gloablRepository);
-					network.setNetworkInfo(infos);
 				}
 			}
-	
+			
 			if ( networkFile != null){
-			    
 				BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(networkFile))));
 				String line = null;
 			
@@ -615,11 +609,16 @@ public class NetworkHierachy  {
 						network.add(factor,target);
 				}
 				br.close();
+				if ( this.infos != null) network.setNetworkInfo(this.infos);
+				network.getOptionValues().put(Option.networkFile, networkFile.toString());
+		
 			}
-			if ( network == null) 
-				CroCoLogger.getLogger().warn("No network read. Neither networkFile nor networkInfo given.");
-			else
-				CroCoLogger.getLogger().warn("Network read with " + network.getSize()  + " edges");
+			if ( network == null) CroCoLogger.getLogger().warn("No network read. Neither networkFile nor networkInfo given.");
+			if ( network != null) network.setNetworkInfo(this.infos);
+			if ( network.getOptionValues().size() ==0) network.setNetworkInfo(this.infos);
+					
+			//else
+			//	CroCoLogger.getLogger().info("Network read with " + network.getSize()  + " edges");
 			return network;
 		}
 		

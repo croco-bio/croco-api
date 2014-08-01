@@ -11,6 +11,7 @@ public class Transcript extends Entity{
 	private String type;
 	private Gene parentGene;
 	private Protein protein;
+	private Integer tssEnd;
 	private Integer tssStart;
 	public Transcript(){
 		
@@ -21,11 +22,12 @@ public class Transcript extends Entity{
 		this.exons = new ArrayList<Exon>();
 		
 	}
-	public Transcript(Gene parentGene, String transcriptId,String transcriptName,Integer tssStart, String type) {
+	public Transcript(Gene parentGene, String transcriptId,String transcriptName,Integer tssStart,Integer tssEnd, String type) {
 		super(transcriptId);
 		this.parentGene = parentGene;
 		this.type = type;
 		this.tssStart = tssStart;
+		this.tssEnd =tssEnd;
 		
 	}
 	public Transcript(Gene parentGene, String transcriptId,String transcriptName, String type) {
@@ -79,6 +81,7 @@ public class Transcript extends Entity{
 	 * @return the <b>strand corrected<b> TSS end position or null when no exon or parent gene annotation is available
 	 */
 	public Integer getStrandCorredEnd(){
+		if ( tssEnd != null) return tssEnd;
 		if ( exons != null && parentGene != null){
 			if ( parentGene.getStrand().equals(Strand.PLUS)) //exons are ordered
 				return exons.get(exons.size()-1).getEnd();  //last exon end => TSS end
