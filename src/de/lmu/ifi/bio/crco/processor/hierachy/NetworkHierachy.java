@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,15 +29,13 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
+
+import com.google.common.io.Files;
 
 import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.data.Entity;
@@ -46,13 +45,13 @@ import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
-import de.lmu.ifi.bio.crco.processor.OpenChrom.Neph;
 import de.lmu.ifi.bio.crco.stat.PairwiseFeatures;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter;
+import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.Pair;
 import de.lmu.ifi.bio.crco.util.Tuple;
-import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
 
 /**
  * Processes the file based network hierarchy.
@@ -62,7 +61,8 @@ import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
 public class NetworkHierachy  {
 	private static CroCoOption<File> TMP_DIR = new CroCoOption<File>("tmpDir",new ConsoleParameter.FileExistHandler()).isRequired().setArgs(1).setDescription("Gene name to ensembl mapping");
 	
-	
+
+
 	/**
 	 * Imports a file based croco hierarchy into a SQL database.
 	 * @param args
@@ -84,23 +84,28 @@ public class NetworkHierachy  {
 		File networkFile =File.createTempFile("networks.", ".croco",tmpDir) ;
 		File statFile =File.createTempFile("stat.", ".croco",tmpDir) ;
 		File annotationFile = File.createTempFile("annotation.", ".croco",tmpDir);
+
 		
 		CroCoLogger.getLogger().info(String.format("Repository dir: %s",repositoryDir));
 		CroCoLogger.getLogger().info(String.format("Temp networkFile: %s",networkFile));
 		CroCoLogger.getLogger().info(String.format("Temp statFile: %s",statFile));
 		CroCoLogger.getLogger().info(String.format("Annotation file: %s",annotationFile));
 		
-		CroCoLogger.getLogger().info("Cleaning data");
 		Connection connection = DatabaseConnection.getConnection();
+		
+		CroCoLogger.getLogger().info("Cleaning data");
+        
 		Statement stat = connection.createStatement();
+		
 		stat.execute("DELETE FROM NetworkHierachy");
+		/*
 		stat.execute("DELETE FROM Network");
 		stat.execute("DELETE FROM NetworkOption");
 		stat.execute("DELETE FROM NetworkSimilarity");
 		stat.execute("DELETE FROM Network2Binding");
 		
 		stat.close();
-		
+		*/
 		
 		try{
 			NetworkHierachy hierachy = new NetworkHierachy();
@@ -120,6 +125,11 @@ public class NetworkHierachy  {
 		}
 
 	}
+	
+	private static int getNextId(AtomicInteger nextId)
+	{
+	    return nextId.incrementAndGet();
+	}
 	/**
 	 * Processes the file based representation of the croco repository
 	 * @param repositoryDir the repo folder
@@ -129,16 +139,17 @@ public class NetworkHierachy  {
 	 */
 	public void processHierachy(File repositoryDir, CroCoRepositoryProcessor networkFileHandler, CroCoRepositoryProcessor folderHandler ) throws Exception{ 
 		
+	
 		Stack<Integer> parentIds = new Stack<Integer>();
 		Stack<File> files = new Stack<File>();
 		
 		int rootId =1;
-		int nextFreeId =rootId;
+		AtomicInteger nextId = new AtomicInteger(rootId);
+		
 		for(File file : repositoryDir.listFiles()){
 			files.add(file);
-			parentIds.add(nextFreeId);
+			parentIds.add(rootId);
 		}
-		nextFreeId = nextFreeId+1;
 		
 		if ( networkFileHandler != null) networkFileHandler.init(rootId);
 		if ( folderHandler != null) folderHandler.init(rootId);
@@ -155,7 +166,7 @@ public class NetworkHierachy  {
 				File statFile = new File(file.toString().replace(".network.gz", ".stat"));
 				File annotationFile = new File(file.toString().replace(".network.gz", ".annotation.gz"));
 				
-				if ( networkFileHandler != null)networkFileHandler.process(currentRootId,nextFreeId++, file, infoFile,statFile,annotationFile);
+				if ( networkFileHandler != null)networkFileHandler.process(currentRootId,getNextId(nextId), file, infoFile,statFile,annotationFile);
 				
 			}else if ( file.isDirectory()){
 				File infoFile = new File(file + "/.info");
@@ -171,16 +182,18 @@ public class NetworkHierachy  {
 				}
 				List<File> currentFiles = Arrays.asList(file.listFiles()); //sort lexci.
 				Collections.sort(currentFiles);
+				
+				int folderId = getNextId(nextId);
 				for(File f : currentFiles) {
 					if ( ignoreList.contains(f.getName())){
 						CroCoLogger.getLogger().debug(String.format("Ignore sub folder: %s", f.toString()));
 						continue;
 					}
 					files.add(f);
-					parentIds.add(nextFreeId);
+					parentIds.add(folderId);
 				}
 				File statFile = new File(file.toString().replace(".network.gz", ".stat"));
-				if ( folderHandler != null) folderHandler.process(currentRootId,nextFreeId++ , file, infoFile,statFile,null);
+				if ( folderHandler != null) folderHandler.process(currentRootId,folderId , file, infoFile,statFile,null);
 				
 			}
 		}	
@@ -203,7 +216,7 @@ public class NetworkHierachy  {
 	class SubFolderProcess implements CroCoRepositoryProcessor{
 		private PreparedStatement hierachy;
 		public SubFolderProcess(Connection connection) throws SQLException{
-			this.hierachy =  connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location) values(?,?,?,?,?,?,?)");
+			this.hierachy =  connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location,hash) values(?,?,?,?,?,?,?,?)");
 		}
 		
 		@Override
@@ -229,6 +242,8 @@ public class NetworkHierachy  {
 			hierachy.setBoolean(5, false);
 			hierachy.setNull(6, java.sql.Types.INTEGER);
 			hierachy.setNull(7, java.sql.Types.VARCHAR);
+			hierachy.setNull(8, java.sql.Types.INTEGER);
+            
 			hierachy.execute();
 			
 		}
@@ -269,7 +284,7 @@ public class NetworkHierachy  {
 			
 			this.connection = connection;
 			this.statFile = statFile;
-			this.hierachy = connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location) values(?,?,?,?,?,?,?)");
+			this.hierachy = connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location,hash) values(?,?,?,?,?,?,?,?)");
 			
 			
 			bwStat = new BufferedWriter(new FileWriter(statFile));
@@ -387,6 +402,10 @@ public class NetworkHierachy  {
 			hierachy.setBoolean(5, true);
 			hierachy.setInt(6, NetworkType.valueOf(infoAnnotations.get(Option.NetworkType)).ordinal());
 			hierachy.setString(7,  networkFile.toString().replace(repositoryDir.toString(), "") );
+			
+			long hash= Files.getChecksum(networkFile, new java.util.zip.CRC32());
+			hierachy.setLong(8, hash);
+			
 			for(Entry<Option, String>e  : infoAnnotations.entrySet()){
 				if ( e.getKey().equals(Option.FactorList)) continue;
 				if ( e.getKey().equals(Option.NetworkName)) continue;
@@ -404,7 +423,7 @@ public class NetworkHierachy  {
 			hierachy.addBatch();
 			addtoNetwork(networkId,networkFile);
 			if ( annotationFile != null && annotationFile.exists()){
-			//	addToAnnotation(networkId,annotationFile);
+				addToAnnotation(networkId,annotationFile);
 			}
 			
 			
@@ -421,6 +440,7 @@ public class NetworkHierachy  {
 			hierachy.setBoolean(5, false);
 			hierachy.setNull(6, java.sql.Types.INTEGER);
 			hierachy.setNull(7, java.sql.Types.VARCHAR);
+			hierachy.setNull(8, java.sql.Types.INTEGER);
 			hierachy.addBatch();
 		}
 
@@ -485,7 +505,7 @@ public class NetworkHierachy  {
 			
 			System.out.println("Sleeping for 5sec");
 			Thread.sleep(5000);
-			
+			/*
 			System.out.println("Loading network into database");
 			stat = connection.createStatement();
 			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network (group_id,gene1,gene2);  ",networkFile.toString()) );
@@ -500,6 +520,7 @@ public class NetworkHierachy  {
 			stat = connection.createStatement();
 			stat.execute(String.format("LOAD DATA INFILE '%s' INTO TABLE Network2Binding;",annotationFile.toString()) );
 			stat.close();
+		*/
 		}
 		
 	}

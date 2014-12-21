@@ -54,8 +54,8 @@ public class Neph {
 		}
 		for(File file : NephResultDir.listFiles()){
 			if ( file.isDirectory()){
-				
-				String cellLine = file.getName().split("-")[0];
+			
+				String cellLine = file.getName();//.split("-")[0];
 				
 				File infoFile = new File(outputDir + "/" +cellLine + ".info");
 				BufferedWriter bwInfo = new BufferedWriter(new FileWriter(infoFile));
@@ -68,9 +68,7 @@ public class Neph {
 				bwInfo.write(String.format("%s: %d\n",Option.Downstream.name(), 5000));
 				bwInfo.write(String.format("%s: %s\n",Option.cellLine.name(), cellLine));
 				bwInfo.write(String.format("%s: %s\n",Option.reference.name(), "Neph at el., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012"));
-				
-			
-				
+
 				File networkFile = new File(file.toString()  + "/" + NETWORK_FILE_NAME);
 				HashMap<String, Set<String>> network =new FileUtil.MappingFileReader(1,0,networkFile).readNNMappingFile();
 			
@@ -82,8 +80,7 @@ public class Neph {
 					mappedFactors.add(factor);
 					for(String t : e.getValue()){
 						String target = mapping.get(t);
-						if ( factor == null || t == null) continue;
-						
+						if ( factor == null || target == null || factor.length() == 0 || target.length() == 0) continue;
 						bwNetwork.write(factor + "\t" + target + "\n");
 					}
 				}

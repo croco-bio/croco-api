@@ -680,7 +680,6 @@ public class LocalService implements QueryService{
 		ResultSet res = stat.getResultSet();
 		while(res.next()){
 			Integer groupId = res.getInt(1);
-			
 		
 			String name = res.getString(2);
 			NetworkType type = NetworkType.values()[res.getInt(3)];
@@ -696,8 +695,6 @@ public class LocalService implements QueryService{
 			
 			Entity tf = new Entity(factor);
 			Entity tg = new Entity(target);
-			
-			
 			
 			Integer bindingStart = res.getInt(4);
 			Integer bindingEnd = res.getInt(5);
