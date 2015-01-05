@@ -12,7 +12,11 @@ import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 
 
 public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
-	
+	public BindingEnrichedDirectedNetwork()
+	{
+	    
+	}
+    
 	public BindingEnrichedDirectedNetwork(Network network){
 		super(network);
 	}

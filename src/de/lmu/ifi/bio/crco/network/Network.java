@@ -59,6 +59,11 @@ public abstract class Network {
 	public String getOptionValue(Option option){
 		return networkInfo.get(option);
 	}
+	
+	protected Network()
+	{
+	    
+	}
 	public void addNetworkInfo(Option option, String value){
 		networkInfo.put(option, value);
 	}

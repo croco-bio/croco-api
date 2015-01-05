@@ -35,6 +35,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.cli.CommandLine;
 
+import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
@@ -402,8 +403,7 @@ public class NetworkHierachy  {
 			hierachy.setBoolean(5, true);
 			hierachy.setInt(6, NetworkType.valueOf(infoAnnotations.get(Option.NetworkType)).ordinal());
 			hierachy.setString(7,  networkFile.toString().replace(repositoryDir.toString(), "") );
-			
-			long hash= Files.getChecksum(networkFile, new java.util.zip.CRC32());
+			long hash= Files.hash(networkFile,   Hashing.crc32()).asLong();
 			hierachy.setLong(8, hash);
 			
 			for(Entry<Option, String>e  : infoAnnotations.entrySet()){
@@ -636,7 +636,7 @@ public class NetworkHierachy  {
 			}
 			if ( network == null) CroCoLogger.getLogger().warn("No network read. Neither networkFile nor networkInfo given.");
 			if ( network != null) network.setNetworkInfo(this.infos);
-			if ( network.getOptionValues().size() ==0) network.setNetworkInfo(this.infos);
+			if ( network.getOptionValues() != null && network.getOptionValues().size() ==0) network.setNetworkInfo(this.infos);
 					
 			//else
 			//	CroCoLogger.getLogger().info("Network read with " + network.getSize()  + " edges");

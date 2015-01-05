@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -75,7 +76,8 @@ public class RemoteWebService implements QueryService{
 		
 		XStream xstream = new XStream();
 		
-		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
+		
+		ObjectOutputStream out = xstream.createObjectOutputStream(new OutputStreamWriter(conn.getOutputStream()));
 		for(Object parameter: parameters){
 			out.writeObject(parameter);
 		}
@@ -97,7 +99,7 @@ public class RemoteWebService implements QueryService{
 		XStream xstream = new XStream();
 		
 		
-		ObjectOutputStream out = xstream.createObjectOutputStream(conn.getOutputStream());
+		ObjectOutputStream out = xstream.createObjectOutputStream(new OutputStreamWriter(conn.getOutputStream()));
 	
 		for(Object parameter: parameters){
 			out.writeObject(parameter);
@@ -113,27 +115,31 @@ public class RemoteWebService implements QueryService{
 		int len;
 		StringBuffer content = new StringBuffer();
 		while ((len = conInput.read(buffer)) > -1 ) {
-			content.append(new String(buffer));
+		    String c = new String(buffer,0,len);
+			content.append(c.replaceAll("\\n",""));
 		    baos.write(buffer, 0, len);
 		}
 		baos.flush();
 		CroCoLogger.getLogger().trace(content);
 		
-		ObjectInputStream in = null;
+		String debugContent = content.substring(0, Math.min(2048,content.length())).replace(" ", "");
+		
+        ObjectInputStream in = null;
 		try{
-			 in = xstream.createObjectInputStream( new ByteArrayInputStream(baos.toByteArray()));
+			 in = xstream.createObjectInputStream( new InputStreamReader(new ByteArrayInputStream(baos.toByteArray())));
 		}catch(StreamException e){
-			CroCoLogger.getLogger().fatal(String.format("Cannnot read xstream. Message from server: %s",content));
-			
-			return null;
+		    CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Error: %s. Message from server: %s",e.getMessage(),debugContent));
+	        return null;
 		}
+		
 		Object object = null;
 		CroCoLogger.getLogger().debug(String.format("Reading results"));
 		
+
 		try {
 			object =  in.readObject() ;
 		} catch (Exception e) {
-			CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Message from server: %s",content));
+			CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Error: %s. Message from server: %s",e.getMessage(),debugContent));
 		}
 		return object;
 	}

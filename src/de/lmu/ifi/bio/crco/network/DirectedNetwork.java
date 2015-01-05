@@ -26,7 +26,9 @@ public class DirectedNetwork extends Network{
 		super(network);
 	}
 
-
+	public DirectedNetwork()
+	{
+	}
 
 
 

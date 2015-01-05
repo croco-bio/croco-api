@@ -12,8 +12,10 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
+import de.lmu.ifi.bio.crco.operation.Transfer;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
+import de.lmu.ifi.bio.crco.operation.ortholog.OrthologRepository;
 import de.lmu.ifi.bio.crco.test.IntegrationTest;
 
 @Category(IntegrationTest.class)
@@ -52,8 +54,13 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testGetOrthologMappingInformation() throws Exception{
 		RemoteWebService service = new RemoteWebService(url);
-		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(null,Species.Human, null);
+		List<OrthologMappingInformation> orthologMappings = service.getOrthologMappingInformation(null,Species.Human, Species.Mouse);
 		assertTrue(orthologMappings.size() > 0);
+	
+		Transfer transferOperation = new Transfer();
+        transferOperation.setInput(Transfer.OrthologMappingInformation, service.getOrthologMappingInformation(null, Species.Human, Species.Mouse));
+        transferOperation.setInput(Transfer.OrthologRepository,OrthologRepository.getInstance( service));
+        
 	}
 
 	@Test
@@ -73,7 +80,7 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testListNetwork() throws Exception {
 		RemoteWebService service = new RemoteWebService(url);
-		NetworkHierachyNode networks = service.getNetworkHierachy("");
+		NetworkHierachyNode networks = service.getNetworkHierachy("/");
 		assertTrue(networks != null);
 	}
 	@Test
@@ -87,15 +94,14 @@ public class RemoteWebServiceTest {
 			assertEquals(10761,networks.getAnnotation(edgeId, Network.EdgeOption.GroupId).get(0));
 		}
 		
-		System.out.println(networks.getTaxId());
 	}
 	@Test
 	public void testReadNetworkWithContext() throws Exception{
 		
-		RemoteWebService service = new RemoteWebService(url);
+		RemoteWebService service = new RemoteWebService(url_local);
 		ContextTreeNode contextNode = service.getContextTreeNode("GO:0032502");
-		Network networks = service.readNetwork(10761, contextNode.getContextId(),true);
-		assertTrue(networks.getSize() > 0);
+		Network network = service.readNetwork(3619, contextNode.getContextId(),true);
+		assertTrue(network.getSize() > 0);
 	
 	}
 }
