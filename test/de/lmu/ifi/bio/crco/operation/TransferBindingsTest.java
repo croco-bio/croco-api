@@ -25,7 +25,7 @@ public class TransferBindingsTest {
 	@Test
 	public void testTransfer() throws Exception{
 		ReadBindingNetwork reader = new ReadBindingNetwork();
-		QueryService service = new LocalService(DatabaseConnection.getConnection());
+		QueryService service = new LocalService();
 		
 		reader.setInput(ReadBindingNetwork.QueryService, service);
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3720,9606));

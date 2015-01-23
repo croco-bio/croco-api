@@ -1,13 +1,17 @@
 package de.lmu.ifi.bio.crco.operation;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
+import de.lmu.ifi.bio.crco.connector.BufferedService;
 import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
+import de.lmu.ifi.bio.crco.connector.RemoteWebService;
 import de.lmu.ifi.bio.crco.data.IdentifierType;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
@@ -18,10 +22,39 @@ import de.lmu.ifi.bio.crco.operation.intersect.BindingSiteOverlapCheck;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class IntersectTest {
+    @Test
+    public void testIntersectk562() throws Exception
+    {
+        RemoteWebService remoteService = new RemoteWebService("http://localhost:8080/croco-web/services");
+        BufferedService service = new BufferedService(remoteService,new File("networkBufferDir/")); 
+        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
+        
+        
+        ReadNetwork reader = new ReadNetwork();
+        reader.setInput(ReadNetwork.QueryService, service);
+        reader.setInput(ReadNetwork.NetworkHierachyNode, k562Networks.get(0));
+            
+        Network k562_rep1 = reader.operate();
+        
+        reader.setInput(ReadNetwork.QueryService, service);
+        reader.setInput(ReadNetwork.NetworkHierachyNode, k562Networks.get(1));
+            
+        Network k562_rep2 = reader.operate();
+        
+        Intersect intersect = new Intersect();
+        intersect.setInputNetwork(k562_rep1,k562_rep2);
+        Network k562_rep12 = intersect.operate();
+        
+        CroCoLogger.getLogger().info("Intersection:" +k562_rep12.getSize());
+        assertTrue(k562_rep12.size()<k562_rep1.size());
+        assertTrue(k562_rep12.size()<k562_rep2.size());
+        
+    }
+    
 	@Test
 	public void testBinding() throws Exception{
 		ReadBindingNetwork reader = new ReadBindingNetwork();
-		QueryService service = new LocalService(DatabaseConnection.getConnection());
+		QueryService service = new LocalService();
 		
 		reader.setInput(ReadBindingNetwork.QueryService, service);
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3734, 10090));
@@ -94,7 +127,7 @@ public class IntersectTest {
 	
 	@Test
 	public void testIntersectOnNetwork() throws Exception{
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService();
 		
 		Network net1 = service.readNetwork(2269,null,false);
 		Network net2 = service.readNetwork(2270,null,false);

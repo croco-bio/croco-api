@@ -30,7 +30,7 @@ public class OperationUtilTest {
 
 	@Test
 	public void simpleStructure() throws Exception{
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService(CroCoLogger.getLogger());
 		NetworkOperationNode root = new NetworkOperationNode(null,9695,new Union());
 		ReadNetwork reader = new ReadNetwork();
 		reader.setInput(ReadNetwork.QueryService, service);
@@ -45,7 +45,7 @@ public class OperationUtilTest {
 	
 	@Test
 	public void intersectUnion() throws Exception{
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService(CroCoLogger.getLogger());
 		
 		
 		NetworkOperationNode root = new NetworkOperationNode(null,9695,new Difference());
@@ -100,7 +100,7 @@ public class OperationUtilTest {
 	
 	@Test
 	public void transferTest() throws Exception{
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService(CroCoLogger.getLogger());
 		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse).get(0);
 
 		OrthologMapping orthologs = service.getOrthologMapping(mapping);
@@ -137,7 +137,7 @@ public class OperationUtilTest {
 	@Test
 	public void process() throws Exception {
 		NetworkOperationNode root = new NetworkOperationNode(null,9695,new Union());
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService(CroCoLogger.getLogger());
 		
 		ReadNetwork reader1 = new ReadNetwork();
 		reader1.setInput(ReadNetwork.QueryService, service);

@@ -49,7 +49,7 @@ public class ShuffleTest {
 	@Test
 	public void testIntegrativ() throws Exception{
 		ReadNetwork reader = new ReadNetwork();
-		QueryService local = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService local = new LocalService(CroCoLogger.getLogger());
 		BufferedService service = new BufferedService(local,new File("/tmp"));
 		
 		reader.setInput(ReadNetwork.NetworkHierachyNode, service.getNetworkHierachyNode(4903));

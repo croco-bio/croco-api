@@ -26,7 +26,7 @@ public class BufferedLocalServiceTest {
 		Connection connection = DatabaseConnection.getConnection();
 		
 		
-		BufferedService service = new BufferedService(new LocalService(logger,connection),new File("/tmp/"));
+		BufferedService service = new BufferedService(new LocalService(logger),new File("/tmp/"));
 		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
 		
 		service.clean();
@@ -54,7 +54,7 @@ public class BufferedLocalServiceTest {
 	public void testReadNetworkRemoteService() throws Exception{
 		
 		
-		BufferedService service = new BufferedService(new RemoteWebService(RemoteWebServiceTest.url_local),new File("/tmp/"));
+		BufferedService service = new BufferedService(new RemoteWebService(RemoteWebServiceTest.url),new File("/tmp/"));
 		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
 		
 		service.clean();
@@ -86,7 +86,7 @@ public class BufferedLocalServiceTest {
 		Connection connection = DatabaseConnection.getConnection();
 		
 		
-		BufferedService service = new BufferedService(new LocalService(logger,connection),new File("/tmp/"));
+		BufferedService service = new BufferedService(new LocalService(logger),new File("/tmp/"));
 		OrthologMapping mapping = service.getOrthologMapping(service.getOrthologMappingInformation(null, Species.Human,Species.Mouse).get(0));
 		assertEquals(41910,mapping.getSize());
 		service.getOrthologMapping(service.getOrthologMappingInformation(null, Species.Human,Species.Mouse).get(0));

@@ -32,7 +32,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger,connection);
+		QueryService service = new LocalService(logger);
 		
 		/*
 		List<Pair<Option, String>> options = new ArrayList<Pair<Option, String>>();
@@ -72,7 +72,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger,connection);
+		QueryService service = new LocalService(logger);
 		service.readNetwork(3463, null, false);
 	}
 	
@@ -81,7 +81,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger,connection);
+		QueryService service = new LocalService(logger);
 		List<Pair<Option,String>> options = new ArrayList<Pair<Option,String>>();
 		options.add(new Pair<Option,String>(Option.cellLine, "K562"));
 		options.add(new Pair<Option,String>(Option.EdgeType, "Directed"));
@@ -95,9 +95,14 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger,connection);
-		NetworkHierachyNode rootNode = service.getNetworkHierachy("OpenChromTFBS/Jaspar-Human-0.00001/K562");
-		System.out.println(rootNode);
+		QueryService service = new LocalService(logger);
+		NetworkHierachyNode rootNode = service.getNetworkHierachy(null);
+		System.out.println(rootNode.getChildren());
+		
+		for(NetworkHierachyNode child : rootNode.getAllChildren())
+		{
+		    System.out.println(child.getOptions().get(Option.TaxId));
+		}
 	}
 	
 
@@ -106,7 +111,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		
-		QueryService service = new LocalService(logger,connection);
+		QueryService service = new LocalService(logger);
 		NetworkHierachyNode root = service.getNetworkHierachy(null);
 		System.out.println(root.getChildren());
 	}
@@ -150,7 +155,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		
-		QueryService service = new LocalService(logger,connection);
+		QueryService service = new LocalService(logger);
 		
 		List<OrthologMappingInformation> mappings = service.getTransferTargetSpecies(9606);
 		assertTrue(mappings.size() > 10);

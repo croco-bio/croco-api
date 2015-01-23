@@ -22,7 +22,7 @@ public class GeneAnnotationEnrichmentTest {
 		network.add(new Gene("ENSG00000185591"), new Gene("ENSG00000185591"), 0);
 		GeneAnnotationEnrichment gae = new GeneAnnotationEnrichment();
 		
-		gae.setInput(GeneAnnotationEnrichment.QueryService, new LocalService(DatabaseConnection.getConnection()));
+		gae.setInput(GeneAnnotationEnrichment.QueryService, new LocalService());
 		gae.setInputNetwork(network);
 		network = gae.operate();
 		for(int edgeId : network.getEdgeIds()){

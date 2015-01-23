@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
 
+import de.lmu.ifi.bio.crco.connector.BufferedService;
 import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
+import de.lmu.ifi.bio.crco.connector.RemoteWebService;
 import de.lmu.ifi.bio.crco.data.IdentifierType;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
@@ -21,10 +24,32 @@ import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 
 public class UnionTest {
 
+    @Test
+    public void testUnionK562() throws Exception{
+        RemoteWebService remoteService = new RemoteWebService("http://localhost:8080/croco-web/services");
+        BufferedService service = new BufferedService(remoteService,new File("networkBufferDir/")); 
+        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
+        
+        ReadNetwork reader = new ReadNetwork();
+        reader.setInput(ReadNetwork.QueryService, service);
+        reader.setInput(ReadNetwork.NetworkHierachyNode, k562Networks.get(0));
+            
+        Network k562_rep1 = reader.operate();
+        
+        reader.setInput(ReadNetwork.QueryService, service);
+        reader.setInput(ReadNetwork.NetworkHierachyNode, k562Networks.get(1));
+            
+        Network k562_rep2 = reader.operate();
+        
+        Union union = new Union();
+        union.setInputNetwork(k562_rep1,k562_rep2);
+        Network k562_rep12 = union.operate();
+    }
+    
 	@Test
 	public void testUnionBindingSite() throws Exception{
 		ReadBindingNetwork reader = new ReadBindingNetwork();
-		QueryService service = new LocalService(DatabaseConnection.getConnection());
+		QueryService service = new LocalService();
 		
 		reader.setInput(ReadBindingNetwork.QueryService, service);
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3734, 10090));

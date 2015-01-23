@@ -15,7 +15,7 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 public class ReadNetworkTest {
 	@Test
 	public void testReadNetworkWrapper() throws Exception{
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService(CroCoLogger.getLogger());
 		
 		ReadNetwork reader = new ReadNetwork();
 		reader.setInput(ReadNetwork.QueryService, service);
@@ -25,7 +25,7 @@ public class ReadNetworkTest {
 	
 	@Test
 	public void readNetwork() throws Exception{
-		QueryService service = new LocalService(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+		QueryService service = new LocalService(CroCoLogger.getLogger());
 
 		
 		ReadNetwork reader = new ReadNetwork();

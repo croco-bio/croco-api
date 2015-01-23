@@ -51,7 +51,7 @@ public class GeneSetFilterTest {
 	}
 	@Test
 	public void testOnBindingNetwork() throws Exception{
-		QueryService service = new LocalService(DatabaseConnection.getConnection());
+		QueryService service = new LocalService();
 		ReadNetwork readNetwork = new ReadNetwork();
 		
 		readNetwork.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(8532,9606));
@@ -76,7 +76,7 @@ public class GeneSetFilterTest {
 	
 	@Test
 	public void test() throws CroCoException, SQLException, IOException {
-		QueryService service = new LocalService(DatabaseConnection.getConnection());
+		QueryService service = new LocalService();
 		
 		ReadNetwork readNetwork = new ReadNetwork();
 		
