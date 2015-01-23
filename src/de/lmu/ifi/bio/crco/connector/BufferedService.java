@@ -43,6 +43,11 @@ public class BufferedService implements QueryService {
 		//super(logger, connection);
 		this.service = service;
 		this.baseDir = baseDir;
+		if (! baseDir.exists())
+		{
+		    CroCoLogger.getLogger().info(String.format("Create buffer dir: %s",baseDir.toString()));
+		    baseDir.mkdirs();
+		}
 	}
 	public void clean() throws Exception{
 		for(File file : baseDir.listFiles()){

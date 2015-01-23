@@ -54,7 +54,7 @@ public class CreateInnerNetworks {
 		CroCoLogger.getLogger().info("Temp file:\t" + tmpFile);
 		CroCoLogger.getLogger().info("New inner nodes:\t" + newInnerNodes);
 		
-		LocalService service = new LocalService(DatabaseConnection.getConnection());
+		LocalService service = new LocalService();
 		
 		NetworkHierachyNode root = service.getNetworkHierachy(null);
 		
@@ -69,7 +69,7 @@ public class CreateInnerNetworks {
 		Thread.sleep(5000);
 		
 		System.out.println("Loading network into database");
-		Statement stat = service.getConnection().createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		String sql = String.format("LOAD DATA INFILE '%s' INTO TABLE Network (group_id,gene1,gene2)",tmpFile.toString());
 		CroCoLogger.getLogger().info(sql);
 		stat.execute(sql );
@@ -105,7 +105,7 @@ public class CreateInnerNetworks {
 		this.bw = bw;
 		this.newInnerNodes = newInnerNodes;
 		
-		updataStat = service.getConnection().prepareStatement("UPDATE NetworkHierachy set has_network=1 where group_id = ?");
+		updataStat = DatabaseConnection.getConnection().prepareStatement("UPDATE NetworkHierachy set has_network=1 where group_id = ?");
 	}
 	
 	public Set<Integer> getTaxIds(NetworkHierachyNode root){

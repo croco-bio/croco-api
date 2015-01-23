@@ -46,22 +46,13 @@ import de.lmu.ifi.bio.crco.util.Pair;
  *
  */
 public class LocalService implements QueryService{
-	private Connection connection;
 	private Logger logger;
 	
-	public Connection getConnection(){
-		return connection;
-	}
-	public LocalService() throws SQLException, IOException{
-		this(CroCoLogger.getLogger(),DatabaseConnection.getConnection());
+	public LocalService( ){
+	    this(CroCoLogger.getLogger());
 	}
 	
-	public LocalService(Connection connection){
-		this(CroCoLogger.getLogger(),connection);
-	}
-
-	public LocalService(Logger logger, Connection connection ){
-		this.connection = connection;
+	public LocalService(Logger logger ){
 		this.logger = logger;
 		
 	}
@@ -69,7 +60,9 @@ public class LocalService implements QueryService{
 	@Override
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
 		
-		PreparedStatement statement = connection.prepareStatement("SELECT group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy ORDER BY parent_group_id");
+	    String sql = "SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY parent_group_id";
+		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
+		CroCoLogger.getLogger().debug(sql);
 		
 		List<NetworkHierachyNode> networks = getNetworks(statement);
 		statement.close();
@@ -93,6 +86,7 @@ public class LocalService implements QueryService{
 			}
 		}
 		
+		
 		logger.debug("Number of networks:\t" + networks.size());
 		return rootNode;
 	}
@@ -100,7 +94,7 @@ public class LocalService implements QueryService{
 
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-		PreparedStatement statement = connection.prepareStatement("SELECT group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy where group_id=?");
+		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement("SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY where nh.group_id=?");
 		statement.setInt(1, groupId);
 		
 		List<NetworkHierachyNode> networks = getNetworks(statement);
@@ -121,8 +115,8 @@ public class LocalService implements QueryService{
 			condition.append("nh.group_id IN (SELECT group_id FROM  NetworkOption nop  where nh.group_id and nop.option_id = ? and nop.value like ?) ");
 		}
 		
-		String sql = String.format("SELECT group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh %s ORDER BY parent_group_id",condition.length() > 0?"where " +condition.toString():"");
-		PreparedStatement statement = connection.prepareStatement(sql);
+		String sql = String.format("SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY %s ORDER BY parent_group_id",condition.length() > 0?"where " +condition.toString():"");
+		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
 		for(Pair<Option,String> option : options){
 			statement.setInt(1, option.getFirst().ordinal());
 			statement.setString(2, option.getSecond());
@@ -133,7 +127,7 @@ public class LocalService implements QueryService{
 		
 		return networks;
 	}
-	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat) throws SQLException{
+	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat) throws SQLException, IOException{
 		List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
 
 		stat.execute();
@@ -144,6 +138,10 @@ public class LocalService implements QueryService{
 		
 		while(res.next()){
 			Integer groupId = res.getInt(1);
+			
+			if ( groupIdToNetwork.containsKey(groupId))
+			    continue;
+			
 			Integer parentGroupId = res.getInt(2);
 			String name = res.getString(3);
 			Boolean hasNetwork = res.getBoolean(4);
@@ -173,6 +171,20 @@ public class LocalService implements QueryService{
 				network.setParent(groupIdToNetwork.get(parentGroupId));
 			}
 		}
+		String sql = "SELECT group_id,option_id,value FROM NetworkOption";
+		CroCoLogger.getLogger().debug(sql);
+		stat = DatabaseConnection.getConnection().prepareStatement(sql);
+		stat.execute();
+		res = stat.getResultSet();
+		while(res.next())
+		{
+		    Integer groupId = res.getInt(1);
+		    Option option = Option.values()[res.getInt(2)];
+		    String value = res.getString(3);
+		    
+		    groupIdToNetwork.get(groupId).addOption(option, value);
+		}
+		
 		
 		return networks;
 	}
@@ -180,7 +192,7 @@ public class LocalService implements QueryService{
 
 	@Override
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2) throws Exception {
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		String sql =String.format(
 				"SELECT ortholog_database_id,tax_id_1,t1.name, database_identifier_id_1,tax_id_2,t2.name,database_identifier_id_2 FROM OrthologMappingInformation " +
 				"JOIN Taxonomy t1 on t1.tax_id = tax_id_1  and t1.type like 'scientific name'  JOIN Taxonomy t2 on t2.tax_id = tax_id_2 and t2.type like 'scientific name' " 
@@ -249,7 +261,7 @@ public class LocalService implements QueryService{
 	@Override
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception{
 		
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		OrthologMapping mapping = new OrthologMapping();
 		int k = 0;
 		String sql = String.format(
@@ -260,7 +272,7 @@ public class LocalService implements QueryService{
 				);
 
 		logger.debug(sql);
-		stat = connection.createStatement();
+		stat = DatabaseConnection.getConnection().createStatement();
 
 		stat.setFetchSize(Integer.MIN_VALUE);
 		stat.execute(sql);
@@ -305,7 +317,7 @@ public class LocalService implements QueryService{
 				"SELECT gene1,gene2,binding_chr,binding_start,binding_end,binding_p_value,binding_motif,open_chrom_start,open_chrom_end FROM Network2Binding network %s",
 				where);
 		logger.debug(sql);
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
 		ResultSet res = stat.getResultSet();
 		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode,gloablRepository);
@@ -349,7 +361,7 @@ public class LocalService implements QueryService{
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
 		if ( contextId == null){
-			Statement stat = connection.createStatement();
+			Statement stat = DatabaseConnection.getConnection().createStatement();
 			stat.execute(String.format("SELECT network_file_location FROM NetworkHierachy where group_id = %d",groupId));
 			ResultSet res = stat.getResultSet();
 			File networkFile = null;
@@ -375,7 +387,7 @@ public class LocalService implements QueryService{
 			condition = String.format("where group_id = %d ", groupId);
 		}
 		
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		
 
 		String sql  = String.format("SELECT gene1,gene2 FROM Network network %s", condition);
@@ -401,7 +413,7 @@ public class LocalService implements QueryService{
 	}
 	@Override
 	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception{
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		
 		String sql = String.format("SELECT has_network FROM NetworkHierachy where group_id = %d;",groupId);
 		stat.execute(sql);
@@ -441,7 +453,7 @@ public class LocalService implements QueryService{
 	
 	@Override
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		Integer ret =null;
 		stat.execute(String.format("SELECT  count(*) FROM Network where group_id = %d",groupId));
 		ResultSet res = stat.getResultSet();
@@ -457,7 +469,7 @@ public class LocalService implements QueryService{
 	@Override
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception {
 		List<OrthologMappingInformation> ret = new ArrayList<OrthologMappingInformation>();
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(
 				String.format(
 						"SELECT ortholog_database_id,tax_id_1,t1.name, database_identifier_id_1,tax_id_2,t2.name,database_identifier_id_2 FROM OrthologMappingInformation " +
@@ -498,7 +510,7 @@ public class LocalService implements QueryService{
 						);
 
 		logger.debug(sql);
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
 		ResultSet res = stat.getResultSet();
 		ArrayList<ContextTreeNode> children = new ArrayList<ContextTreeNode>();
@@ -522,7 +534,7 @@ public class LocalService implements QueryService{
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
 		String sql = String.format(" SELECT context_id,context_type_id,source_id,source_name,num_children FROM ContextHierachyNode where source_id like '%s' ", sourceId);
 		logger.debug(sql);
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
 		ResultSet res = stat.getResultSet();
 		ContextTreeNode ret = null;
@@ -544,7 +556,7 @@ public class LocalService implements QueryService{
 	public List<ContextTreeNode> getContextTreeNodes(String namenToken) throws Exception {
 		String sql = String.format(" SELECT context_id,context_type_id,source_id,source_name,num_children FROM ContextHierachyNode where source_name like '%%%s%%' LIMIT 100 ", namenToken);
 		logger.debug(sql);
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
 		ResultSet res = stat.getResultSet();
 		List<ContextTreeNode> ret = new ArrayList<ContextTreeNode>();
@@ -563,22 +575,16 @@ public class LocalService implements QueryService{
 		return ret;
 	}
 
-
-
-
-
 	public Logger getLogger() {
 		return logger;
 	}
-	public void setConnection(Connection connection) {
-		this.connection = connection;
-	}
+
 	@Override
 	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
 		File networkFile = null;
 		String sql =String.format("SELECT network_file_location from NetworkHierachy where group_id=%d",groupId);
 		CroCoLogger.getLogger().debug(sql);
-		Statement stat = connection.createStatement();
+		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
 		ResultSet res = stat.getResultSet();
 		if ( res.next()) {

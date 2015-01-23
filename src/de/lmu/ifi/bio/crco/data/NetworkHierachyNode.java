@@ -1,10 +1,12 @@
 package de.lmu.ifi.bio.crco.data;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
+
+import de.lmu.ifi.bio.crco.util.Pair;
 
 
 public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
@@ -19,6 +21,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	private Integer taxId;
 	private NetworkHierachyNode parent;
 	
+	private HashMap<Option,String> options = new HashMap<Option,String>();
 	
 	//added for xsteam
 	public NetworkHierachyNode(){}
@@ -27,8 +30,20 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		return type;
 	}
 
+	public HashMap<Option,String> getOptions() {
+        return options;
+    }
 
-	public boolean hasNetwork() {
+    public void setOptions(HashMap<Option,String> options) {
+        this.options = options;
+    }
+    public void addOption(Option option, String value)
+    {
+        options.put(option, value);
+        
+    }
+    
+    public boolean hasNetwork() {
 		return hasNetwork;
 	}
 	public String getHierachyAsString(){
@@ -52,6 +67,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		this.hasNetwork = node.hasNetwork();
 		this.children = node.getChildren();
 		this.type = node.getType();
+		this.options = node.options;
 	}
 	
 
@@ -86,6 +102,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 
 	public void setTaxId(Integer taxId) {
 		this.taxId = taxId;
+		this.options.put(Option.TaxId,taxId+"");
 	}
 /*
 	public void setParent(NetworkHierachyNode parent) {
@@ -131,30 +148,38 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	public Integer getParentGroupdId(){
 		return parentGroupId;
 	}
+	
+	public NetworkHierachyNode(Integer numChildren, Integer groupId, String name, boolean hasNetwork, Integer taxId, NetworkType type)
+	{
+	    this.numChildren = numChildren;
+        this.groupId = groupId;
+        
+        this.type = type;
+        this.name = name;
+        this.hasNetwork = hasNetwork;
+        this.taxId = taxId;
+        
+        this.options.put(Option.TaxId,taxId+"");
+        this.options.put(Option.NetworkType,type.name());
+	}
 	public NetworkHierachyNode(Integer numChildren, Integer parentGroupId,Integer groupId,String name, boolean hasNetwork,Integer taxId,NetworkType type  ) {
-		this.numChildren = numChildren;
-		this.groupId = groupId;
+	    this(numChildren,groupId,name,hasNetwork,taxId,type);
 		
 		this.parentGroupId = parentGroupId;
-		this.type = type;
 		this.children = null;
-		this.name = name;
-		this.hasNetwork = hasNetwork;
-		this.taxId = taxId;
+        
 	}
 	public NetworkHierachyNode(Integer numChildren, NetworkHierachyNode parent,Integer groupId,String name, boolean hasNetwork,Integer taxId,NetworkType type  ) {
-		this.numChildren = numChildren;
-		this.groupId = groupId;
-		this.type = type;
-		this.groupId = groupId;
+		
+	    this(numChildren,groupId,name,hasNetwork,taxId,type);
+        
 		this.parent = parent;
 		if ( parent != null){
 			parentGroupId = parent.groupId;
 		}
 		this.children = null;
-		this.name = name;
-		this.hasNetwork = hasNetwork;
-		this.taxId = taxId;
+	
+        
 	}
 	public void addChild(NetworkHierachyNode child){
 		if ( children == null){

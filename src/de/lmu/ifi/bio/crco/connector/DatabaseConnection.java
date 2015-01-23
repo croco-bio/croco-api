@@ -63,7 +63,13 @@ public class DatabaseConnection {
 			Properties tmp = props;
 			//tmp.put("user", "anonymous");
 			CroCoLogger.getLogger().info("Create new database connection to:\t"  + props.getProperty("connectionStr"));
-			connection = DriverManager.getConnection((String) props.get("connectionStr"),tmp);
+			try{
+			    connection = DriverManager.getConnection((String) props.get("connectionStr"),tmp);
+			}catch(SQLException conErr)
+			{
+			    CroCoLogger.getLogger().error("Could not connect", conErr);
+			    throw new RuntimeException(conErr);
+			}
 			last_connection_retrieved = current;
 		}
 		

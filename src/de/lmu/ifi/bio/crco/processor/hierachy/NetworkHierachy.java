@@ -99,20 +99,21 @@ public class NetworkHierachy  {
 		Statement stat = connection.createStatement();
 		
 		stat.execute("DELETE FROM NetworkHierachy");
+		stat.execute("DELETE FROM NetworkOption");
+        
 		/*
 		stat.execute("DELETE FROM Network");
-		stat.execute("DELETE FROM NetworkOption");
 		stat.execute("DELETE FROM NetworkSimilarity");
 		stat.execute("DELETE FROM Network2Binding");
-		
-		stat.close();
 		*/
+		stat.close();
+		
 		
 		try{
 			NetworkHierachy hierachy = new NetworkHierachy();
 			
 			
-			hierachy.processHierachy(repositoryDir, hierachy.new NetworkProcessor(repositoryDir,connection, networkFile,statFile,annotationFile), hierachy.new SubFolderProcess(connection));
+			hierachy.processHierachy(repositoryDir, new NetworkProcessor(repositoryDir,connection, networkFile,statFile,annotationFile), new SubFolderProcess(connection));
 			
 		}catch(Exception e){
 			throw new RuntimeException(e);
@@ -214,7 +215,7 @@ public class NetworkHierachy  {
 		public void finish() throws Exception;
 		
 	}
-	class SubFolderProcess implements CroCoRepositoryProcessor{
+	static class SubFolderProcess implements CroCoRepositoryProcessor{
 		private PreparedStatement hierachy;
 		public SubFolderProcess(Connection connection) throws SQLException{
 			this.hierachy =  connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, parent_group_id,name,tax_id,has_network,network_type,network_file_location,hash) values(?,?,?,?,?,?,?,?)");
@@ -257,7 +258,7 @@ public class NetworkHierachy  {
 		
 	}
 	
-	class NetworkProcessor implements CroCoRepositoryProcessor{
+	static class NetworkProcessor implements CroCoRepositoryProcessor{
 		private PreparedStatement hierachy;
 		private PreparedStatement networkOptions;
 		
@@ -403,7 +404,7 @@ public class NetworkHierachy  {
 			hierachy.setBoolean(5, true);
 			hierachy.setInt(6, NetworkType.valueOf(infoAnnotations.get(Option.NetworkType)).ordinal());
 			hierachy.setString(7,  networkFile.toString().replace(repositoryDir.toString(), "") );
-			long hash= Files.hash(networkFile,   Hashing.crc32()).asLong();
+			long hash= Files.hash(networkFile,   Hashing.crc32()).padToLong();
 			hierachy.setLong(8, hash);
 			
 			for(Entry<Option, String>e  : infoAnnotations.entrySet()){
@@ -447,8 +448,12 @@ public class NetworkHierachy  {
 
 		@Override
 		public void finish() throws Exception {
+		    networkOptions.executeBatch();
+		    networkOptions.close();
+		    
 			hierachy.executeBatch();
 			hierachy.close();
+			
 			bwNetwork.flush();
 			bwNetwork.close();
 			bwAnnotation.flush();
@@ -525,7 +530,7 @@ public class NetworkHierachy  {
 		
 	}
 
-	private static HashMap<Option,String> readInfoFile(File infoFile) throws IOException{
+	public static HashMap<Option,String> readInfoFile(File infoFile) throws IOException{
 		HashMap<Option,String> ret = new HashMap<Option,String> ();
 		BufferedReader br =new BufferedReader(new FileReader(infoFile));
 		String line = null;
@@ -646,7 +651,7 @@ public class NetworkHierachy  {
 		
 	}
 
-	public static void writeNetworkHierachyFile(Network network, File outputNetworkFile) throws Exception{
+	public static void writeNetworkHierachyFile(Network network, File outputNetworkFile) throws IOException{
 		BufferedWriter bwNetwork =null;
 		if ( outputNetworkFile.getName().endsWith(".gz")){
 			bwNetwork = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(outputNetworkFile)) ));
