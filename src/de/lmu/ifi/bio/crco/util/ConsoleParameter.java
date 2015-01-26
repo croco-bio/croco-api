@@ -191,6 +191,13 @@ public class ConsoleParameter {
 			return Integer.valueOf(cmdLine.getOptionValue(parameterName));
 		}
 	}
+	public static class FileHandler extends Handler<File>{
+	    @Override
+        public File getValue(CommandLine cmdLine,String parameterName) throws CroCoParameterException{
+            File file = new File(cmdLine.getOptionValue(parameterName));
+            return file;
+        }
+	}
 	public static class FloatValueHandler extends Handler<Float>{
 
 		@Override

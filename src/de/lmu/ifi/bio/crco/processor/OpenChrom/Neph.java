@@ -68,7 +68,8 @@ public class Neph {
 				bwInfo.write(String.format("%s: %d\n",Option.Downstream.name(), 5000));
 				bwInfo.write(String.format("%s: %s\n",Option.cellLine.name(), cellLine));
 				bwInfo.write(String.format("%s: %s\n",Option.reference.name(), "Neph at el., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012"));
-
+				bwInfo.write(String.format("%s: %s\n",Option.OpenChromType.name(),"DGF"));
+				
 				File networkFile = new File(file.toString()  + "/" + NETWORK_FILE_NAME);
 				HashMap<String, Set<String>> network =new FileUtil.MappingFileReader(1,0,networkFile).readNNMappingFile();
 			
