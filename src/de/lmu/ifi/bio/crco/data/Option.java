@@ -22,7 +22,6 @@ public enum Option {
 	 reference(OptionType.Experiment,"Reference"),
 	 MotifSet(OptionType.Experiment,"PWM motif collection name"),
 	 
-	 
 	 AntibodyTargetMapped(OptionType.Experiment,"Antibody target (mapped to ensembl)","targetMapped"),
 	 AntibodyTarget(OptionType.Experiment,"Antibody target","antibody"),
 	 
@@ -71,5 +70,13 @@ public enum Option {
 	 Option(){}
 	 Option(OptionType optionType){
 		 this.optionType = optionType;
+	 }
+	 
+	 public static void main(String[] args)
+	 {
+	     for(Option option: Option.values())
+	     {
+	         System.out.println(option.name() + " " + option.ordinal());
+	     }
 	 }
 }

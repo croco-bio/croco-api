@@ -29,6 +29,13 @@ public class CroCoLogger {
 		}
 		return logger;
 	}
+	public static void info(String msg, Object ... format)
+	{
+	    getLogger().info(String.format(msg,format));
+	}
 
+    public static void debug(String msg, Object ... format) {
+        getLogger().debug(String.format(msg,format));
+    }
 
 }
