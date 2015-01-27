@@ -182,7 +182,7 @@ public class DNaseTFBSExtWriter {
 				bwInfo.write(String.format("%s: %d\n",Option.TaxId.name(),taxId));
 				bwInfo.write(String.format("%s: %s\n",Option.EdgeType,"Directed"));
 				bwInfo.write(String.format("%s: %s\n",Option.NetworkType.name(), NetworkType.OpenChrom.name()));
-				bwInfo.write(String.format("%s: %s\n",Option.OpenChromMotifSet.name(),motifSetName.toString()));
+				bwInfo.write(String.format("%s: %s\n",Option.MotifSet.name(),motifSetName.toString()));
 				bwInfo.write(String.format("%s: %s\n",Option.ConfidenceThreshold.name(),pValueCutOf.toString()));
 				bwInfo.write(String.format("%s: %s\n",Option.OpenChromType.name(),openChromExpType));
 				bwInfo.write(String.format("%s: %s\n",Option.Upstream.name(), upstream + ""));

@@ -95,13 +95,13 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger);
+		LocalService service = new LocalService(logger);
 		NetworkHierachyNode rootNode = service.getNetworkHierachy(null);
 		System.out.println(rootNode.getChildren());
 		
 		for(NetworkHierachyNode child : rootNode.getAllChildren())
 		{
-		    System.out.println(child.getOptions().get(Option.TaxId));
+		    System.out.println(child.getOptions().get(Option.TaxId) + "\t" + child.getFactors().size() + " " + child.getOptions());
 		}
 	}
 	

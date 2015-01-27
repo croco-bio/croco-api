@@ -1,12 +1,16 @@
 package de.lmu.ifi.bio.crco.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
-import de.lmu.ifi.bio.crco.util.Pair;
+import de.lmu.ifi.bio.crco.data.genome.Gene;
+import de.lmu.ifi.bio.crco.util.StringUtil;
 
 
 public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
@@ -20,6 +24,8 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	private Vector<NetworkHierachyNode> children;
 	private Integer taxId;
 	private NetworkHierachyNode parent;
+	
+	private Set<String> factors = new HashSet<String>();
 	
 	private HashMap<Option,String> options = new HashMap<Option,String>();
 	
@@ -39,10 +45,21 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
     }
     public void addOption(Option option, String value)
     {
+        if ( option == Option.FactorList){
+            for(String gene : value.split("\\s+"))
+            {
+                factors.add(gene.toUpperCase());
+            }
+            return;
+        }
         options.put(option, value);
         
     }
     
+    public Set<String> getFactors() {
+        return factors;
+    }
+
     public boolean hasNetwork() {
 		return hasNetwork;
 	}
@@ -243,6 +260,7 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		}
 		return ret;
 	}
+
 
 
 }

@@ -6,71 +6,73 @@ import java.util.List;
 
 public enum Option {
 
-	 project(OptionType.Experiment,"Project"),
-	 lab(OptionType.Experiment,"Laboratory where the experiment was conducted"),
-	 composite(OptionType.Experiment,"Composite"),
-	 cellLine(OptionType.Experiment,"Cell line/ Tissue","cell"),
-	 treatment(OptionType.Experiment,"Treatment"),
-	 strain(OptionType.Experiment,"Strain"),
-	 age(OptionType.Experiment,"Age"),
-	 replicate(OptionType.Experiment,"Replicate"),
-	 TaxId(OptionType.Experiment,"Tax ID"),
-	 NetworkName(OptionType.Experiment,"Network name"),
-	 NetworkType(OptionType.Experiment,"Network type"),
-	 EdgeType(OptionType.Experiment,"Edge type"),
-	 developmentStage(OptionType.Experiment,"Developmental-Stage","developmental-stage"),
-	 reference(OptionType.Experiment,"Reference"),
-	 MotifSet(OptionType.Experiment,"PWM motif collection name"),
+	 project("Project"),
+	 lab("Laboratory where the experiment was conducted"),
+	 composite("Composite"),
+	 cellLine("Cell line/ Tissue","cell"),
+	 treatment("Treatment"),
+	 strain("Strain"),
+	 age("Age"),
+	 replicate("Replicate"),
+	 TaxId("Tax ID"),
+	 NetworkName("Network name"),
+	 NetworkType("Network type"),
+	 EdgeType("Edge type"),
+	 developmentStage("Developmental-Stage","developmental-stage"),
+	 reference("Reference"),
+	 MotifSet("PWM motif collection name"),
 	 
-	 AntibodyTargetMapped(OptionType.Experiment,"Antibody target (mapped to ensembl)","targetMapped"),
-	 AntibodyTarget(OptionType.Experiment,"Antibody target","antibody"),
+	 AntibodyTargetMapped("Antibody target (mapped to ensembl)","targetMapped"),
+	 AntibodyTarget("Antibody target","antibody"),
 	 
-	 Upstream(OptionType.Experiment,"TSS upstream"),
-	 Downstream(OptionType.Experiment,"TSS downstream"),
-	 DatabaseName(OptionType.Experiment,"Database name"),
-	 OpenChromMotifPVal(OptionType.Experiment,"OpenChrom motif match p-value"),
-	 OpenChromMotifSet(OptionType.Experiment,"OpenChrom motif set"),
-	 OpenChromType(OptionType.Experiment,"Open chromatin type"),
-	 ConfidenceThreshold(OptionType.Experiment,"Confidence threshold"),
+	 Upstream("TSS upstream"),
+	 Downstream("TSS downstream"),
+	 DatabaseName("Database name"),
+	 /**
+	  * Use ConfidenceThreshold instead
+	  */
+	 @Deprecated
+	 OpenChromMotifPVal("OpenChrom motif match p-value"),
+	 /**
+	  * Use MotifSet instead
+	  */
+	 @Deprecated
+	 OpenChromMotifSet("OpenChrom motif set"),
+	 OpenChromType("Open chromatin type"),
+	 ConfidenceThreshold("Confidence threshold"),
 
-	 networkFile(OptionType.Experiment,"Underlying network file"),
+	 networkFile("Underlying network file"),
 	 
-	 FactorList(OptionType.Experiment,"List of transcription factors"),
+	 FactorList("List of transcription factors"),
 	 
-	 networkOverlap(OptionType.NetworkSimilarity,"Fraction of overlapping interactions"),
-	 explainability(OptionType.NetworkSimilarity,"Fraction of explainable interactions"),
-	 networkDegreeOverlap(OptionType.NetworkSimilarity,"Network degree overlap"),
+	 networkOverlap("Fraction of overlapping interactions"),
+	 explainability("Fraction of explainable interactions"),
+	 networkDegreeOverlap("Network degree overlap"),
 	 
-	 numberOfInteractions(OptionType.Experiment,"Number of interactions"), 
+	 numberOfInteractions("Number of interactions"), 
 	 
-	 ENCODEName(OptionType.Experiment,"Encode file id"),
-	 numberOfPeak(OptionType.Experiment,"Number of called peaks");
+	 ENCODEName("Encode file id"),
+	 numberOfPeak("Number of called peaks");
 	 
 	 
-	 public OptionType optionType;
 	 public String description;
 	 public List<String> alias;
 	 
-	 public enum OptionType{
-		 Experiment,NetworkSimilarity;
-	 }
+
 	 public static Option getOption(String name){
 		 for(Option o : Option.values()){
 			 if ( o.name().equals(name)) return o;
 		 }
 		 return null;
 	 }
-	 Option(OptionType optionType,String description,String...alias){
-		 this.optionType = optionType;
+	 Option(String description,String...alias){
 		 this.description = description;
 		 this.alias = new ArrayList<String>();
 		 this.alias.add(this.name());
 		 if ( alias.length > 0) this.alias.addAll(Arrays.asList(alias));
 	 }
 	 Option(){}
-	 Option(OptionType optionType){
-		 this.optionType = optionType;
-	 }
+	
 	 
 	 public static void main(String[] args)
 	 {

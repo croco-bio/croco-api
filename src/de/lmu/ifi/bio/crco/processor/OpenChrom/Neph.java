@@ -52,6 +52,7 @@ public class Neph {
 				System.exit(1);
 			}
 		}
+		
 		for(File file : NephResultDir.listFiles()){
 			if ( file.isDirectory()){
 			
@@ -67,7 +68,7 @@ public class Neph {
 				bwInfo.write(String.format("%s: %d\n",Option.Upstream.name(), 5000));
 				bwInfo.write(String.format("%s: %d\n",Option.Downstream.name(), 5000));
 				bwInfo.write(String.format("%s: %s\n",Option.cellLine.name(), cellLine));
-				bwInfo.write(String.format("%s: %s\n",Option.reference.name(), "Neph at el., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012"));
+				bwInfo.write(String.format("%s: %s\n",Option.reference.name(), "Neph et al., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012"));
 				bwInfo.write(String.format("%s: %s\n",Option.OpenChromType.name(),"DGF"));
 				
 				File networkFile = new File(file.toString()  + "/" + NETWORK_FILE_NAME);

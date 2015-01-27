@@ -538,6 +538,13 @@ public class NetworkHierachy  {
 			
 			String[] tokens = line.split(":");
 			Option option = Option.valueOf(tokens[0].trim());
+			
+			if ( option == Option.OpenChromMotifPVal)
+			    option = Option.ConfidenceThreshold;
+			
+			if ( option == Option.OpenChromMotifSet)
+			    option = Option.MotifSet;
+			
 			String value = tokens[1].trim();
 			ret.put(option, value);
 		}
