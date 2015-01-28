@@ -52,8 +52,9 @@ public enum Option {
 	 numberOfInteractions("Number of interactions"), 
 	 
 	 ENCODEName("Encode file id"),
-	 numberOfPeak("Number of called peaks");
+	 numberOfPeak("Number of called peaks"),
 	 
+	 TextMiningSpeciesContext("Text-Mining species context");
 	 
 	 public String description;
 	 public List<String> alias;
