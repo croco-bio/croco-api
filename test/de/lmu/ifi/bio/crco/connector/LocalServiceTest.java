@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.IdentifierType;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
@@ -46,6 +47,17 @@ public class LocalServiceTest {
 		//service.findNetwork(options );
 	}
 	@Test
+	public void testReadOntology() throws Exception
+	{
+	    QueryService service = new LocalService();
+        CroCoNode root = service.getNetworkOntology();
+        
+       // System.out.println(root.children);
+        
+        System.out.println(root.children.get(0).children.get(0).children);
+	}
+	
+	@Test
 	public void getGenes() throws Exception{
 		QueryService service = new LocalService();
 		List<Gene> genes = service.getGenes(Species.Human,true,null);
@@ -79,7 +91,6 @@ public class LocalServiceTest {
 	@Test
 	public void testFind() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
-		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
 		QueryService service = new LocalService(logger);
 		List<Pair<Option,String>> options = new ArrayList<Pair<Option,String>>();
@@ -93,15 +104,14 @@ public class LocalServiceTest {
 	@Test
 	public void testGetNetworkHierachy() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
-		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
 		LocalService service = new LocalService(logger);
 		NetworkHierachyNode rootNode = service.getNetworkHierachy(null);
-		System.out.println(rootNode.getChildren());
 		
 		for(NetworkHierachyNode child : rootNode.getAllChildren())
 		{
-		    System.out.println(child.getOptions().get(Option.TaxId) + "\t" + child.getFactors().size() + " " + child.getOptions());
+		 //   if ( child.getFactors().size() > 1)
+		 //       System.out.println(child.getOptions().get(Option.TaxId) + "\t" + child.getFactors().size() + " " + child.getOptions());
 		}
 	}
 	
@@ -109,7 +119,6 @@ public class LocalServiceTest {
 	@Test
 	public void testLoadHierachy() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
-		Connection connection = DatabaseConnection.getConnection();
 		
 		QueryService service = new LocalService(logger);
 		NetworkHierachyNode root = service.getNetworkHierachy(null);

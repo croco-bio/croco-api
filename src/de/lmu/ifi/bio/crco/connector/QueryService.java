@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
+import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
@@ -92,4 +93,11 @@ public interface QueryService {
 	 * @throws Exception
 	 */
 	public List<Gene> getGenes(Species species,Boolean onlyCoding, ContextTreeNode context) throws Exception;
+
+	/**
+	 * Return the croco network ontology
+	 * @return --
+	 * @throws Exception
+	 */
+	public CroCoNode getNetworkOntology() throws Exception;
 }

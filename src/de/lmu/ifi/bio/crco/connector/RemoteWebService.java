@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
+import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
@@ -56,7 +57,7 @@ public class RemoteWebService implements QueryService{
 		this.debug = true;
 	}
 	public static Long getServiceVersion(String baseUrl) throws IOException{
-		return (Long) performceOperation(false,baseUrl,"getVersion");
+		return (Long) performeOperation(false,baseUrl,"getVersion");
 		
 	}
 	
@@ -85,10 +86,10 @@ public class RemoteWebService implements QueryService{
 		
 		return conn.getInputStream();
 	}
-	private static Object performceOperation(String baseUrl, String method, Object...parameters) throws IOException{
-		return performceOperation(false,baseUrl,method,parameters);
+	private static Object performeOperation(String baseUrl, String method, Object...parameters) throws IOException{
+		return performeOperation(false,baseUrl,method,parameters);
 	}
-	private static Object performceOperation(Boolean debug, String baseUrl, String method, Object...parameters) throws IOException{
+	private static Object performeOperation(Boolean debug, String baseUrl, String method, Object...parameters) throws IOException{
 		URL url = new URL(String.format("%s/%s",baseUrl  , method));
 		
 		CroCoLogger.getLogger().debug(String.format("Query remote url %s",url));
@@ -158,7 +159,7 @@ public class RemoteWebService implements QueryService{
 			throw new CroCoException(String.format("Can not read ortholog mapping. Message from server: %s",errorMessage));
 		}
 		String line = null;
-		OrthologMapping ret = new OrthologMapping();
+		OrthologMapping ret = new OrthologMapping(orthologMappingInformation);
 		while (( line = br.readLine())!=null){
 			if ( line.startsWith("#")) continue;
 			String[] tokens = line.split("\t");
@@ -171,7 +172,7 @@ public class RemoteWebService implements QueryService{
 		is.close();
 		
 		
-		return  ret;//(OrthologMapping)performceOperation(baseUrl,"getOrthologMapping",orthologMappingInformation);
+		return  ret;//(OrthologMapping)performeOperation(baseUrl,"getOrthologMapping",orthologMappingInformation);
 	}
 	//TODO: merge with NetworkHierachy readAnnotation
 	private Float getValue(String value){
@@ -193,7 +194,7 @@ public class RemoteWebService implements QueryService{
 	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception {
 
 		if ( contextId != null){
-			return (BindingEnrichedDirectedNetwork)performceOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
+			return (BindingEnrichedDirectedNetwork)performeOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
 		}
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
@@ -273,7 +274,7 @@ public class RemoteWebService implements QueryService{
 	public Network readNetwork(Integer groupId, Integer contextId,Boolean globalRepository) throws Exception {
 	
 		if ( contextId != null){
-			return 	 (Network)performceOperation(baseUrl,"readNetwork",groupId,contextId,false);
+			return 	 (Network)performeOperation(baseUrl,"readNetwork",groupId,contextId,false);
 		}
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 
@@ -316,63 +317,63 @@ public class RemoteWebService implements QueryService{
 	
 	@Override
 	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
-		return (NetworkHierachyNode)performceOperation(baseUrl,"getNetworkHierachy",path);
+		return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachy",path);
 	}
 
 
 	@Override
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option, String>> options) throws Exception {
-		return (List)performceOperation(baseUrl,"findNetwork",options);
+		return (List)performeOperation(baseUrl,"findNetwork",options);
 	}
 
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-		return (NetworkHierachyNode)performceOperation(baseUrl,"getNetworkHierachyNode",groupId);
+		return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachyNode",groupId);
 	}
 
 	@Override
 	public List<Pair<Option, String>> getNetworkInfo(Integer groupId) throws Exception {
-		return (List)performceOperation(baseUrl,"getNetworkInfo",groupId);
+		return (List)performeOperation(baseUrl,"getNetworkInfo",groupId);
 	}
 
 
 	@Override
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
-		return (Integer)performceOperation(baseUrl,"getNumberOfEdges",groupId);
+		return (Integer)performeOperation(baseUrl,"getNumberOfEdges",groupId);
 	}
 
 
 	@Override
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)throws Exception {
-		return (List) performceOperation(baseUrl,"getTransferTargetSpecies",taxId);
+		return (List) performeOperation(baseUrl,"getTransferTargetSpecies",taxId);
 		
 	}
 
 	@Override
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2)throws Exception {
 		
-		return (List) performceOperation(baseUrl,"getOrthologMappingInformation",database,species1,species2);
+		return (List) performeOperation(baseUrl,"getOrthologMappingInformation",database,species1,species2);
 	}
 
 	@Override
 	public List<ContextTreeNode> getContextTreeNodes(String name) throws Exception {
-		return (List)performceOperation(baseUrl,"getContextTreeNodes",name);
+		return (List)performeOperation(baseUrl,"getContextTreeNodes",name);
 	}
 
 	@Override
 	public List<ContextTreeNode> getChildren(ContextTreeNode node)throws Exception {
-		return (List)performceOperation(baseUrl,"getChildren",node);
+		return (List)performeOperation(baseUrl,"getChildren",node);
 	}
 
 
 	public ContextTreeNode getContextTreeNode(String sourceId) throws Exception {
-		return (ContextTreeNode)performceOperation(baseUrl,"getContextTreeNode",sourceId);
+		return (ContextTreeNode)performeOperation(baseUrl,"getContextTreeNode",sourceId);
 	}
 
 
 	@Override
 	public List<BindingEnrichedDirectedNetwork> getBindings(String factor,String target) throws Exception {
-		return (List<BindingEnrichedDirectedNetwork>)performceOperation(baseUrl,"getBindings",factor,target);
+		return (List<BindingEnrichedDirectedNetwork>)performeOperation(baseUrl,"getBindings",factor,target);
 	}
 
 
@@ -383,8 +384,12 @@ public class RemoteWebService implements QueryService{
 	}
 	@Override
 	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {
-		return (List<Gene>)performceOperation(baseUrl,"getGenes",species,onlyCoding,context);
+		return (List<Gene>)performeOperation(baseUrl,"getGenes",species,onlyCoding,context);
 	}
+    @Override
+    public CroCoNode getNetworkOntology() throws Exception {
+        return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology");
+    }
 
 
 }

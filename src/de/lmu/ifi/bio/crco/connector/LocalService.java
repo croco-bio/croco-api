@@ -3,21 +3,24 @@ package de.lmu.ifi.bio.crco.connector;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
+import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.NetworkType;
@@ -38,6 +41,7 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.CroCoProperties;
+import de.lmu.ifi.bio.crco.util.FileUtil;
 import de.lmu.ifi.bio.crco.util.Pair;
 
 /**
@@ -47,7 +51,8 @@ import de.lmu.ifi.bio.crco.util.Pair;
  */
 public class LocalService implements QueryService{
 	private Logger logger;
-	
+	private static String FACTOR_FILE="factors.gz";
+    
 	public LocalService( ){
 	    this(CroCoLogger.getLogger());
 	}
@@ -127,6 +132,8 @@ public class LocalService implements QueryService{
 		
 		return networks;
 	}
+	
+	
 	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat) throws SQLException, IOException{
 		List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
 
@@ -185,10 +192,23 @@ public class LocalService implements QueryService{
 		    groupIdToNetwork.get(groupId).addOption(option, value);
 		}
 		
-		
+		File file = new File(String.format("%s/%s",CroCoProperties.getInstance().getValue("service.Networks"),FACTOR_FILE));
+		CroCoLogger.debug("Read: %s", file);
+		if ( file.exists())
+		{
+            Iterator<String> it = FileUtil.getLineIterator(file);
+         
+            while(it.hasNext())
+            {
+                String[] tokens = it.next().split("\t");
+                Integer groupId = Integer.valueOf(tokens[0]);
+                groupIdToNetwork.get(groupId).addOption(Option.FactorList, tokens[1]);
+            }
+		}
 		return networks;
 	}
 	
+   
 
 	@Override
 	public List<OrthologMappingInformation> getOrthologMappingInformation(OrthologDatabaseType database, Species species1, Species species2) throws Exception {
@@ -243,11 +263,15 @@ public class LocalService implements QueryService{
 		while(res.next()){
 			OrthologDatabaseType orthologDatabase = OrthologDatabaseType.values()[res.getInt(1)];
 			String commonName1 = res.getString(3);
-			Species sp1 = new Species(res.getInt(2),commonName1);
+			Integer taxId1 = res.getInt(2);
+            Species sp1 = Species.taxIdMapping.containsKey(taxId1)?Species.taxIdMapping.get(taxId1):new Species(taxId1,commonName1);
+
 			
 			String commonName2 = res.getString(6);
-			Species sp2 = new Species(res.getInt(5),commonName2);
-			
+			Integer taxId2 = res.getInt(5);
+            
+            Species sp2 = Species.taxIdMapping.containsKey(taxId2)?Species.taxIdMapping.get(taxId2):new Species(taxId2,commonName2);
+    
 			ret.add(new OrthologMappingInformation(orthologDatabase,sp1,sp2));
 			
 		}
@@ -262,7 +286,7 @@ public class LocalService implements QueryService{
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception{
 		
 		Statement stat = DatabaseConnection.getConnection().createStatement();
-		OrthologMapping mapping = new OrthologMapping();
+		OrthologMapping mapping = new OrthologMapping(orthologMappingInformation);
 		int k = 0;
 		String sql = String.format(
 				"SELECT db_id_1,db_id_2  FROM Ortholog where tax_id1 = %d and tax_id2 = %d and ortholog_database_id =%d;",
@@ -727,6 +751,80 @@ public class LocalService implements QueryService{
 	public Long getVersion() {
 		return version;
 	}
+
+    @Override
+    public CroCoNode getNetworkOntology() throws Exception{
+        LocalService service = new LocalService();
+        NetworkHierachyNode networks = service.getNetworkHierachy(null);
+        
+        HashMap<Integer,NetworkHierachyNode> idToNetwork = new HashMap<Integer,NetworkHierachyNode>();
+        
+        for(NetworkHierachyNode network : networks.getAllChildren())
+        {
+            idToNetwork.put(network.getGroupId(), network);
+        }
+        
+        Statement stat = DatabaseConnection.getConnection().createStatement();
+        String sql ="SELECT node_id,parent_node_id,name,network_ids FROM NetworkOntology";
+        CroCoLogger.debug(sql);
+        stat.execute(sql);
+         
+        HashMap<Integer,CroCoNode> networkToCroCoNode = new HashMap<Integer,CroCoNode>();
+        HashMap<Integer,Integer> nodeToParent = new HashMap<Integer,Integer>();
+        
+        ResultSet res = stat.getResultSet();
+        int k = 0;
+        while(res.next())
+        {
+            Integer id = res.getInt(1);
+            Integer pId = res.getInt(2);
+            String name = res.getString(3);
+            
+            Set<NetworkHierachyNode> nodes = new HashSet<NetworkHierachyNode>();
+            for(String nId : res.getString(4).trim().split(" "))
+            {
+                nodes.add(idToNetwork.get(Integer.valueOf(nId)));
+            }
+            CroCoNode node = new CroCoNode(name,null,true,nodes);
+            
+            networkToCroCoNode.put(id, node);
+            nodeToParent.put(id, pId);
+            //networkToCroCoNode.put(id, );
+            k++;
+        }
+        res.close();
+        stat.close();
+        CroCoLogger.debug("Found %d ontology nodes.",k);
+
+        for(Integer id : nodeToParent.keySet())
+        {
+            CroCoNode node = networkToCroCoNode.get(id);
+            Integer parentId = nodeToParent.get(id);
+            if ( parentId >= 0)
+            {
+                CroCoNode parent = networkToCroCoNode.get(parentId);
+                node.parent = parent;
+                if ( parent.children == null)
+                {
+                    parent.childShowRootChildren = false;
+                    
+                    parent.children = new ArrayList<CroCoNode>();
+                    parent.children.add(node);
+                }    else{
+                    parent.children.add(node);
+                        
+                }
+            }
+            
+        }
+        CroCoNode root =  networkToCroCoNode.get(0) ;
+        if (root== null)
+        {
+            throw new Exception("Root node not found.");
+        }
+        
+        return root;
+    }
 
 
 

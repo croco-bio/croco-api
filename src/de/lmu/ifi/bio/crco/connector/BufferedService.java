@@ -17,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
+import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
@@ -65,25 +66,25 @@ public class BufferedService implements QueryService {
 		}
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",orthologMappingFile.getAbsoluteFile().toString()));
 
-		return readOrthologMapping(orthologMappingFile);
+		return readOrthologMapping(orthologMappingFile,orthologMappingInformation);
 	}
 	public static void writeOrthologMapping(File file,OrthologMappingInformation orthologMappingInformation, OrthologMapping orthologMapping) throws IOException{
 		OutputStreamWriter writer = new OutputStreamWriter(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(file))));
 		writer.write("#" +orthologMappingInformation.getDatabase().getName() + "\t" + orthologMappingInformation.getSpecies1().getName() + "\t" + orthologMappingInformation.getSpecies2().getName());
 		
-		for(Entry<Entity, Set<Entity>> e : orthologMapping.getMapping().entrySet()){
-			for(Entity value : e.getValue()){
-				writer.write(e.getKey().getIdentifier() + "\t" + value.getIdentifier() + "\n");
-			}
-		}
-		
+        for(Entry<Entity, Set<Entity>> e : orthologMapping.getMapping().entrySet()){
+            for(Entity value : e.getValue()){
+                writer.write(e.getKey().getIdentifier() + "\t" + value.getIdentifier() + "\n");
+            }
+        }
+        
 		writer.flush();
 		writer.close();
 	}
-	private OrthologMapping readOrthologMapping(File file) throws IOException{
+	private OrthologMapping readOrthologMapping(File file, OrthologMappingInformation orthologMappingInformation) throws IOException{
 		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
 		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
-		OrthologMapping mapping = new OrthologMapping();
+		OrthologMapping mapping = new OrthologMapping(orthologMappingInformation);
 		String line = br.readLine();
 		while((line = br.readLine())!=null){
 			String[] tokens = line.split("\t");
@@ -205,4 +206,8 @@ public class BufferedService implements QueryService {
 	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {
 		return service.getGenes(species,onlyCoding,context);
 	}
+    @Override
+    public CroCoNode getNetworkOntology() throws Exception {
+        return service.getNetworkOntology();
+    }
 }
