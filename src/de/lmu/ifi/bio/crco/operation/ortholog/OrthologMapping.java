@@ -8,6 +8,7 @@ import de.lmu.ifi.bio.crco.data.Entity;
 
 public class OrthologMapping{
 	private HashMap<Entity,Set<Entity>> orthologMapping;
+	private OrthologMappingInformation oi;
 	
 	public HashMap<Entity,Set<Entity>>  getMapping(){
 		return orthologMapping;
@@ -18,7 +19,14 @@ public class OrthologMapping{
 	public int getSize(){
 		return orthologMapping.size();
 	}
-	
+	public OrthologMapping(OrthologMappingInformation oi)
+	{
+	    this.oi = oi;
+	}
+	public OrthologMappingInformation getOrthologMappingInformation()
+	{
+	    return oi;
+	}
 	public void addMapping(Entity e1, Entity e2){
 		if ( orthologMapping == null){
 			orthologMapping = new HashMap<Entity,Set<Entity>>();

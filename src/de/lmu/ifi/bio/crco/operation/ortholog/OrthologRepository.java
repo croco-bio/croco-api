@@ -1,10 +1,10 @@
 package de.lmu.ifi.bio.crco.operation.ortholog;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 import de.lmu.ifi.bio.crco.connector.QueryService;
-import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 /**
@@ -47,9 +47,8 @@ public class OrthologRepository {
 	 * @return the ortholog genes
 	 */
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) {
-
-		
 		if (! orthologMapping.containsKey(orthologMappingInformation)){
+		    CroCoLogger.debug("Load orthologs for: %s", orthologMappingInformation.toString());
 			try {
 				OrthologMapping mapping = service.getOrthologMapping(orthologMappingInformation);
 				orthologMapping.put(orthologMappingInformation, mapping);
@@ -61,5 +60,12 @@ public class OrthologRepository {
 		}
 		return orthologMapping.get(orthologMappingInformation);
 	}
+    public Set<OrthologMappingInformation> getOrthologMappingInformation() {
+        return orthologMapping.keySet();
+        
+    }
+    public Collection<OrthologMapping> getMappings() {
+        return orthologMapping.values();
+    }
 
 }
