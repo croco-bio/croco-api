@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -195,6 +197,19 @@ public class FileUtilTest {
 		
 		tmpMappingFile.delete();
 	}
+	@Test  
+	public void testReaderIterator() throws IOException
+	{
+	    File file = new File("/home/proj/biosoft/ws/croco-web/factors.gz");
+	    
+	    Iterator<String> it = FileUtil.getLineIterator(file);
+	    
+	    while(it.hasNext())
+	    {
+	       // System.out.println(it.next());
+	    }
+	    
+	}
 	
 	@Test
 	public void readN1MappingFile()throws Exception {
@@ -210,7 +225,7 @@ public class FileUtilTest {
 		System.out.println(mappingNN);
 		assertEquals(mappingNN.size(),2);
 		
-		HashMap<String, String> mappingN1 = new FileUtil.MappingFileReader(0,1,tmpMappingFile).readN1MappingFile();
+		HashMap<String, String> mappingN1 = new FileUtil.MappingFileReader(0,1,tmpMappingFile).readMappingFile();
 		System.out.println(mappingN1);
 		assertEquals(mappingN1.size(),1);
 		
