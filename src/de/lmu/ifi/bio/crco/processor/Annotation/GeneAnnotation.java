@@ -186,8 +186,8 @@ public class GeneAnnotation {
 		
 		if ( clean)clean();
 		
-		HashMap<String, String> geneDescriptions = FileUtil.mappingFileReader( 0, 1, descriptionFile).caseSensetive(false).readN1MappingFile();
-		HashMap<String, String> geneName = FileUtil.mappingFileReader(0, 1, geneNameFile).caseSensetive(false).readN1MappingFile();
+		HashMap<String, String> geneDescriptions = FileUtil.mappingFileReader( 0, 1, descriptionFile).caseSensetive(false).readMappingFile();
+		HashMap<String, String> geneName = FileUtil.mappingFileReader(0, 1, geneNameFile).caseSensetive(false).readMappingFile();
 		
 		GeneAnnotation.importGTF(gtfFile, taxId, geneName, geneDescriptions);
 		

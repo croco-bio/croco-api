@@ -41,7 +41,7 @@ public class Neph {
 		File NephResultDir = NephResultDir_Parameter.getValue(cmdLine);
 		File mappingFile = mapping_parameter.getValue(cmdLine);
 		
-		HashMap<String, String> mapping = new FileUtil.MappingFileReader(0,1,mappingFile).readN1MappingFile();
+		HashMap<String, String> mapping = new FileUtil.MappingFileReader(0,1,mappingFile).readMappingFile();
 		
 		File outputDir = new File(repositoryDir + "/"   + composite);
 		if ( outputDir.exists()){
