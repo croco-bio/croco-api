@@ -2,17 +2,24 @@ package de.lmu.ifi.bio.crco.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import de.lmu.ifi.bio.crco.data.genome.Exon;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
@@ -265,7 +272,7 @@ public class FileUtil {
 		 * @return n:1 mapping
 		 * @throws IOException
 		 */
-		public HashMap<String,String> readN1MappingFile(  ) throws IOException{
+		public HashMap<String,String> readMappingFile(  ) throws IOException{
 			HashMap<String,String> ret = new HashMap<String,String>();
 			Set<String> ambigious = new HashSet<String>();
 			for(File inputFile: inputFiles){
@@ -363,4 +370,57 @@ public class FileUtil {
 		}
 	}
 
+    public static PrintWriter getPrintWriter(File file) throws IOException{
+        if ( file.getName().endsWith(".gz"))
+        {
+            return new PrintWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(file)) ));
+        }
+        return new PrintWriter(file);
+    }
+    public static BufferedReader getReader(File file) throws IOException{
+        if ( file.getName().endsWith(".gz"))
+        {
+            return new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+        }
+        return new BufferedReader(new FileReader(file));
+    }
+    public static Iterator<String> getLineIterator(File file) throws IOException {
+        BufferedReader reader = getReader(file);
+        //reader.
+        return new LineIterator(reader);
+    }
+    static public class LineIterator implements Iterator<String>
+    {
+        BufferedReader bw;
+        String currentLine = null;
+        public LineIterator(BufferedReader bw)
+        {
+            this.bw = bw;
+        }
+        @Override
+        public boolean hasNext() {
+            try{
+                if ( (currentLine =bw.readLine()) != null) return true;
+                CroCoLogger.debug("Close file");
+                bw.close();
+            }catch(IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            
+            return false;
+        }
+
+        @Override
+        public String next() {
+            return currentLine;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+        
+    }
+    
 }
