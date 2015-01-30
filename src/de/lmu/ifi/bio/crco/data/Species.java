@@ -1,8 +1,8 @@
 package de.lmu.ifi.bio.crco.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class Species {
 	
@@ -12,19 +12,26 @@ public class Species {
 	public static Species Fly =  new Species(7227,"D. melanogaster","Fly");
 	
 	public static List<Species> knownSpecies;
-
+	public static HashMap<Integer,Species> taxIdMapping;
+	
 	static{
 		knownSpecies = new ArrayList<Species> ();
 		knownSpecies.add(Human);
 		knownSpecies.add(Mouse);
 		knownSpecies.add(Worm);
 		knownSpecies.add(Fly);
+		
+		taxIdMapping= new HashMap<Integer,Species>();
+		
+		for(Species species : knownSpecies ){
+		    taxIdMapping.put(species.taxId, species);
+        }
 	}
 	
 	public static Species getSpecies(Integer taxId){
-		for(Species species : knownSpecies ){
-			if ( species.getTaxId().equals(taxId)) return species;
-		}
+	    if (taxIdMapping.containsKey(taxId) )
+	        return taxIdMapping.get(taxId);
+	    
 		return new Species(taxId);
 	}
 
