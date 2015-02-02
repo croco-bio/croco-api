@@ -35,7 +35,28 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	public NetworkType getType() {
 		return type;
 	}
+	
+	public NetworkHierachyNode getNode(String path) throws Exception{
+	    return NetworkHierachyNode.getNode(this, path);
+	}
+	public static NetworkHierachyNode getNode(NetworkHierachyNode rootNode,String path) throws Exception
+	{
+	    String[] tokens = path.split("/");
 
+	    for(String token : tokens){
+	        if(token.length() == 0) continue;
+	        NetworkHierachyNode newRoot = null;
+	        for(NetworkHierachyNode child : rootNode.getChildren()){
+	            if ( child.getName().equals(token)) {
+	                newRoot = child;
+	                break;
+	            }
+	        }
+	        if ( newRoot == null) throw new Exception(String.format("Network not found for path %s stopped at %s (id: %d).",path,token,rootNode.getGroupId()));
+	        rootNode = newRoot;
+	    }
+	    return rootNode;
+	}
 	public HashMap<Option,String> getOptions() {
         return options;
     }
