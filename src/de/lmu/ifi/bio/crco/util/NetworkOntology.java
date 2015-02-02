@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.crco.util;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -463,7 +465,8 @@ public class NetworkOntology {
         }
         
         NetworkHierachyNode networks = service.getNetworkHierachy();
-       
+        readFactors(networks);
+        
         CroCoNode root = new CroCoNode("Root",null,true,new HashSet<NetworkHierachyNode>(networks.getAllChildren()));
         
         CroCoNode cellLine = new CroCoNode("Cell-line",root, new GeneralFilter(Option.cellLine),false,root.networks);
@@ -497,7 +500,30 @@ public class NetworkOntology {
         
         return root;
     }
+    private static String FACTOR_FILE="factors.gz";
     
+    private void readFactors(NetworkHierachyNode root) throws Exception
+    {
+        HashMap<Integer,NetworkHierachyNode> groupIdToNetwork = new HashMap<Integer,NetworkHierachyNode>();
+        for(NetworkHierachyNode nh : root.getAllChildren() ) 
+        {
+            groupIdToNetwork.put(nh.getGroupId(), nh);
+        }
+        
+        File file = new File(String.format("%s/%s",CroCoProperties.getInstance().getValue("service.Networks"),FACTOR_FILE));
+        CroCoLogger.debug("Read: %s", file);
+        if ( file.exists())
+        {
+            Iterator<String> it = FileUtil.getLineIterator(file);
+         
+            while(it.hasNext())
+            {
+                String[] tokens = it.next().split("\t");
+                Integer groupId = Integer.valueOf(tokens[0]);
+                groupIdToNetwork.get(groupId).addOption(Option.FactorList, tokens[1]);
+            }
+        }
+    }
     public static void main(String[] args) throws Exception
     {
         NetworkOntology onto = new NetworkOntology();

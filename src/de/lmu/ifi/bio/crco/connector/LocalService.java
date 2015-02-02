@@ -53,8 +53,7 @@ import de.lmu.ifi.bio.crco.util.Pair;
  */
 public class LocalService implements QueryService{
 	private Logger logger;
-	private static String FACTOR_FILE="factors.gz";
-    
+	
 	public LocalService( ){
 	    this(CroCoLogger.getLogger());
 	}
@@ -121,7 +120,6 @@ public class LocalService implements QueryService{
 		return networks;
 	}
 	
-	
 	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat, Integer ... groupIds) throws SQLException, IOException{
 		List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
 
@@ -184,19 +182,6 @@ public class LocalService implements QueryService{
 		    groupIdToNetwork.get(groupId).addOption(option, value);
 		}
 		
-		File file = new File(String.format("%s/%s",CroCoProperties.getInstance().getValue("service.Networks"),FACTOR_FILE));
-		CroCoLogger.debug("Read: %s", file);
-		if ( file.exists())
-		{
-            Iterator<String> it = FileUtil.getLineIterator(file);
-         
-            while(it.hasNext())
-            {
-                String[] tokens = it.next().split("\t");
-                Integer groupId = Integer.valueOf(tokens[0]);
-                groupIdToNetwork.get(groupId).addOption(Option.FactorList, tokens[1]);
-            }
-		}
 		return networks;
 	}
 	

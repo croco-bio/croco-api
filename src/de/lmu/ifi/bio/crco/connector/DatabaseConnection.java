@@ -44,14 +44,14 @@ public class DatabaseConnection {
 		}
 
 		if ( connection == null || connection.isClosed()  ){
-
-
+		    
 			props.put("driver", props.get("util.DatabaseConnection.dbdriver"));
 			props.put("user", props.get("util.DatabaseConnection.user"));
 			props.put("password", props.get("util.DatabaseConnection.password"));
 			props.put("autoReconnect", props.get("util.DatabaseConnection.autoReconnect"));
 			props.put("connectionStr", props.get("util.DatabaseConnection.dbconstr"));
 
+			
 			try{
 				CroCoLogger.getLogger().debug(String.format("Loading driver:%s",props.getProperty("driver")));
 				Class.forName(props.getProperty("driver"));
@@ -59,7 +59,8 @@ public class DatabaseConnection {
 			}catch(ClassNotFoundException e){
 				throw new RuntimeException("Can not load mysql driver:" + props.getProperty("driver") + ")");
 			}
-
+			
+            
 			Properties tmp = props;
 			//tmp.put("user", "anonymous");
 			CroCoLogger.getLogger().info("Create new database connection to:\t"  + props.getProperty("connectionStr"));
