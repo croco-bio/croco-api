@@ -1,13 +1,12 @@
 package de.lmu.ifi.bio.crco.operation.progress;
 
-import javax.swing.SwingUtilities;
 
 import de.lmu.ifi.bio.crco.operation.GeneralOperation;
 
 public abstract class ProgressListener {
 
 	
-	
+	/*
 	public void doUpdate(final GeneralOperation operation){
 		 SwingUtilities.invokeLater(new Runnable() {
 
@@ -21,7 +20,7 @@ public abstract class ProgressListener {
 		
 	
 	}
-	
+	*/
 	
 	public abstract void update(GeneralOperation operation);
 }

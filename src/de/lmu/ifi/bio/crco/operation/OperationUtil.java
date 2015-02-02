@@ -74,13 +74,19 @@ public class OperationUtil {
 		for(NetworkOperationNode child : operation.getChildren()){
 			
 			if ( pi != null)pi.nextStep(child.getOperator());
-			ret.add(OperationUtil.process(service,child,pi));
+			if ( pi != null && pi.isKill()) return null;
+			Network p = OperationUtil.process(service,child,pi);
+			
+			ret.add(p);
 		}
 
 		CroCoLogger.getLogger().debug(operation + " on " +  ret.size() + " networks");
 		
 		GeneralOperation operator = operation.getOperator();
+		
+		if ( pi != null && pi.isKill()) return null;
 		if ( pi != null)pi.nextStep(operator);
+
 		operator.setInputNetwork(ret);
 
 		Network network= operator.operate();

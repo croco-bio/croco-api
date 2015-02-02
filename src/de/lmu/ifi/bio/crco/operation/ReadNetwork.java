@@ -46,7 +46,7 @@ public class ReadNetwork extends GeneralOperation {
 		}
 		String path = query.substring(0,query.lastIndexOf("/"));
 	
-		de.lmu.ifi.bio.crco.data.NetworkHierachyNode node = service.getNetworkHierachy(path);
+		de.lmu.ifi.bio.crco.data.NetworkHierachyNode node = de.lmu.ifi.bio.crco.data.NetworkHierachyNode.getNode(service.getNetworkHierachy(),path);
 		if ( node.hasNetwork()) 
 			this.setInput(NetworkHierachyNode, node);
 		else{
