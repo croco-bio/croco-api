@@ -28,7 +28,7 @@ public class TransferTest {
 	{
 	    RemoteWebService remoteService = new RemoteWebService("http://localhost:8080/croco-web/services");
         BufferedService service = new BufferedService(remoteService,new File("networkBufferDir/")); 
-        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
+        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy().getNode("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
         
         ReadNetwork reader = new ReadNetwork();
         reader.setInput(ReadNetwork.QueryService, service);

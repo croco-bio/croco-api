@@ -315,11 +315,6 @@ public class RemoteWebService implements QueryService{
 		return image;
 	}
 	
-	@Override
-	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
-		return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachy",path);
-	}
-
 
 	@Override
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option, String>> options) throws Exception {
@@ -389,6 +384,10 @@ public class RemoteWebService implements QueryService{
     @Override
     public CroCoNode getNetworkOntology() throws Exception {
         return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology");
+    }
+    @Override
+    public NetworkHierachyNode getNetworkHierachy() throws Exception {
+        return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachy");
     }
 
 

@@ -134,8 +134,8 @@ public class BufferedService implements QueryService {
 	}
 	*/
 	@Override
-	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
-		return service.getNetworkHierachy(path);
+	public NetworkHierachyNode getNetworkHierachy() throws Exception {
+		return service.getNetworkHierachy();
 	}
 
 

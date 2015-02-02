@@ -84,8 +84,8 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger);
-		service.readNetwork(3463, null, false);
+		LocalService service = new LocalService(logger);
+		service.readNetwork(8, null, false);
 	}
 	
 	@Test
@@ -106,7 +106,12 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		logger.setLevel(Level.DEBUG);
 		LocalService service = new LocalService(logger);
-		NetworkHierachyNode rootNode = service.getNetworkHierachy(null);
+		NetworkHierachyNode rootNode = service.getNetworkHierachy();
+		
+		String path ="M. musculus/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/Mid. Confidence/All-Motifs";
+        
+		
+		System.out.println(rootNode.getNode(path));
 		
 		for(NetworkHierachyNode child : rootNode.getAllChildren())
 		{
@@ -121,7 +126,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		
 		QueryService service = new LocalService(logger);
-		NetworkHierachyNode root = service.getNetworkHierachy(null);
+		NetworkHierachyNode root = service.getNetworkHierachy();
 		System.out.println(root.getChildren());
 	}
 

@@ -30,7 +30,7 @@ public interface QueryService {
 	 */
 	public Long getVersion();
 	
-	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception;
+	public NetworkHierachyNode getNetworkHierachy() throws Exception;
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option,String>> options) throws Exception;
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception;
 	

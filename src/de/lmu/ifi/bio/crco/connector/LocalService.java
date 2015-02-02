@@ -19,6 +19,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Joiner;
+
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
 import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.Entity;
@@ -63,7 +65,7 @@ public class LocalService implements QueryService{
 	}
 	
 	@Override
-	public NetworkHierachyNode getNetworkHierachy(String path) throws Exception {
+	public NetworkHierachyNode getNetworkHierachy() throws Exception {
 		
 	    String sql = "SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY parent_group_id";
 		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
@@ -73,23 +75,7 @@ public class LocalService implements QueryService{
 		statement.close();
 		
 		NetworkHierachyNode rootNode = networks.get(0);
-		if ( path != null){
-			
-			String[] tokens = path.split("/");
-			
-			for(String token : tokens){
-				if(token.length() == 0) continue;
-				NetworkHierachyNode newRoot = null;
-				for(NetworkHierachyNode child : rootNode.getChildren()){
-					if ( child.getName().equals(token)) {
-						newRoot = child;
-						break;
-					}
-				}
-				if ( newRoot == null) throw new Exception(String.format("Network not found for path %s stopped at %s (id: %d).",path,token,rootNode.getGroupId()));
-				rootNode = newRoot;
-			}
-		}
+		
 		
 		
 		logger.debug("Number of networks:\t" + networks.size());
@@ -99,10 +85,12 @@ public class LocalService implements QueryService{
 
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement("SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY where nh.group_id=?");
+	    String sql = "SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh where nh.group_id=?";
+	    CroCoLogger.getLogger().debug(sql);
+		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
 		statement.setInt(1, groupId);
 		
-		List<NetworkHierachyNode> networks = getNetworks(statement);
+		List<NetworkHierachyNode> networks = getNetworks(statement,groupId);
 		statement.close();
 		if ( networks.size() == 1) 
 			return networks.get(0);
@@ -134,7 +122,7 @@ public class LocalService implements QueryService{
 	}
 	
 	
-	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat) throws SQLException, IOException{
+	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat, Integer ... groupIds) throws SQLException, IOException{
 		List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
 
 		stat.execute();
@@ -179,6 +167,10 @@ public class LocalService implements QueryService{
 			}
 		}
 		String sql = "SELECT group_id,option_id,value FROM NetworkOption";
+		if ( groupIds != null && groupIds.length >0)
+		{
+		    sql+= String.format(" where group_id IN(%s)",Joiner.on(",").join(groupIds));
+		}
 		CroCoLogger.getLogger().debug(sql);
 		stat = DatabaseConnection.getConnection().prepareStatement(sql);
 		stat.execute();
@@ -380,7 +372,7 @@ public class LocalService implements QueryService{
 	@Override
 	public Network readNetwork(Integer groupId, Integer contextId, Boolean gloablRepository) throws Exception{
 	
-		logger.debug("Load:\t" + groupId + " with context " + contextId);
+		logger.debug("Load:\t" + groupId + " with context " + contextId + " global repo:" + gloablRepository);
 
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
@@ -755,7 +747,7 @@ public class LocalService implements QueryService{
     @Override
     public CroCoNode getNetworkOntology() throws Exception{
         LocalService service = new LocalService();
-        NetworkHierachyNode networks = service.getNetworkHierachy(null);
+        NetworkHierachyNode networks = service.getNetworkHierachy();
         
         HashMap<Integer,NetworkHierachyNode> idToNetwork = new HashMap<Integer,NetworkHierachyNode>();
         

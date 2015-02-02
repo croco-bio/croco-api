@@ -34,7 +34,7 @@ public class ReadBindingNetworkTest {
         
         String path="/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/" +
                 "DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/";
-        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy(path).getAllChildren();
+        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy().getNode(path).getAllChildren();
 
         
         ReadBindingNetwork reader = new ReadBindingNetwork();
@@ -60,7 +60,7 @@ public class ReadBindingNetworkTest {
 		ReadBindingNetwork reader = new ReadBindingNetwork();
 		QueryService service = new LocalService();
 		
-		NetworkHierachyNode th1 = service.getNetworkHierachy("OpenChromTFBS/Human/DNase/0.000001/JASPAR/Th1/").getChildren().get(0);
+		NetworkHierachyNode th1 = service.getNetworkHierachy().getNode("OpenChromTFBS/Human/DNase/0.000001/JASPAR/Th1/").getChildren().get(0);
 		
 		reader.setInput(ReadBindingNetwork.QueryService, service);
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, th1);

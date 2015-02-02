@@ -27,7 +27,8 @@ public class BufferedLocalServiceTest {
 		
 		
 		BufferedService service = new BufferedService(new LocalService(logger),new File("/tmp/"));
-		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
+		String path ="H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR";
+		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy().getNode(path);
 		
 		service.clean();
 		Network network1 = service.readNetwork(testNetworkNode.getGroupId(),null,false);
@@ -55,7 +56,7 @@ public class BufferedLocalServiceTest {
 		
 		
 		BufferedService service = new BufferedService(new RemoteWebService(RemoteWebServiceTest.url),new File("/tmp/"));
-		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
+		NetworkHierachyNode testNetworkNode = service.getNetworkHierachy().getNode("H. Sapiens/Global Networks/Transcription Factor Binding Sites/High Confidence/JASPAR");
 		
 		service.clean();
 		Network network1 = service.readNetwork(testNetworkNode.getGroupId(),null,false);

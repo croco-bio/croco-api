@@ -45,7 +45,7 @@ public class RemoteWebServiceTest {
 	public void testGetNetworkHierachy() throws Exception{
 		RemoteWebService service = new RemoteWebService(url);
 		
-		service.getNetworkHierachy("");
+		service.getNetworkHierachy();
 	}
 	
 	@Test
@@ -88,7 +88,7 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testListNetwork() throws Exception {
 		RemoteWebService service = new RemoteWebService(url);
-		NetworkHierachyNode networks = service.getNetworkHierachy("/");
+		NetworkHierachyNode networks = service.getNetworkHierachy();
 		assertTrue(networks.getChildren().size()>0);
 		assertTrue(networks != null);
 	}
@@ -100,7 +100,7 @@ public class RemoteWebServiceTest {
         String path="/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/" +
                 "DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/";
         
-	    List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy(path).getAllChildren();
+	    List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy().getNode(path).getAllChildren();
 	 
 	}
 	
