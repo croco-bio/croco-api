@@ -27,7 +27,6 @@ public class CroCoProperties {
 		instance = new CroCoProperties(is);
 	}
 	public static void init(File file) throws IOException{
-		System.out.println("Open:" + file);
 		instance = new CroCoProperties(new FileInputStream(file));
 	}
 	

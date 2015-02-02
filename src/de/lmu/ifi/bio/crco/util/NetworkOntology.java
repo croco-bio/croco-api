@@ -462,7 +462,7 @@ public class NetworkOntology {
             OrthologRepository.getInstance(service).getOrthologMapping(mapping);
         }
         
-        NetworkHierachyNode networks = service.getNetworkHierachy(null);
+        NetworkHierachyNode networks = service.getNetworkHierachy();
        
         CroCoNode root = new CroCoNode("Root",null,true,new HashSet<NetworkHierachyNode>(networks.getAllChildren()));
         
