@@ -19,7 +19,10 @@ import com.google.common.base.Joiner;
 import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.data.CroCoNode;
+import de.lmu.ifi.bio.crco.data.CroCoNode.FactorFilter;
 import de.lmu.ifi.bio.crco.data.CroCoNode.Filter;
+import de.lmu.ifi.bio.crco.data.CroCoNode.GeneralFilter;
+import de.lmu.ifi.bio.crco.data.CroCoNode.NameFilter;
 import de.lmu.ifi.bio.crco.data.Entity;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.NetworkType;
@@ -33,17 +36,25 @@ public class NetworkOntology {
     private static String KHERAPOUR ="Kherapour et al., Reliable prediction of regulator targets using 12 Drosophila genomes, Genome Res., 2007";
     private static String NEPH ="Neph et al., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012";
     
+    private LocalService service;
+    
+    public NetworkOntology()
+    {
+        this.service = new LocalService();
+       
+    }
+    
     private void addConfidence(CroCoNode root){
-        root.children = new ArrayList<CroCoNode>();
-        CroCoNode highConf = new CroCoNode("High confidence",root,new GeneralFilter(Option.ConfidenceThreshold,"1.0E-6"),false,root.networks);
-        CroCoNode midConf = new CroCoNode("Mid. confidence",root,new GeneralFilter(Option.ConfidenceThreshold,"1.0E-5"),false,root.networks);
+        root.setChildren( new ArrayList<CroCoNode>());
+        CroCoNode highConf = new CroCoNode("High confidence",root,new GeneralFilter(Option.ConfidenceThreshold,"1.0E-6"),false,root.getNetworks());
+        CroCoNode midConf = new CroCoNode("Mid. confidence",root,new GeneralFilter(Option.ConfidenceThreshold,"1.0E-5"),false,root.getNetworks());
         
-        CroCoNode neph = new CroCoNode("Neph et. al",root,new GeneralFilter(Option.reference,NEPH),true,root.networks);
+        CroCoNode neph = new CroCoNode("Neph et. al",root,new GeneralFilter(Option.reference,NEPH),true,root.getNetworks());
         
-        root.children.add(highConf);
+        root.getChildren().add(highConf);
         
-        root.children.add(midConf);
-        root.children.add(neph);
+        root.getChildren().add(midConf);
+        root.getChildren().add(neph);
        
     }
    
@@ -53,93 +64,16 @@ public class NetworkOntology {
     {
         public LeafNode(String name, NetworkHierachyNode network) {
             super(name);
-            super.networks = new HashSet<NetworkHierachyNode>();
-            super.networks.add(network);
+            super.setNetworks( new HashSet<NetworkHierachyNode>());
+            super.getNetworks().add(network);
         }
         
     }
     
-   
-    static public class FactorFilter implements Filter
-    {
-        Set<String> factors = null;
-        public FactorFilter(Set<String> factors)
-        {
-            this.factors = factors;
-        }
-        @Override
-        public boolean accept(NetworkHierachyNode nh) {
-            for(String factor : factors)
-            {
-                if ( nh.getFactors().contains(factor)) return true;
-            }
-            return false;
-        }
-        
-    }
-    
-    static public class NameFilter implements Filter
-    {
-        String name;
-        
-        public NameFilter(String name)
-        {
-            this.name = name;
-        }
 
-        @Override
-        public boolean accept(NetworkHierachyNode nh) {
-            return nh.getName().equals(name);
-        }
-    }
-    
-    static public class GeneralFilter implements Filter
-    {
-        Option option;
-        String value;
-        boolean debug = false;
-        
-        GeneralFilter(Option option, String value,boolean debug)
-        {
-            this.option = option;
-            this.value = value;
-            this.debug  = debug;
-        }
-       
-        public GeneralFilter(Option option, String value)
-        {
-            this.option = option;
-            this.value = value;
-        }
-       
-        public GeneralFilter(Option option)
-        {
-            this.option = option;
-        }
-        
-        
-        @Override
-        public boolean accept(NetworkHierachyNode nh) {
-            if ( debug )
-            {
-                CroCoLogger.debug("Apply option/id/value: %s/%d/%s on  name/group_id: %s (%d) with options: %s ",option.name(),option.ordinal(),value,nh.getName(),nh.getGroupId(),nh.getOptions().toString());
-            }
-                
-            if (! nh.getOptions().containsKey(option)) return false;
-            
-            if ( value != null)
-                return nh.getOptions().get(option).equals(value);
-            
-            return true;
-        }
-        public String toString()
-        {
-            return String.format("%s = %s",option.name(),value);
-        }
-    }
     public  void addOntologyNodes(Option option,CroCoNode parent)  throws Exception
     {
-        parent.children = new ArrayList<CroCoNode>();
+        parent.setChildren(new ArrayList<CroCoNode>());
         
         if ( option == Option.AntibodyTargetMapped)
         {
@@ -150,10 +84,10 @@ public class NetworkOntology {
         String sql = null;
         if ( option == Option.TaxId )
         {
-            sql = String.format("SELECT distinct(tax_id) FROM NetworkHierachy where has_network = 1");
+            sql = String.format("SELECT distinct(tax_id) FROM NetworkHierachy");
         }else if ( option == Option.NetworkType )
         {
-            sql = String.format("SELECT distinct(network_type) FROM NetworkHierachy where has_network = 1");
+            sql = String.format("SELECT distinct(network_type) FROM NetworkHierachy");
         }else{
             sql = String.format("SELECT distinct(value) from NetworkOption where option_id = %d ORDER BY value",option.ordinal());
         }
@@ -177,112 +111,112 @@ public class NetworkOntology {
             Filter filter = new GeneralFilter(option,value);
             
             
-            CroCoNode node = new CroCoNode(name,parent,filter,true,parent.networks);
+            CroCoNode node = new CroCoNode(name,parent,filter,true,parent.getNetworks());
             
-            parent.children.add(node);
+            parent.getChildren().add(node);
             
          
             if ( option == Option.NetworkType && value.equals(NetworkType.TextMining.name()))
             {
-                node.childShowRootChildren = false;
+                node.setChildShowRootChildren(false);
                 
-                CroCoNode directed = new CroCoNode("Directed",node,new GeneralFilter(Option.EdgeType,"Directed"),false,node.networks);
-                CroCoNode undirected = new CroCoNode("Undirected",node,new GeneralFilter(Option.EdgeType,"Undirected"),false,node.networks);
+                CroCoNode directed = new CroCoNode("Directed",node,new GeneralFilter(Option.EdgeType,"Directed"),false,node.getNetworks());
+                CroCoNode undirected = new CroCoNode("Undirected",node,new GeneralFilter(Option.EdgeType,"Undirected"),false,node.getNetworks());
                 
-                node.children = new ArrayList<CroCoNode>();
-                node.children.add(directed);
-                node.children.add(undirected);
+                node.setChildren(new ArrayList<CroCoNode>());
+                node.getChildren().add(directed);
+                node.getChildren().add(undirected);
                 
                 
                 for(CroCoNode d : new CroCoNode[]{directed,undirected})
                 {
-                    d.children = new ArrayList<CroCoNode>();
-                    CroCoNode context = new CroCoNode("Species filtered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"Yes"),true,d.networks);
-                    CroCoNode nocontext = new CroCoNode("Species unfiltered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"No"),true,d.networks);
+                    d.setChildren( new ArrayList<CroCoNode>());
+                    CroCoNode context = new CroCoNode("Species filtered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"Yes"),true,d.getNetworks());
+                    CroCoNode nocontext = new CroCoNode("Species unfiltered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"No"),true,d.getNetworks());
                     
-                    d.children.add(context);
-                    d.children.add(nocontext);
+                    d.getChildren().add(context);
+                    d.getChildren().add(nocontext);
                     
                 }
             }
             
             if ( option == Option.NetworkType && value.equals(NetworkType.Database.name()))
             {
-                node.childShowRootChildren = false;
+                node.setChildShowRootChildren(false);
                 
-                CroCoNode transfac = new CroCoNode("Transfac",node,new NameFilter("Transfac9.3"),true,node.networks);
-                CroCoNode redfly = new CroCoNode("REDfly",node,new NameFilter("REDfly3.2"),true,node.networks);
-                CroCoNode orgenanno = new CroCoNode("ORegAnno",node,new NameFilter("ORegAnno"),true,node.networks);
-                CroCoNode ncipathway = new CroCoNode("NCI-Pathway",node,new NameFilter("NCI-Pathway"),true,node.networks);
-                CroCoNode biocarta = new CroCoNode("Biocarta",node,new NameFilter("Biocarta"),true,node.networks);
+                CroCoNode transfac = new CroCoNode("Transfac",node,new NameFilter("Transfac9.3"),true,node.getNetworks());
+                CroCoNode redfly = new CroCoNode("REDfly",node,new NameFilter("REDfly3.2"),true,node.getNetworks());
+                CroCoNode orgenanno = new CroCoNode("ORegAnno",node,new NameFilter("ORegAnno"),true,node.getNetworks());
+                CroCoNode ncipathway = new CroCoNode("NCI-Pathway",node,new NameFilter("NCI-Pathway"),true,node.getNetworks());
+                CroCoNode biocarta = new CroCoNode("Biocarta",node,new NameFilter("Biocarta"),true,node.getNetworks());
                 
-                node.children = new ArrayList<CroCoNode>();
-                node.children.add(transfac);
-                node.children.add(redfly);
-                node.children.add(orgenanno);
-                node.children.add(ncipathway);
-                node.children.add(biocarta);
+                node.setChildren( new ArrayList<CroCoNode>());
+                node.getChildren().add(transfac);
+                node.getChildren().add(redfly);
+                node.getChildren().add(orgenanno);
+                node.getChildren().add(ncipathway);
+                node.getChildren().add(biocarta);
                 
                 
                 
             }
             if ( option == Option.NetworkType && value.equals(NetworkType.TFBS.name()))
             {
-                node.childShowRootChildren = false;
+                node.setChildShowRootChildren(false);
                 addConfidence(node);
                 
-                for(CroCoNode child : node.children)
+                for(CroCoNode child : node.getChildren())
                 {
                     addMotifSet(child);
                     
                 }   
                 
-                CroCoNode kherapour = new CroCoNode("Kherapour et al.",node,new GeneralFilter(Option.reference,KHERAPOUR),false,node.networks);
-                CroCoNode kherapour_500 = new CroCoNode("Promoter 500.",kherapour,new GeneralFilter(Option.Upstream,"500"),false,kherapour.networks);
-                CroCoNode kherapour_2000 = new CroCoNode("Promoter 2000.",kherapour,new GeneralFilter(Option.Downstream,"2000"),false,kherapour.networks);
+                CroCoNode kherapour = new CroCoNode("Kherapour et al.",node,new GeneralFilter(Option.reference,KHERAPOUR),false,node.getNetworks());
+                CroCoNode kherapour_500 = new CroCoNode("Promoter 500.",kherapour,new GeneralFilter(Option.Upstream,"500"),false,kherapour.getNetworks());
+                CroCoNode kherapour_2000 = new CroCoNode("Promoter 2000.",kherapour,new GeneralFilter(Option.Downstream,"2000"),false,kherapour.getNetworks());
                 
                 
-                kherapour.children = new ArrayList<CroCoNode>();
-                kherapour.children.add(kherapour_500);
-                kherapour.children.add(kherapour_2000);
+                kherapour.setChildren( new ArrayList<CroCoNode>());
+                kherapour.getChildren().add(kherapour_500);
+                kherapour.getChildren().add(kherapour_2000);
                 
-                kherapour_500.children = new ArrayList<CroCoNode>();
-                kherapour_2000.children = new ArrayList<CroCoNode>();
+                kherapour_500.setChildren( new ArrayList<CroCoNode>());
+                kherapour_2000.setChildren ( new ArrayList<CroCoNode>());
                 
                 for(int i = 0 ; i<= 10 ; i++)
                 {
                     float c = (float)i/(float)10;
-                    CroCoNode conf_1 = new CroCoNode(String.format("Kherapour conf. %.2f",c),kherapour_500,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),true,kherapour_500.networks);
-                    CroCoNode conf_2 = new CroCoNode(String.format("Kherapour conf. %.2f",c),kherapour_2000,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),true,kherapour_2000.networks);
+                    CroCoNode conf_1 = new CroCoNode(String.format("Kherapour conf. %.2f",c),kherapour_500,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),true,kherapour_500.getNetworks());
+                    CroCoNode conf_2 = new CroCoNode(String.format("Kherapour conf. %.2f",c),kherapour_2000,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),true,kherapour_2000.getNetworks());
                     
-                    kherapour_500.children.add(conf_1);
-                    kherapour_2000.children.add(conf_2);
+                    kherapour_500.getChildren().add(conf_1);
+                    kherapour_2000.getChildren().add(conf_2);
                     
                     //CroCoNode conf_2 = new CroCoNode(String.format("Kherapour conf. %.2f",c),kherapour_2000,new GeneralFilter(Option.reference,KHERAPOUR),false,node.networks);
                     
                          
                 }
                 
-                node.children.add(kherapour);
+                node.getChildren().add(kherapour);
             }
             
             if ( option == Option.NetworkType && value.equals(NetworkType.OpenChrom.name()))
             {
-                node.childShowRootChildren = false;
+                node.setChildShowRootChildren(false);
                 
-                CroCoNode dgf = new CroCoNode("Digital Genomic Footprinting (DGF)",node,new GeneralFilter(Option.OpenChromType,"DGF"),false,node.networks);
-                CroCoNode dnase = new CroCoNode("DNase I hypersensitive sites (DNase)",node,new GeneralFilter(Option.OpenChromType,"DNase"),false,node.networks);
-                CroCoNode fair = new CroCoNode("Formaldehyde-Assisted Isolation of Regulatory Elements (FAIRE)",node,new GeneralFilter(Option.OpenChromType,"Faire"),false,node.networks);
-                node.children = new ArrayList<CroCoNode>();
-                node.children.add(dgf);
-                node.children.add(dnase);
-                node.children.add(fair);
+                CroCoNode dgf = new CroCoNode("Digital Genomic Footprinting (DGF)",node,new GeneralFilter(Option.OpenChromType,"DGF"),false,node.getNetworks());
+                CroCoNode dnase = new CroCoNode("DNase I hypersensitive sites (DNase)",node,new GeneralFilter(Option.OpenChromType,"DNase"),false,node.getNetworks());
+                CroCoNode fair = new CroCoNode("Formaldehyde-Assisted Isolation of Regulatory Elements (FAIRE)",node,new GeneralFilter(Option.OpenChromType,"Faire"),false,node.getNetworks());
+                node.setChildren ( new ArrayList<CroCoNode>());
+                node.getChildren().add(dgf);
+                node.getChildren().add(dnase);
+                node.getChildren().add(fair);
                 
                 for(CroCoNode openChromNode : new CroCoNode[]{dgf,dnase,fair})
                 {
                     addConfidence(openChromNode);
                     
-                    for(CroCoNode child : openChromNode.children)
+                    for(CroCoNode child : openChromNode.getChildren())
                     {
                         addMotifSet(child);
                         
@@ -302,12 +236,12 @@ public class NetworkOntology {
     }
     private void addMotifSet (CroCoNode root)
     {
-        root.children = new ArrayList<CroCoNode>();
+        root.setChildren (new ArrayList<CroCoNode>());
         
-        for(String motifSetName : getMotifSet(root.networks))
+        for(String motifSetName : getMotifSet(root.getNetworks()))
         {
-            CroCoNode node = new CroCoNode(motifSetName,root,new GeneralFilter(Option.MotifSet,motifSetName),true,root.networks);
-            root.children.add(node);
+            CroCoNode node = new CroCoNode(motifSetName,root,new GeneralFilter(Option.MotifSet,motifSetName),true,root.getNetworks());
+            root.getChildren().add(node);
         }
         
     }
@@ -353,21 +287,21 @@ public class NetworkOntology {
         while(!stack.isEmpty())
         {
             CroCoNode top = stack.pop();
-            if ( top.networks.size() == 0) continue;
+            if ( top.getNetworks().size() == 0) continue;
             Integer topId = nodeToId.containsKey(top)?nodeToId.get(top):id++;
             
             Integer parentId = null;
             
-            if ( top.parent == null)
+            if ( top.getParent() == null)
             {
                 parentId = -1;
             }else
             {
-                parentId = nodeToId.get(top.parent);
+                parentId = nodeToId.get(top.getParent());
             }
             nodeToId.put(top,topId);
             List<Integer> ids = new ArrayList<Integer>();
-            for(NetworkHierachyNode nh : top.networks)
+            for(NetworkHierachyNode nh : top.getNetworks())
             {
                 ids.add(nh.getGroupId());
             }
@@ -375,14 +309,14 @@ public class NetworkOntology {
             stat.setInt(1, topId);
             stat.setInt(2,parentId);
             
-            stat.setString(3, top.name);
+            stat.setString(3, top.getName());
             stat.setString(4,Joiner.on(" ").join(ids));
 
             stat.addBatch();
             
-            if ( top.children != null)
+            if ( top.getChildren() != null)
             {
-                for(CroCoNode child : top.children)
+                for(CroCoNode child : top.getChildren())
                 {
                     stack.add(child);
                 }
@@ -403,7 +337,7 @@ public class NetworkOntology {
         ResultSet res = stat.getResultSet();
         HashMap<String,List<Pair<String,Integer>>> names = new HashMap<String,List<Pair<String,Integer>>>();
        
-        OrthologRepository orepo = OrthologRepository.getInstance(new LocalService());
+        OrthologRepository orepo = OrthologRepository.getInstance(service);
         
         while(res.next())
         {
@@ -438,14 +372,13 @@ public class NetworkOntology {
                 }
             }
             
-            CroCoNode factorNode = new CroCoNode(geneName.getKey(),parent,new FactorFilter(genesOfInterest),true,parent.networks);
-            parent.children.add(factorNode);
+            CroCoNode factorNode = new CroCoNode(geneName.getKey(),parent,new FactorFilter(genesOfInterest),true,parent.getNetworks());
+            parent.getChildren().add(factorNode);
         }
     }
   
     public CroCoNode createNetworkOntology() throws Exception
     {
-        LocalService service = new LocalService();
         
         List<Species> sp = new ArrayList<Species>(Species.knownSpecies);
         List<OrthologMappingInformation> mappings = new ArrayList<OrthologMappingInformation>();
@@ -464,48 +397,48 @@ public class NetworkOntology {
             OrthologRepository.getInstance(service).getOrthologMapping(mapping);
         }
         
-        NetworkHierachyNode networks = service.getNetworkHierachy();
+        List<NetworkHierachyNode> networks = service.getNetworkHierachy();
         readFactors(networks);
         
-        CroCoNode root = new CroCoNode("Root",null,true,new HashSet<NetworkHierachyNode>(networks.getAllChildren()));
+        CroCoNode root = new CroCoNode("Root",null,true,new HashSet<NetworkHierachyNode>(networks));
         
-        CroCoNode cellLine = new CroCoNode("Cell-line",root, new GeneralFilter(Option.cellLine),false,root.networks);
+        CroCoNode cellLine = new CroCoNode("Cell-line",root, new GeneralFilter(Option.cellLine),false,root.getNetworks());
         addOntologyNodes(Option.cellLine,cellLine);
       
-        CroCoNode factor = new CroCoNode("Factor",root, false,root.networks);
+        CroCoNode factor = new CroCoNode("Factor",root, false,root.getNetworks());
         addOntologyNodes(Option.AntibodyTargetMapped,factor);
-        CroCoNode allFactors = new CroCoNode("All factors",factor,true,factor.networks);
-        factor.children.add(allFactors);
+        CroCoNode allFactors = new CroCoNode("All factors",factor,true,factor.getNetworks());
+        factor.getChildren().add(allFactors);
         
-        CroCoNode specie = new CroCoNode("Species",root, new GeneralFilter(Option.TaxId),false,root.networks);
+        CroCoNode specie = new CroCoNode("Species",root, new GeneralFilter(Option.TaxId),false,root.getNetworks());
         addOntologyNodes(Option.TaxId,specie);    
 
-        CroCoNode technique = new CroCoNode("Technique",root, new GeneralFilter(Option.NetworkType),false,root.networks);
+        CroCoNode technique = new CroCoNode("Technique",root, new GeneralFilter(Option.NetworkType),false,root.getNetworks());
         addOntologyNodes(Option.NetworkType,technique);
     
-        CroCoNode devstage = new CroCoNode("Development-stage",root, new GeneralFilter(Option.developmentStage),false,root.networks);
+        CroCoNode devstage = new CroCoNode("Development-stage",root, new GeneralFilter(Option.developmentStage),false,root.getNetworks());
         addOntologyNodes(Option.developmentStage,devstage);
     
-        CroCoNode treatment = new CroCoNode("Treatment",root, new GeneralFilter(Option.treatment),false,root.networks);
+        CroCoNode treatment = new CroCoNode("Treatment",root, new GeneralFilter(Option.treatment),false,root.getNetworks());
         addOntologyNodes(Option.treatment,treatment);
     
-        root.children = new ArrayList<CroCoNode>();
+        root.setChildren (new ArrayList<CroCoNode>());
         
-        root.children.add(cellLine);
-        root.children.add(factor);
-        root.children.add(specie);
-        root.children.add(technique);
-        root.children.add(devstage);
-        root.children.add(treatment);
+        root.getChildren().add(cellLine);
+        root.getChildren().add(factor);
+        root.getChildren().add(specie);
+        root.getChildren().add(technique);
+        root.getChildren().add(devstage);
+        root.getChildren().add(treatment); 
         
         return root;
     }
     private static String FACTOR_FILE="factors.gz";
     
-    private void readFactors(NetworkHierachyNode root) throws Exception
+    private void readFactors(List<NetworkHierachyNode> nodes) throws Exception
     {
         HashMap<Integer,NetworkHierachyNode> groupIdToNetwork = new HashMap<Integer,NetworkHierachyNode>();
-        for(NetworkHierachyNode nh : root.getAllChildren() ) 
+        for(NetworkHierachyNode nh : nodes ) 
         {
             groupIdToNetwork.put(nh.getGroupId(), nh);
         }
