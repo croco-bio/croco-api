@@ -63,128 +63,88 @@ public class LocalService implements QueryService{
 		
 	}
 	
+	private List<NetworkHierachyNode> getNetworkHierachy(Integer  gId) throws Exception
+	{
+	    String sql = null;
+	    if ( gId == null)
+	        sql = "SELECT nh.group_id ,  name,  tax_id,network_type FROM NetworkHierachy nh";
+	    else
+	        sql = String.format("SELECT nh.group_id ,  name, tax_id,network_type FROM NetworkHierachy nh where nh.group_id=%d",gId);
+	       
+	    PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement(sql);
+        CroCoLogger.getLogger().debug(sql);
+
+        List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
+
+        stat.execute();
+
+        ResultSet res = stat.getResultSet();
+        HashMap<Integer,NetworkHierachyNode> groupIdToNH = new  HashMap<Integer,NetworkHierachyNode>();
+        while(res.next()){
+            Integer groupId = res.getInt(1);
+
+            String name = res.getString(2);
+            Integer taxId = res.getInt(3);
+
+
+           
+            if ( res.wasNull())  taxId = null;
+            NetworkType type = null;
+            Integer networkTypeID = res.getInt(4);
+            if ( NetworkType.values().length >networkTypeID){
+                type = NetworkType.values()[networkTypeID];
+            }else{
+                CroCoLogger.getLogger().error(String.format("Unknown network type %d",networkTypeID));
+            }
+
+            NetworkHierachyNode nhn = new NetworkHierachyNode(groupId,name,taxId,type);
+            networks.add(nhn);
+            groupIdToNH.put(groupId, nhn);
+
+        }
+        res.close();
+        stat.close();
+
+
+        sql = "SELECT group_id,option_id,value FROM NetworkOption";
+        if ( gId != null)
+        {
+            sql+= String.format(" where group_id =%d",gId);
+        }
+        CroCoLogger.getLogger().debug(sql);
+        stat = DatabaseConnection.getConnection().prepareStatement(sql);
+        stat.execute();
+        res = stat.getResultSet();
+        while(res.next())
+        {
+            Integer groupId = res.getInt(1);
+            Option option = Option.values()[res.getInt(2)];
+            String value = res.getString(3);
+            
+            groupIdToNH.get(groupId).addOption(option, value);
+        }
+        
+        
+        logger.debug("Number of networks:\t" + networks.size());
+        return networks;
+	}
+	
 	@Override
-	public NetworkHierachyNode getNetworkHierachy() throws Exception {
-		
-	    String sql = "SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY parent_group_id";
-		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
-		CroCoLogger.getLogger().debug(sql);
-		
-		List<NetworkHierachyNode> networks = getNetworks(statement);
-		statement.close();
-		
-		NetworkHierachyNode rootNode = networks.get(0);
-		
-		
-		
-		logger.debug("Number of networks:\t" + networks.size());
-		return rootNode;
+	public List<NetworkHierachyNode> getNetworkHierachy() throws Exception {
+	    return getNetworkHierachy(null);
 	}
 
 
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-	    String sql = "SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh where nh.group_id=?";
-	    CroCoLogger.getLogger().debug(sql);
-		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
-		statement.setInt(1, groupId);
-		
-		List<NetworkHierachyNode> networks = getNetworks(statement,groupId);
-		statement.close();
-		if ( networks.size() == 1) 
-			return networks.get(0);
-		else
-			return null;
+	    List<NetworkHierachyNode> ret = getNetworkHierachy();
+	    
+	    if ( ret == null || ret.size() == 0)
+	        return null;
+	    
+	    return ret.get(0);
 	}
-	@Override
-	public List<NetworkHierachyNode> findNetwork(List<Pair<Option, String>> options) throws Exception {
-		
-		
-		StringBuffer condition =new StringBuffer();
-		
-		for(int i = 0 ; i< options.size(); i++){
-			if ( condition.length() > 0) condition.append(" AND ");
-			condition.append("nh.group_id IN (SELECT group_id FROM  NetworkOption nop  where nh.group_id and nop.option_id = ? and nop.value like ?) ");
-		}
-		
-		String sql = String.format("SELECT nh.group_id , parent_group_id , name, has_network, tax_id,database_identifier_id,network_type FROM NetworkHierachy nh ORDER BY %s ORDER BY parent_group_id",condition.length() > 0?"where " +condition.toString():"");
-		PreparedStatement statement = DatabaseConnection.getConnection().prepareStatement(sql);
-		for(Pair<Option,String> option : options){
-			statement.setInt(1, option.getFirst().ordinal());
-			statement.setString(2, option.getSecond());
-			
-		}
-		List<NetworkHierachyNode> networks = getNetworks(statement);
-		statement.close();
-		
-		return networks;
-	}
-	
-	private List<NetworkHierachyNode> getNetworks(PreparedStatement stat, Integer ... groupIds) throws SQLException, IOException{
-		List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
 
-		stat.execute();
-		
-		ResultSet res = stat.getResultSet();
-	
-		HashMap<Integer,NetworkHierachyNode> groupIdToNetwork = new HashMap<Integer,NetworkHierachyNode>();
-		
-		while(res.next()){
-			Integer groupId = res.getInt(1);
-			
-			if ( groupIdToNetwork.containsKey(groupId))
-			    continue;
-			
-			Integer parentGroupId = res.getInt(2);
-			String name = res.getString(3);
-			Boolean hasNetwork = res.getBoolean(4);
-			
-
-			Integer taxId = res.getInt(5);
-			if ( res.wasNull())  taxId = null;
-			NetworkType type = null;
-			Integer networkTypeID = res.getInt(7);
-			if ( NetworkType.values().length >networkTypeID){
-				type = NetworkType.values()[networkTypeID];
-			}else{
-				CroCoLogger.getLogger().error(String.format("Unknown network type %d",networkTypeID));
-			}
-			
-			NetworkHierachyNode nhn = new NetworkHierachyNode(null,parentGroupId,groupId,name,hasNetwork,taxId,type);
-			groupIdToNetwork.put(groupId, nhn);
-			networks.add(nhn);
-			
-		}
-		res.close();
-		stat.close();
-		for(NetworkHierachyNode network : networks){ //creates hierarchy
-			Integer parentGroupId = network.getParentGroupdId();
-			if ( groupIdToNetwork.containsKey(parentGroupId)){
-				groupIdToNetwork.get(parentGroupId).addChild(network);
-				network.setParent(groupIdToNetwork.get(parentGroupId));
-			}
-		}
-		String sql = "SELECT group_id,option_id,value FROM NetworkOption";
-		if ( groupIds != null && groupIds.length >0)
-		{
-		    sql+= String.format(" where group_id IN(%s)",Joiner.on(",").join(groupIds));
-		}
-		CroCoLogger.getLogger().debug(sql);
-		stat = DatabaseConnection.getConnection().prepareStatement(sql);
-		stat.execute();
-		res = stat.getResultSet();
-		while(res.next())
-		{
-		    Integer groupId = res.getInt(1);
-		    Option option = Option.values()[res.getInt(2)];
-		    String value = res.getString(3);
-		    
-		    groupIdToNetwork.get(groupId).addOption(option, value);
-		}
-		
-		return networks;
-	}
-	
    
 
 	@Override
@@ -411,45 +371,6 @@ public class LocalService implements QueryService{
 		stat.close();
 		return network;
 		
-	}
-	@Override
-	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception{
-		Statement stat = DatabaseConnection.getConnection().createStatement();
-		
-		String sql = String.format("SELECT has_network FROM NetworkHierachy where group_id = %d;",groupId);
-		stat.execute(sql);
-		ResultSet res = stat.getResultSet();
-		
-		boolean hasNetwork = false;
-		if (res.next() ){
-			hasNetwork = res.getBoolean(1);
-		}
-		res.close();
-		
-		sql =String.format("SELECT no.option_id,no.value FROM NetworkOption no  where group_id =%d",groupId);
-		stat.execute(sql);
-		logger.debug(sql);
-		res = stat.getResultSet();
-		List<Pair<Option,String>> options = new ArrayList<Pair<Option,String>>();
-		while(res.next()) {
-			Integer optionId = res.getInt(1);
-			Option option = Option.values()[optionId];
-			
-			String value = res.getString(2);
-			
-			options.add(new Pair<Option,String>(option,value));
-			
-		}
-		
-		res.close();
-		stat.close();
-		
-		if ( hasNetwork){
-			Integer interaction = this.getNumberOfEdges(groupId) ;
-			if ( interaction != null)options.add(new Pair<Option,String>(Option.numberOfInteractions,interaction+""));
-		}
-		
-		return options;
 	}
 	
 	@Override
@@ -692,7 +613,7 @@ public class LocalService implements QueryService{
 			NetworkType type = NetworkType.values()[res.getInt(3)];
 			
 			if (! groupIdToNetworkSummary.containsKey(groupId)){
-				NetworkHierachyNode nh = new NetworkHierachyNode(0,-1,groupId,name,true,null,type);
+				NetworkHierachyNode nh = new NetworkHierachyNode(groupId,name,null,type);
 				BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(name,null,false);
 				network.setHierachyNode(nh);
 				groupIdToNetworkSummary.put(groupId,network );
@@ -729,14 +650,14 @@ public class LocalService implements QueryService{
 		return version;
 	}
 
+	
+	
     @Override
     public CroCoNode getNetworkOntology() throws Exception{
-        LocalService service = new LocalService();
-        NetworkHierachyNode networks = service.getNetworkHierachy();
         
         HashMap<Integer,NetworkHierachyNode> idToNetwork = new HashMap<Integer,NetworkHierachyNode>();
         
-        for(NetworkHierachyNode network : networks.getAllChildren())
+        for(NetworkHierachyNode network : getNetworkHierachy())
         {
             idToNetwork.put(network.getGroupId(), network);
         }
@@ -780,15 +701,15 @@ public class LocalService implements QueryService{
             if ( parentId >= 0)
             {
                 CroCoNode parent = networkToCroCoNode.get(parentId);
-                node.parent = parent;
-                if ( parent.children == null)
+                node.setParent(parent);
+                if ( parent.getChildren() == null)
                 {
-                    parent.childShowRootChildren = false;
+                    parent.setChildShowRootChildren(false);
                     
-                    parent.children = new ArrayList<CroCoNode>();
-                    parent.children.add(node);
+                    parent.setChildren( new ArrayList<CroCoNode>());
+                    parent.getChildren().add(node);
                 }    else{
-                    parent.children.add(node);
+                    parent.getChildren().add(node);
                         
                 }
             }

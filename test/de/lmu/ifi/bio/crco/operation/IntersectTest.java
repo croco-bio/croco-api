@@ -22,13 +22,13 @@ import de.lmu.ifi.bio.crco.operation.intersect.BindingSiteOverlapCheck;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class IntersectTest {
+    /*
     @Test
     public void testIntersectk562() throws Exception
     {
         RemoteWebService remoteService = new RemoteWebService("http://localhost:8080/croco-web/services");
         BufferedService service = new BufferedService(remoteService,new File("networkBufferDir/")); 
         List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy().getNode("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
-        
         
         ReadNetwork reader = new ReadNetwork();
         reader.setInput(ReadNetwork.QueryService, service);
@@ -50,7 +50,7 @@ public class IntersectTest {
         assertTrue(k562_rep12.size()<k562_rep2.size());
         
     }
-    
+    */
 	@Test
 	public void testBinding() throws Exception{
 		ReadBindingNetwork reader = new ReadBindingNetwork();

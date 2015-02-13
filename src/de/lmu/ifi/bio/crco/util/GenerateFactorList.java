@@ -34,7 +34,7 @@ public class GenerateFactorList {
         PrintWriter pw = new PrintWriter(outFile);
         
         LocalService service = new LocalService();
-        List<NetworkHierachyNode> networks = service.getNetworkHierachy().getAllChildren();
+        List<NetworkHierachyNode> networks = service.getNetworkHierachy();
         CroCoLogger.info("Generate factor stat for: %d networks",networks.size());
         PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement("SELECT distinct(gene1) FROM Network where group_id= ?");
         

@@ -25,7 +25,7 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Tuple;
 
 public class ReadBindingNetworkTest {
-
+    /*
     @Test
     public void testReadK562() throws Exception
     {
@@ -86,5 +86,5 @@ public class ReadBindingNetworkTest {
 			assertTrue(net.size() > 0);
 			
 	}
-
+*/
 }

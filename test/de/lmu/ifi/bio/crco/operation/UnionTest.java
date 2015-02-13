@@ -23,7 +23,7 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 
 public class UnionTest {
-
+    /*
     @Test
     public void testUnionK562() throws Exception{
         RemoteWebService remoteService = new RemoteWebService("http://localhost:8080/croco-web/services");
@@ -45,7 +45,7 @@ public class UnionTest {
         union.setInputNetwork(k562_rep1,k562_rep2);
         Network k562_rep12 = union.operate();
     }
-    
+    */
 	@Test
 	public void testUnionBindingSite() throws Exception{
 		ReadBindingNetwork reader = new ReadBindingNetwork();

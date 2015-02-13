@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
+import de.lmu.ifi.bio.crco.data.CroCoNode;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
@@ -24,7 +25,7 @@ import de.lmu.ifi.bio.crco.test.IntegrationTest;
 @Category(IntegrationTest.class)
 public class RemoteWebServiceTest {
 	//public static String url="http://services.bio.ifi.lmu.de/croco-web/services";
-	public static String url="http://localhost:8080/croco-web/services";
+	public static String url="http://localhost:8080/croco-web/services/";
 	public static String url_local2="http://tomcluster64:1046/croco-web/services";
 	
 	
@@ -45,9 +46,17 @@ public class RemoteWebServiceTest {
 	public void testGetNetworkHierachy() throws Exception{
 		RemoteWebService service = new RemoteWebService(url);
 		
-		service.getNetworkHierachy();
+		List<NetworkHierachyNode> nodes = service.getNetworkHierachy();
+		
 	}
-	
+	@Test
+	public void testGetNetworkOntology() throws Exception
+	{
+	    RemoteWebService service = new RemoteWebService(url);
+        
+        CroCoNode ontology = service.getNetworkOntology();
+        System.out.println(ontology);
+	}
 	@Test
 	public void testGetOrthologMapping() throws Exception{
 		RemoteWebService service = new RemoteWebService(url);
@@ -88,10 +97,12 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testListNetwork() throws Exception {
 		RemoteWebService service = new RemoteWebService(url);
-		NetworkHierachyNode networks = service.getNetworkHierachy();
-		assertTrue(networks.getChildren().size()>0);
+		List<NetworkHierachyNode> networks = service.getNetworkHierachy();
+
 		assertTrue(networks != null);
+		assertTrue(networks.size()>0);
 	}
+	/*
 	@Test
 	public void testReadK562() throws Exception
 	{
@@ -101,9 +112,8 @@ public class RemoteWebServiceTest {
                 "DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/";
         
 	    List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy().getNode(path).getAllChildren();
-	 
 	}
-	
+	*/
 	@Test
 	public void testReadNetwork() throws Exception{
 		

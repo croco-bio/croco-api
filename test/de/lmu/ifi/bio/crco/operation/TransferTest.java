@@ -23,6 +23,7 @@ import de.lmu.ifi.bio.crco.operation.ortholog.OrthologRepository;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class TransferTest {
+    /*
 	@Test
 	public void testK562() throws Exception
 	{
@@ -53,7 +54,7 @@ public class TransferTest {
         Network transferred = transfer.operate();
         assertEquals((int)transferred.getTaxId(),10090);
 	}
-    
+    */
 	@Test
 	public void transferFlyHuman() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger());

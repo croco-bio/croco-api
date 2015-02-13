@@ -67,6 +67,7 @@ public class RemoteWebService implements QueryService{
 	 *
 	 */
 	public static class NullObject{}
+	
 	public static InputStream getStreamedData(String baseUrl, String method, Object...parameters) throws Exception{
 		URL url = new URL(String.format("%s/%s",baseUrl  , method));
 		
@@ -76,7 +77,8 @@ public class RemoteWebService implements QueryService{
 		conn.setDoOutput(true);
 		
 		XStream xstream = new XStream();
-		
+	    xstream.setMode(XStream.ID_REFERENCES);
+	        
 		
 		ObjectOutputStream out = xstream.createObjectOutputStream(new OutputStreamWriter(conn.getOutputStream()));
 		for(Object parameter: parameters){
@@ -86,6 +88,7 @@ public class RemoteWebService implements QueryService{
 		
 		return conn.getInputStream();
 	}
+	
 	private static Object performeOperation(String baseUrl, String method, Object...parameters) throws IOException{
 		return performeOperation(false,baseUrl,method,parameters);
 	}
@@ -98,6 +101,8 @@ public class RemoteWebService implements QueryService{
 		conn.setDoOutput(true);
 		
 		XStream xstream = new XStream();
+        xstream.setMode(XStream.ID_REFERENCES);
+        
 		
 		
 		ObjectOutputStream out = xstream.createObjectOutputStream(new OutputStreamWriter(conn.getOutputStream()));
@@ -108,7 +113,8 @@ public class RemoteWebService implements QueryService{
 		
 		
 		out.close();
-		InputStream conInput = conn.getInputStream();
+		GZIPInputStream conInput = new GZIPInputStream(conn.getInputStream());
+	//	InputStream conInput = conn.getInputStream();
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -122,7 +128,6 @@ public class RemoteWebService implements QueryService{
 		}
 		baos.flush();
 		CroCoLogger.getLogger().trace(content);
-		
 		String debugContent = content.substring(0, Math.min(2048,content.length())).replace(" ", "");
 		
         ObjectInputStream in = null;
@@ -135,7 +140,6 @@ public class RemoteWebService implements QueryService{
 		
 		Object object = null;
 		CroCoLogger.getLogger().debug(String.format("Reading results"));
-		
 
 		try {
 			object =  in.readObject() ;
@@ -143,6 +147,7 @@ public class RemoteWebService implements QueryService{
 			CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Error: %s. Message from server: %s",e.getMessage(),debugContent));
 		}
 		return object;
+	
 	}
 	@Override
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation)throws Exception {
@@ -315,22 +320,10 @@ public class RemoteWebService implements QueryService{
 		return image;
 	}
 	
-
-	@Override
-	public List<NetworkHierachyNode> findNetwork(List<Pair<Option, String>> options) throws Exception {
-		return (List)performeOperation(baseUrl,"findNetwork",options);
-	}
-
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
 		return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachyNode",groupId);
 	}
-
-	@Override
-	public List<Pair<Option, String>> getNetworkInfo(Integer groupId) throws Exception {
-		return (List)performeOperation(baseUrl,"getNetworkInfo",groupId);
-	}
-
 
 	@Override
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
@@ -386,8 +379,8 @@ public class RemoteWebService implements QueryService{
         return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology");
     }
     @Override
-    public NetworkHierachyNode getNetworkHierachy() throws Exception {
-        return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachy");
+    public List<NetworkHierachyNode> getNetworkHierachy() throws Exception {
+        return (List<NetworkHierachyNode>)performeOperation(baseUrl,"getNetworkHierachy");
     }
 
 

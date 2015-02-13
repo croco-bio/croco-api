@@ -2,17 +2,13 @@ package de.lmu.ifi.bio.crco.operation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
 import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
-import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
-import de.lmu.ifi.bio.crco.util.Pair;
 /**
  * Reads a network from a CroCo-Repository.
  * @author rpesch
@@ -23,45 +19,6 @@ public class ReadNetwork extends GeneralOperation {
 	public static Parameter<NetworkHierachyNode> NetworkHierachyNode = new Parameter<NetworkHierachyNode>("NetworkHierachyNode",null);
 	public static Parameter<ContextTreeNode> ContextTreeNode = new Parameter<ContextTreeNode>("ContextTreeNode",null);
 	
-	/**
-	 * Wrapper for {@link de.lmu.ifi.bio.crco.connector.NetworkHierachyNode}
-	 * @param path string
-	 * @return Object
-	 * @throws Exception if the connection to the {@link de.lmu.ifi.bio.crco.connector.QueryService} does not work.
-	 */
-	@ParameterWrapper(parameter="NetworkHierachyNode",alias="NetworkPath")
-	public void setNetworkPathParameter(String query) throws Exception{
-		CroCoLogger.getLogger().debug("Query for network:"+query);
-		QueryService service = this.getParameter(QueryService);
-		if ( service == null) throw new RuntimeException("Query service not set");
-		Pattern pattern = Pattern.compile("(\\w+)=(\\w+)");
-		Matcher matcher = pattern.matcher(query);
-		List<Pair<Option,String>> options = new ArrayList<Pair<Option,String>>();
-		while ( matcher.find()){
-			
-			Option option = Option.getOption(matcher.group(1));
-			if ( option == null) throw new Exception(String.format("Unknown option %s in query string",matcher.group(1)));
-			options.add(new Pair<Option,String>(option,matcher.group(2)));
-			
-		}
-		String path = query.substring(0,query.lastIndexOf("/"));
-	
-		de.lmu.ifi.bio.crco.data.NetworkHierachyNode node = de.lmu.ifi.bio.crco.data.NetworkHierachyNode.getNode(service.getNetworkHierachy(),path);
-		if ( node.hasNetwork()) 
-			this.setInput(NetworkHierachyNode, node);
-		else{
-			for(de.lmu.ifi.bio.crco.data.NetworkHierachyNode child  : node.getChildren()){
-				List<Pair<Option, String>> infos = service.getNetworkInfo(child.getGroupId());
-				int k = 0;
-				for(Pair<Option, String> o : options){
-					for(Pair<Option, String> info : infos){
-						if ( info.getFirst().equals(o.getFirst()) && info.getSecond().equals(o.getSecond()))k++;
-					}
-				}
-				if ( k == options.size()) this.setInput(NetworkHierachyNode, child);
-			}
-		}
-	}
 	@ParameterWrapper(parameter="ContextTreeNode",alias="ContextTreeNode")
 	public void setContextTreeNodeParameter(String soureID) throws Exception{
 		QueryService service = this.getParameter(QueryService);

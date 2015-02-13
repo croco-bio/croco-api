@@ -8,13 +8,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import com.thoughtworks.xstream.XStream;
 
 import de.lmu.ifi.bio.crco.data.ContextTreeNode;
 import de.lmu.ifi.bio.crco.data.CroCoNode;
@@ -23,18 +28,14 @@ import de.lmu.ifi.bio.crco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.crco.data.Option;
 import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.data.genome.Gene;
-import de.lmu.ifi.bio.crco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.crco.network.BindingEnrichedDirectedNetwork;
-import de.lmu.ifi.bio.crco.network.DirectedNetwork;
 import de.lmu.ifi.bio.crco.network.Network;
-import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.Pair;
-import de.lmu.ifi.bio.crco.util.Tuple;
 
 public class BufferedService implements QueryService {
 	private File baseDir;
@@ -57,6 +58,57 @@ public class BufferedService implements QueryService {
 			}
 		}
 	}
+	/*
+	@Override
+	public CroCoNode getNetworkOntology() throws Exception {
+	    return service.getNetworkOntology();
+	}
+	*/
+	
+	@Override
+	public CroCoNode getNetworkOntology() throws Exception {
+	    File ontologyFile = new File(baseDir + "/ontology");
+	    CroCoNode rootNode = null;
+	    if (! ontologyFile.exists())
+	    {
+	        rootNode= service.getNetworkOntology();
+	        writeOntology(ontologyFile,rootNode);
+	    }else{
+	        rootNode = readOntology(ontologyFile);
+	    }
+	    
+	    return rootNode;
+	}
+	
+	private CroCoNode readOntology(File file) throws Exception
+	{
+	    CroCoLogger.getLogger().info("Write ontology file:" + file);
+	    XStream xstream = new XStream();
+        xstream.setMode(XStream.ID_REFERENCES);
+        
+        
+        ObjectInputStream in = xstream.createObjectInputStream(new InputStreamReader( new GZIPInputStream(new FileInputStream(file))));
+        
+        CroCoNode obj = (CroCoNode)  in.readObject();
+	
+        in.close();
+        return obj;
+	}
+	private void writeOntology(File file, CroCoNode node) throws Exception
+	{
+	    CroCoLogger.getLogger().info("Read ontology from file:" + file);
+	    XStream xstream = new XStream();
+        xstream.setMode(XStream.ID_REFERENCES);
+        Writer out = new PrintWriter(new GZIPOutputStream(new FileOutputStream(file)));
+        ObjectOutputStream out2 = xstream.createObjectOutputStream(out);
+        
+        out2.writeObject(node);
+        
+        out2.close();
+        out.close();
+	    
+	}
+	
 	@Override
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception{
 		File orthologMappingFile = new File(baseDir + "/ortholog-" + orthologMappingInformation.getDatabase().ordinal() + "-" + orthologMappingInformation.getSpecies1().getTaxId() +"-" + orthologMappingInformation.getSpecies2().getTaxId() + ".croco.gz" );
@@ -134,26 +186,17 @@ public class BufferedService implements QueryService {
 	}
 	*/
 	@Override
-	public NetworkHierachyNode getNetworkHierachy() throws Exception {
+	public List<NetworkHierachyNode> getNetworkHierachy() throws Exception {
 		return service.getNetworkHierachy();
 	}
 
 
+
 	@Override
-	public List<NetworkHierachyNode> findNetwork(
-			List<Pair<Option, String>> options) throws Exception {
-		return this.service.findNetwork(options);
-	}
-	@Override
-	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId)
-			throws Exception {
+	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
 		return this.service.getNetworkHierachyNode(groupId);
 	}
-	@Override
-	public List<Pair<Option, String>> getNetworkInfo(Integer groupId)
-			throws Exception {
-		return this.service.getNetworkInfo(groupId);
-	}
+	
 
 	@Override
 	public Integer getNumberOfEdges(Integer groupId) throws Exception {
@@ -161,8 +204,7 @@ public class BufferedService implements QueryService {
 	}
 
 	@Override
-	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)
-			throws Exception {
+	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId)	throws Exception {
 		return service.getTransferTargetSpecies(taxId);
 	}
 	
@@ -206,8 +248,6 @@ public class BufferedService implements QueryService {
 	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {
 		return service.getGenes(species,onlyCoding,context);
 	}
-    @Override
-    public CroCoNode getNetworkOntology() throws Exception {
-        return service.getNetworkOntology();
-    }
+ 
+   
 }

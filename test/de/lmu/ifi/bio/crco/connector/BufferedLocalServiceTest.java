@@ -20,7 +20,17 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 @Category(IntegrationTest.class)
 public class BufferedLocalServiceTest {
-	@Test
+    
+    @Test
+    public void remoteServiceWrapped() throws Exception
+    {
+        RemoteWebService s = new RemoteWebService(RemoteWebServiceTest.url);
+        BufferedService service = new BufferedService(s,new File("/tmp/"));
+        
+        System.out.println(service.getNetworkOntology());
+    }
+	/*
+    @Test
 	public void testReadNetworkLocalService() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
@@ -51,6 +61,7 @@ public class BufferedLocalServiceTest {
 		}
 	
 	}
+	
 	@Test
 	public void testReadNetworkRemoteService() throws Exception{
 		
@@ -80,7 +91,7 @@ public class BufferedLocalServiceTest {
 	
 	}
 	
-	
+	*/
 	@Test
 	public void testGetOrtholog() throws Exception{
 		Logger logger = CroCoLogger.getLogger();

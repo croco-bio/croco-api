@@ -13,7 +13,8 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
 
 public class ReadNetworkTest {
-	@Test
+	/*
+    @Test
 	public void testReadNetworkWrapper() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger());
 		
@@ -22,7 +23,7 @@ public class ReadNetworkTest {
 		reader.setNetworkPathParameter("/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=2]");
 		System.out.println(reader.getParameter(ReadNetwork.NetworkHierachyNode).getGroupId());
 	}
-	
+	*/
 	@Test
 	public void readNetwork() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger());

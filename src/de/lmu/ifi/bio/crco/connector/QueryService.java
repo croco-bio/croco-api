@@ -22,7 +22,7 @@ import de.lmu.ifi.bio.crco.util.Pair;
  *
  */
 public interface QueryService {
-	final static long version = 1l;
+	final static long version = 11l;
 	
 	/**
 	 * The current QueryService version
@@ -30,9 +30,13 @@ public interface QueryService {
 	 */
 	public Long getVersion();
 	
+	/*
 	public NetworkHierachyNode getNetworkHierachy() throws Exception;
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option,String>> options) throws Exception;
+	*/
+	
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception;
+	public List<NetworkHierachyNode> getNetworkHierachy() throws Exception;
 	
 	/**
 	 * Returns network annotations for a specific network id
@@ -40,7 +44,7 @@ public interface QueryService {
 	 * @return a list of options
 	 * @throws Exception
 	 */
-	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception;
+//	public List<Pair<Option,String>> getNetworkInfo(Integer groupId) throws Exception;
 
 
 	/**
