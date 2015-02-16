@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.crco.operation;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Stack;
 
 import org.junit.Test;
 
-import de.lmu.ifi.bio.crco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.crco.connector.LocalService;
 import de.lmu.ifi.bio.crco.connector.QueryService;
 import de.lmu.ifi.bio.crco.data.Entity;
@@ -56,8 +56,8 @@ public class OperationUtilTest {
 		root.addChild(child1);
 		
 		
-		NetworkOperationNode intersect = new NetworkOperationNode(null,9695,new Intersect());
-		
+		NetworkOperationNode intersect = new NetworkOperationNode(null,9606,new Intersect());
+
 		
 		ReadNetwork reader1 = new ReadNetwork();
 		reader1.setInput(ReadNetwork.QueryService, service); 
@@ -81,13 +81,15 @@ public class OperationUtilTest {
 		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse).get(0);
 		List<OrthologMappingInformation>  mappings = new ArrayList<OrthologMappingInformation>();
 		mappings.add(mapping);
-		
+
 		transferOp.setInput(Transfer.OrthologMappingInformation, mappings);
 		transferOp.setInput(Transfer.OrthologRepository, OrthologRepository.getInstance(service));
 		NetworkOperationNode transfer = new NetworkOperationNode(null,9695,transferOp);
 		transfer.addChild(intersect);
 		
 		root.addChild(transfer);
+		
+		root.print(new PrintWriter(System.out));
 		
 		int k =OperationUtil.getNumberOfOperations(root);
 		Network retNetwork = OperationUtil.process(service, root);

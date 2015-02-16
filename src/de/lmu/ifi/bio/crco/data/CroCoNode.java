@@ -133,7 +133,7 @@ public class CroCoNode implements Comparable<CroCoNode>
     
     public CroCoNode getNode(String name, Filter ... filters) throws Exception{
         return CroCoNode.getNode(name,this, filters);
-    }
+    } 
     public static CroCoNode getNode(String name,CroCoNode rootNode,Filter ... filters) throws Exception
     {
         CroCoNode node = new CroCoNode(name);

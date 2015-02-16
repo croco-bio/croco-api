@@ -137,7 +137,7 @@ public class Transfer extends GeneralOperation{
 		
 		for(OrthologMappingInformation ortholog : orthologs){
 			if ( !ortholog.getSpecies1().getTaxId().equals(sourceTaxId) && !ortholog.getSpecies2().getTaxId().equals(sourceTaxId) ){
-				throw new OperationNotPossibleException("Can not map network" + network.getTaxId());
+				throw new OperationNotPossibleException(String.format("Invalid ortholog mapping (%s). For network %s with taxId: %d",ortholog.toString(),network.getName(), network.getTaxId()));
 			}
 			
 			

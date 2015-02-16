@@ -137,7 +137,7 @@ public class LocalService implements QueryService{
 
 	@Override
 	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-	    List<NetworkHierachyNode> ret = getNetworkHierachy();
+	    List<NetworkHierachyNode> ret = getNetworkHierachy(groupId);
 	    
 	    if ( ret == null || ret.size() == 0)
 	        return null;

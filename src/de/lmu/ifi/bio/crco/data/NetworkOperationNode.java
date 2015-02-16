@@ -1,5 +1,7 @@
 package de.lmu.ifi.bio.crco.data;
 
+import java.io.PrintWriter;
+import java.util.Stack;
 import java.util.Vector;
 
 import de.lmu.ifi.bio.crco.operation.GeneralOperation;
@@ -36,8 +38,9 @@ public class NetworkOperationNode {
 	public String toString(){
 		String ret = "";
 		if ( operator != null) ret = operator.getDescription(); //+ " (";
-		if( species != null && species.getName() != null) ret += "(" + species.getName() + ")";
 		
+		if( species != null && species.getName() != null)
+		    ret += "(" + species.getName() + ")";
 		return ret;
 	}
 
@@ -75,5 +78,38 @@ public class NetworkOperationNode {
 	public Integer getTaxId() {
 		if ( species == null)return null;
 		return species.getTaxId();
+	}
+	
+	public void print(PrintWriter pw)
+	{
+	    
+	    Stack<NetworkOperationNode> npns = new Stack<NetworkOperationNode>();
+	    Stack<Integer> tabs = new Stack<Integer>();
+        
+	    npns.add(this);
+	    tabs.add(0);
+	    
+	    while(!npns.isEmpty())
+	    {
+	        Integer t = tabs.pop();
+	        NetworkOperationNode npn = npns.pop();
+	        
+	        for(int i = 0 ; i < t;i++)
+	        {
+	            pw.print("\t");
+	        }
+	        pw.println(npn.toString());
+	        if ( npn.getChildren() != null)
+	        {
+	            for(NetworkOperationNode child : npn.getChildren())
+	            {
+	                npns.add(child);
+	                tabs.add(t+1);
+	            }
+	        }
+	      
+	        
+	    }
+	    pw.flush();
 	}
 }
