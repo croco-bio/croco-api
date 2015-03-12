@@ -28,7 +28,8 @@ public class EdgeRepository {
 	
 	public Integer getId(Tuple<Entity, Entity> edge, boolean createNew){
 		if ( createNew == true){
-			if (! tuplesToEdgeId.containsKey(edge)){
+		    
+		    if (! tuplesToEdgeId.containsKey(edge)){
 				edgeIdToTuple.put(currentNewEdgeId, edge);
 				tuplesToEdgeId.put(edge, currentNewEdgeId++);
 				
@@ -39,4 +40,9 @@ public class EdgeRepository {
 	public int getNumberOfEdges(){
 		return edgeIdToTuple.size();
 	}
+
+    public int[] getEdgeIds() {
+        return edgeIdToTuple.keys();
+        
+    }
 }

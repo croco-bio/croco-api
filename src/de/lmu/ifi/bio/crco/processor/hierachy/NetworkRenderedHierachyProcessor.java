@@ -64,7 +64,6 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 		LocalService service = new LocalService();
 		nameMapping = new HashMap<String,String>();
 		List<Gene> knownEntities = service.getGenes(null, true, null);
-		System.out.println(knownEntities.size());
 		for(Entity entity : knownEntities){
 			nameMapping.put(entity.getIdentifier(), entity.getName());
 		}
@@ -72,7 +71,7 @@ public class NetworkRenderedHierachyProcessor implements CroCoRepositoryProcesso
 	}
 
 	@Override
-	public void process(Integer rootId, Integer networkId, File networkFile,File infoFile, File statFile,File annotationFile) throws Exception {
+	public void process(Integer rootId, Integer networkId, File networkFile,File infoFile,File annotationFile) throws Exception {
 		//render network
 		File networkImageFile = new File(networkFile.toString().replace(".network.gz", ".network."  +outputFormat ));
 		

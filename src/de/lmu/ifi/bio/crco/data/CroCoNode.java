@@ -55,7 +55,7 @@ public class CroCoNode implements Comparable<CroCoNode>
         String value;
         boolean debug = false;
         
-        GeneralFilter(Option option, String value,boolean debug)
+        public GeneralFilter(Option option, String value,boolean debug)
         {
             this.option = option;
             this.value = value;

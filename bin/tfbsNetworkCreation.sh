@@ -15,7 +15,7 @@ COUNTER=0
 OPTION=$1
 if [ $OPTION == "HUMAN" ]; then
     for e in $E5 $E6; do 
-	    for i in $HUMAN_JASPAR_SCAN,$HUMAN_JASPAR_MAPPING,"JASPAR" $HUMAN_TRANSFAC_SCAN,$HUMAN_TRANSFAC_MAPPING,"TRANSFAC" $HUMAN_WEI_SCAN,$HUMAN_WEI_MAPPING,"WEI" $HUMAN_WANG_SCAN,$HUMAN_WANG_MAPPING,"WANG" $HUMAN_UNIPROBE_SCAN,$HUMAN_UNIPROBE_MAPPING,"UNIPROBE"; do 
+	    for i in $HUMAN_JASPAR_SCAN,$HUMAN_JASPAR_MAPPING,"Jaspar 2014" $HUMAN_TRANSFAC_SCAN,$HUMAN_TRANSFAC_MAPPING,"Transfac v9.3" $HUMAN_WEI_SCAN,$HUMAN_WEI_MAPPING,"Wei et al. 2010" $HUMAN_WANG_SCAN,$HUMAN_WANG_MAPPING,"Wang et al. 2012" $HUMAN_UNIPROBE_SCAN,$HUMAN_UNIPROBE_MAPPING,"UniPROBE"; do 
         IFS=",";
 		    set $i;
 		    SCAN=$1
@@ -34,7 +34,7 @@ if [ $OPTION == "HUMAN" ]; then
            -motifMappingFiles $MAPPING -motifSetName $NAME            
      
       done
-      NAME="All-Motifs"
+      NAME="Combined set"
         java -Xmx10G -Xms10G  -cp $CP de.lmu.ifi.bio.crco.processor.TFBS.FIMOHandler \
 	         -taxId 9606 \
 	         -compositeName $COMPOSITE_NAME/Human \
@@ -48,7 +48,7 @@ if [ $OPTION == "HUMAN" ]; then
     done
 elif [ $OPTION == "MOUSE" ]; then
     for e in $E5 $E6; do 
-	    for i in $MOUSE_JASPAR_SCAN,$MOUSE_JASPAR_MAPPING,"JASPAR" $MOUSE_TRANSFAC_SCAN,$MOUSE_TRANSFAC_MAPPING,"TRANSFAC" $MOUSE_WEI2010_SCAN,$MOUSE_WEI2010_MAPPING,"WEI" $MOUSE_CHEN_SCAN,$MOUSE_CHEN_MAPPING,"CHEN" $MOUSE_UNIPROBE_SCAN,$MOUSE_UNIPROBE_MAPPING,"UNIPROBE"; do 
+	    for i in $MOUSE_JASPAR_SCAN,$MOUSE_JASPAR_MAPPING,"Jaspar 2014" $MOUSE_TRANSFAC_SCAN,$MOUSE_TRANSFAC_MAPPING,"Transfac v9.3" $MOUSE_WEI2010_SCAN,$MOUSE_WEI2010_MAPPING,"Wei et al. 2010" $MOUSE_CHEN_SCAN,$MOUSE_CHEN_MAPPING," Chen et al. 2008" $MOUSE_UNIPROBE_SCAN,$MOUSE_UNIPROBE_MAPPING,"UniPROBE"; do 
         IFS=",";
 		    set $i;
 		    SCAN=$1
@@ -66,7 +66,7 @@ elif [ $OPTION == "MOUSE" ]; then
            -tfbsFiles $SCAN \
            -motifMappingFiles $MAPPING -motifSetName $NAME    
       done
-      NAME="All-Motifs"
+      NAME="Combined set"
         java -Xmx10G -Xms10G  -cp $CP de.lmu.ifi.bio.crco.processor.TFBS.FIMOHandler \
 	         -taxId 10090 \
 	         -compositeName $COMPOSITE_NAME/Mouse \
@@ -80,7 +80,7 @@ elif [ $OPTION == "MOUSE" ]; then
     done
 elif [ $OPTION == "WORM" ]; then
     for e in $E5 $E6; do 
-	    for i in $WORM_JASPAR_SCAN,$WORM_JASPAR_MAPPING,"JASPAR" $WORM_TRANSFAC_SCAN,$WORM_TRANSFAC_MAPPING,"TRANSFAC" $WORM_UNIPROBE_SCAN,$WORM_UNIPROBE_MAPPING,"UNIPROBE"; do 
+	    for i in $WORM_JASPAR_SCAN,$WORM_JASPAR_MAPPING,"Jaspar 2014" $WORM_TRANSFAC_SCAN,$WORM_TRANSFAC_MAPPING,"Transfac v9.3" $WORM_UNIPROBE_SCAN,$WORM_UNIPROBE_MAPPING,"UniPROBE"; do 
         IFS=",";
 		    set $i;
 		    SCAN=$1
@@ -98,7 +98,7 @@ elif [ $OPTION == "WORM" ]; then
            -tfbsFiles $SCAN \
            -motifMappingFiles $MAPPING -motifSetName $NAME    
       done
-      NAME="All-Motifs"
+      NAME="Combined set"
         java -Xmx10G -Xms10G  -cp $CP de.lmu.ifi.bio.crco.processor.TFBS.FIMOHandler \
 	         -taxId 6239 \
 	         -compositeName $COMPOSITE_NAME/Worm \

@@ -376,7 +376,10 @@ public class NetworkOntology {
             parent.getChildren().add(factorNode);
         }
     }
-  
+    public void readOntology()
+    {
+        
+    }
     public CroCoNode createNetworkOntology() throws Exception
     {
         
@@ -401,6 +404,9 @@ public class NetworkOntology {
         readFactors(networks);
         
         CroCoNode root = new CroCoNode("Root",null,true,new HashSet<NetworkHierachyNode>(networks));
+      
+        CroCoNode compendium = new CroCoNode("Compendium",root, new GeneralFilter(Option.Compendium),false,root.getNetworks());
+        addOntologyNodes(Option.Compendium,compendium);
         
         CroCoNode cellLine = new CroCoNode("Cell-line",root, new GeneralFilter(Option.cellLine),false,root.getNetworks());
         addOntologyNodes(Option.cellLine,cellLine);
@@ -457,6 +463,7 @@ public class NetworkOntology {
             }
         }
     }
+    
     public static void main(String[] args) throws Exception
     {
         NetworkOntology onto = new NetworkOntology();

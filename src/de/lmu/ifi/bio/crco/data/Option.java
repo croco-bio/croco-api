@@ -42,19 +42,25 @@ public enum Option {
 	 ConfidenceThreshold("Confidence threshold"),
 
 	 networkFile("Underlying network file"),
-	 
+	 @Deprecated
 	 FactorList("List of transcription factors"),
-	 
+
+	 @Deprecated
 	 networkOverlap("Fraction of overlapping interactions"),
+	 @Deprecated
 	 explainability("Fraction of explainable interactions"),
+	 @Deprecated
 	 networkDegreeOverlap("Network degree overlap"),
-	 
+
 	 numberOfInteractions("Number of interactions"), 
+	 numberOfNodes("Number of nodes"), 
+     
 	 
 	 ENCODEName("Encode file id"),
 	 numberOfPeak("Number of called peaks"),
 	 
-	 TextMiningSpeciesContext("Text-Mining species context");
+	 TextMiningSpeciesContext("Text-Mining species context"),
+	 Compendium("Compendium");
 	 
 	 public String description;
 	 public List<String> alias;

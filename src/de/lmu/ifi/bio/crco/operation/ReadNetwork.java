@@ -49,7 +49,6 @@ public class ReadNetwork extends GeneralOperation {
 			throw new OperationNotPossibleException("Could not read network",e);
 		}
 		
-		System.out.println(node.getGroupId() + "\t"  + network.getTaxId());
 		return network;
 	}
 	@Override
