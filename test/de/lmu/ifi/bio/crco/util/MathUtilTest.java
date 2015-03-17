@@ -1,5 +1,7 @@
 package de.lmu.ifi.bio.crco.util;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class MathUtilTest {
 		pairedData.add(new Pair<Integer,Integer>(5,5));
 		pairedData.add(new Pair<Integer,Integer>(6,6));
 		
-		System.out.println(MathUtil.pearson(pairedData));
+		assertEquals(0.467f,MathUtil.pearson(pairedData),0.01f);
 		
 	}
 
@@ -39,7 +41,7 @@ public class MathUtilTest {
 		pairedData.add(new Pair<Integer,Integer>(5,5));
 		pairedData.add(new Pair<Integer,Integer>(6,3));
 		
-		
-		System.out.println(MathUtil.spearman(pairedData));
+		assertEquals(0.485f,MathUtil.pearson(pairedData),0.01f);
+        
 	}
 }

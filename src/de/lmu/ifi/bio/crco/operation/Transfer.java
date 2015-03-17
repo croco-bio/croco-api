@@ -104,10 +104,8 @@ public class Transfer extends GeneralOperation{
 			if (factorOrthologs != null && targetOrthologs != null ){
 				
 				TIntObjectHashMap<List<Object>> annotation = network.getAnnotation(edgeId);
-				
 				for(Entity factorOrtholog : factorOrthologs ){
 					for(Entity targetOrtholog : targetOrthologs ){
-						
 						ret.add(factorOrtholog, targetOrtholog, annotation);
 					}
 				}

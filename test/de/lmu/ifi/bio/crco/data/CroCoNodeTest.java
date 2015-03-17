@@ -1,5 +1,7 @@
 package de.lmu.ifi.bio.crco.data;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -10,7 +12,7 @@ import de.lmu.ifi.bio.crco.data.CroCoNode.GeneralFilter;
 public class CroCoNodeTest {
 
     @Test
-    public void test()  throws Exception{
+    public void testFilter()  throws Exception{
         LocalService service = new LocalService();
         
         CroCoNode onto = service.getNetworkOntology();
@@ -21,10 +23,9 @@ public class CroCoNodeTest {
         GeneralFilter g4 = new GeneralFilter(Option.MotifSet,"Combined set");
         GeneralFilter g5 = new GeneralFilter(Option.OpenChromType,"DNase");
         
-        System.out.println(onto.getNetworks().size());
+        assertTrue(onto.getNetworks().size()>0);
         
         CroCoNode filtered = onto.getNode("Filtered",g1,g2,g3,g4,g5);
-        System.out.println(filtered.getNetworks().size());
         
         String[] esCellLineNames = new String[]{"ES-CJ7","ES-E14","ES-WW6","ES-WW6_F1KO"};
         
@@ -33,7 +34,7 @@ public class CroCoNodeTest {
             GeneralFilter g6 = new GeneralFilter(Option.cellLine,cellLine);
             CroCoNode t = filtered.getNode(cellLine, g6);
             
-            System.out.println(t.getNetworks().size());
+            assertTrue(t.getNetworks().size()>0);
         }
         
         

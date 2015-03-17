@@ -34,7 +34,7 @@ public class PeakTest {
 		Peak p1 = new Peak("chr1",10,100);
 		Peak p2 = new Peak("chr2",101,200);
 		
-		System.out.println(Peak.overlap(p2, p1));
+		assertEquals(-1,Peak.overlap(p2, p1));
 	}
 	
 	@Test
@@ -74,7 +74,8 @@ public class PeakTest {
 		peaks2.add(new Peak(450,550));
 		peaks2.add(new Peak(550,620));
 		
-		System.out.println(Peak.getMaxBindingSupportOverlap(peaks1, peaks2, 50));;
+		assertEquals((int)3,(int)Peak.getMaxBindingSupportOverlap(peaks1, peaks2, 50).getSecond());
+	//	System.out.println(Peak.getMaxBindingSupportOverlap(peaks1, peaks2, 50));;
 	}
 	
 	@Test

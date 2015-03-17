@@ -129,23 +129,23 @@ public class RemoteWebService implements QueryService{
 		baos.flush();
 		CroCoLogger.getLogger().trace(content);
 		String debugContent = content.substring(0, Math.min(2048,content.length())).replace(" ", "");
-		
         ObjectInputStream in = null;
 		try{
 			 in = xstream.createObjectInputStream( new InputStreamReader(new ByteArrayInputStream(baos.toByteArray())));
 		}catch(StreamException e){
 		    CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Error: %s. Message from server: %s",e.getMessage(),debugContent));
-	        return null;
+	        throw new IOException(e);
 		}
 		
 		Object object = null;
 		CroCoLogger.getLogger().debug(String.format("Reading results"));
-
 		try {
 			object =  in.readObject() ;
 		} catch (Exception e) {
 			CroCoLogger.getLogger().fatal(String.format("Cannnot create object. Error: %s. Message from server: %s",e.getMessage(),debugContent));
+			throw new IOException(e);
 		}
+		
 		return object;
 	
 	}
@@ -208,7 +208,7 @@ public class RemoteWebService implements QueryService{
 		try{
 			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(is)));
 		}catch(Exception e){
-			 byte[] tmp = new byte[1014];
+			byte[] tmp = new byte[2048];
 			is.read(tmp);
 			String errorMessage =new String(tmp).trim(); 
 			throw new CroCoException(String.format("Can not read network %d. Message from server: %s",groupId,errorMessage));

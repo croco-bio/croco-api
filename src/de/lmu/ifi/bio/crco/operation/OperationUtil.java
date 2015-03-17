@@ -73,7 +73,6 @@ public class OperationUtil {
 		if ( pi != null && pi.isKill()) return null;
 		for(NetworkOperationNode child : operation.getChildren()){
 			
-			if ( pi != null)pi.nextStep(child.getOperator());
 			if ( pi != null && pi.isKill()) return null;
 			Network p = OperationUtil.process(service,child,pi);
 			
@@ -87,8 +86,9 @@ public class OperationUtil {
 		if ( pi != null && pi.isKill()) return null;
 		if ( pi != null)pi.nextStep(operator);
 
-		operator.setInputNetwork(ret);
-
+		if ( ret.size() > 0)
+		    operator.setInputNetwork(ret);
+		CroCoLogger.getLogger().info("Set input: " + ret + " for:" + operation);
 		Network network= operator.operate();
 		if ( network.getNetworkSummary() == null){
 			NetworkSummary summary = new NetworkSummary(String.format("%s (Operation: %s", network.getName() , operator.getClass().getSimpleName()), network.getNodes().size(),network.size());

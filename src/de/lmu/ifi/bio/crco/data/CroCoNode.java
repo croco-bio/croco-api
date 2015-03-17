@@ -84,7 +84,7 @@ public class CroCoNode implements Comparable<CroCoNode>
             if (! nh.getOptions().containsKey(option)) return false;
             
             if ( value != null)
-                return nh.getOptions().get(option).equals(value);
+                return nh.getOptions().get(option).toLowerCase().equals(value.toLowerCase());
             
             return true;
         }
@@ -256,6 +256,8 @@ public class CroCoNode implements Comparable<CroCoNode>
     }
     public CroCoNode(CroCoNode node)
     {
+        if ( node == null)
+            throw new RuntimeException("Node cannot be null (init failed).");
         this.name = node.name;
         this.fromCloned = node;
         this.childShowRootChildren = node.childShowRootChildren;

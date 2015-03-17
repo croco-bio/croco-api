@@ -101,6 +101,36 @@ public class OperationUtilTest {
 	}
 	
 	@Test
+	public void testTransferRead() throws Exception
+	{
+	    QueryService service = new LocalService(CroCoLogger.getLogger());
+        
+	    ReadNetwork read= new ReadNetwork();
+	    read.setInput(ReadNetwork.NetworkHierachyNode,service.getNetworkHierachyNode(3592));
+	    read.setInput(ReadNetwork.GlobalRepository, false);
+	    read.setInput(ReadNetwork.QueryService, service);
+	    Network network = read.operate();
+	    
+	    Transfer transfer = new Transfer();
+	    transfer.setInput(Transfer.QueryService, service);
+	    OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse).get(0);
+	    List<OrthologMappingInformation>  mappings = new ArrayList<OrthologMappingInformation>();
+	    mappings.add(mapping);
+
+	    transfer.setInput(Transfer.OrthologMappingInformation, mappings);
+	    transfer.setInput(Transfer.OrthologRepository, OrthologRepository.getInstance(service));
+	                   
+	    transfer.setInputNetwork(network);
+	    
+	    NetworkOperationNode root  = new NetworkOperationNode(null, 9606, transfer);
+        
+	    Network nTransfer = OperationUtil.process(service, root);
+	    
+	    System.out.println(network.getTaxId() + " " +network.size());
+	    System.out.println(nTransfer.getTaxId()+ " "+ nTransfer.size());
+	}
+	
+	@Test
 	public void transferTest() throws Exception{
 		QueryService service = new LocalService(CroCoLogger.getLogger());
 		OrthologMappingInformation mapping = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, Species.Mouse).get(0);
@@ -112,7 +142,6 @@ public class OperationUtilTest {
 		int k  = 0;
 		int w = 0;
 	
-		
 		Set<Entity> humanFactors = humanNet1.getFactors();
 		Set<Entity> mouseFactors = mouseNet1.getFactors();
 		System.out.println("Human factors:\t" + humanFactors.size());
@@ -129,10 +158,8 @@ public class OperationUtilTest {
 		tranferredMouse.retainAll(humanFactors);
 		System.out.println("Transferrd mouse factors:\t" + tranferredMouse.size());
 	
-		 System.out.println(unique);
-		 System.out.println(unique.size());
-		 
-	
+		System.out.println(unique);
+		System.out.println(unique.size());
 
 	}
 	

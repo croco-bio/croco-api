@@ -96,8 +96,11 @@ public class NetworkOntology {
         ResultSet res = stat.getResultSet();
         while(res.next())
         {
+            
             String value = res.getString(1);
             String name = value;
+            
+
             if ( option == Option.TaxId )
             {
                name = Species.getSpecies(Integer.valueOf(value)).getName();
@@ -407,7 +410,7 @@ public class NetworkOntology {
       
         CroCoNode compendium = new CroCoNode("Compendium",root, new GeneralFilter(Option.Compendium),false,root.getNetworks());
         addOntologyNodes(Option.Compendium,compendium);
-        
+       
         CroCoNode cellLine = new CroCoNode("Cell-line",root, new GeneralFilter(Option.cellLine),false,root.getNetworks());
         addOntologyNodes(Option.cellLine,cellLine);
       
@@ -430,6 +433,7 @@ public class NetworkOntology {
     
         root.setChildren (new ArrayList<CroCoNode>());
         
+        root.getChildren().add(compendium);
         root.getChildren().add(cellLine);
         root.getChildren().add(factor);
         root.getChildren().add(specie);

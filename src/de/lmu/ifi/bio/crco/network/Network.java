@@ -21,7 +21,7 @@ import de.lmu.ifi.bio.crco.util.CroCoLogger;
 import de.lmu.ifi.bio.crco.util.TIntHashSetInteratorableWrapper;
 import de.lmu.ifi.bio.crco.util.Tuple;
 
-public abstract class Network {
+public abstract class Network  {
 	public enum EdgeOption{
 		GroupId(Integer.class), BindingSite(Peak.class), TransferredSite(TransferredPeak.class);
 		
@@ -252,12 +252,18 @@ public abstract class Network {
 			if (! annotation.contains(edgeId)){
 				annotation.put(edgeId, edgeAnnotation);
 			}else{
-				
 				for(int edgeOptionOrdinal : edgeAnnotation.keys()){
 					if ( !annotation.get(edgeId).contains(edgeOptionOrdinal)){
 						annotation.get(edgeId).put(edgeOptionOrdinal,edgeAnnotation.get(edgeOptionOrdinal));
 					}else{
-						annotation.get(edgeId).get(edgeOptionOrdinal).addAll(edgeAnnotation.get(edgeOptionOrdinal));
+					    //merge
+					   
+					    for(Object value : edgeAnnotation.get(edgeOptionOrdinal))
+					    {
+					        if ( annotation.get(edgeId).get(edgeOptionOrdinal).contains(value))
+					            continue;
+					        annotation.get(edgeId).get(edgeOptionOrdinal).add(value);
+					    }
 					}
 				}
 			}
@@ -384,5 +390,6 @@ public abstract class Network {
 		return this.hierachyNode;
 	}
 
+	
 	
 }

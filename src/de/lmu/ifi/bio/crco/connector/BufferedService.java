@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +59,20 @@ public class BufferedService implements QueryService {
 			}
 		}
 	}
+	public File[] getBufferedFiles()
+	{
+	    File[] files = baseDir.listFiles(new FileFilter(){
+
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().contains(".croco.gz");
+            }
+            
+        });
+	    
+	    return files;
+	}
+	
 	/*
 	@Override
 	public CroCoNode getNetworkOntology() throws Exception {
@@ -67,12 +82,13 @@ public class BufferedService implements QueryService {
 	
 	@Override
 	public CroCoNode getNetworkOntology() throws Exception {
-	    File ontologyFile = new File(baseDir + "/ontology");
+	    File ontologyFile = new File(baseDir + "/ontology.croco.gz");
 	    CroCoNode rootNode = null;
 	    if (! ontologyFile.exists())
 	    {
 	        rootNode= service.getNetworkOntology();
-	        writeOntology(ontologyFile,rootNode);
+	        if ( rootNode != null) 
+	            writeOntology(ontologyFile,rootNode);
 	    }else{
 	        rootNode = readOntology(ontologyFile);
 	    }

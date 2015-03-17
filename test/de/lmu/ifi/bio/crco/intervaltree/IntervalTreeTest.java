@@ -15,7 +15,7 @@ public class IntervalTreeTest {
 		IntervalTree<Interval> tree  = new IntervalTree<Interval>();
 		tree.insert(new Interval(0,100));
 		tree.insert(new Interval(0,100));
-		System.out.println(tree.searchAll(new Interval(50,60)));
+		assertEquals(2,tree.searchAll(new Interval(50,60)).size());
 	}
 	
 	@Test
