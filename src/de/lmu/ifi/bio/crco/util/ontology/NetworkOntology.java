@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.crco.util;
+package de.lmu.ifi.bio.crco.util.ontology;
 
 import java.io.File;
 import java.sql.PreparedStatement;
@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -31,10 +32,19 @@ import de.lmu.ifi.bio.crco.data.Species;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.crco.operation.ortholog.OrthologRepository;
+import de.lmu.ifi.bio.crco.util.CroCoLogger;
+import de.lmu.ifi.bio.crco.util.CroCoProperties;
+import de.lmu.ifi.bio.crco.util.FileUtil;
+import de.lmu.ifi.bio.crco.util.Pair;
+import de.lmu.ifi.bio.crco.util.ontology.OboReader.OboElement;
 
 public class NetworkOntology {
     private static String KHERAPOUR ="Kherapour et al., Reliable prediction of regulator targets using 12 Drosophila genomes, Genome Res., 2007";
     private static String NEPH ="Neph et al., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012";
+    private static File taxObo= new File("data/croco-sp.obo");
+    private static File brendaOBO = new File("data/BrendaTissue.obo");
+    private static File brendaMapping = new File("data/BrendaMapping");
+    
     
     private LocalService service;
     
@@ -408,24 +418,35 @@ public class NetworkOntology {
         
         CroCoNode root = new CroCoNode("Root",null,true,new HashSet<NetworkHierachyNode>(networks));
       
+        CroCoNode cellLine = new CroCoNode("Tissue/Cell-line",root, new GeneralFilter(Option.cellLine),false,root.getNetworks());
+        CroCoNode cellLine_flat = new CroCoNode("All tissue/cell-lines",cellLine,false,cellLine.getNetworks());
+        cellLine.setChildren(new ArrayList<CroCoNode>());
+        cellLine.getChildren().add(cellLine_flat);
+        addOntologyNodes(Option.cellLine,cellLine_flat);
+        addBrenda(cellLine);
+        
+        CroCoNode specie = new CroCoNode("Species",root, new GeneralFilter(Option.TaxId),false,root.getNetworks());
+        CroCoNode specie_flat = new CroCoNode("All species",specie,false,specie.getNetworks());
+        specie.setChildren(new ArrayList<CroCoNode>());
+        specie.getChildren().add(specie_flat);
+        addOntologyNodes(Option.TaxId,specie_flat);
+        addSpeciesObo(specie,taxObo,"NCBITaxon:33213");
+        
+        
         CroCoNode compendium = new CroCoNode("Compendium",root, new GeneralFilter(Option.Compendium),false,root.getNetworks());
         addOntologyNodes(Option.Compendium,compendium);
        
-        CroCoNode cellLine = new CroCoNode("Cell-line",root, new GeneralFilter(Option.cellLine),false,root.getNetworks());
-        addOntologyNodes(Option.cellLine,cellLine);
       
-        CroCoNode factor = new CroCoNode("Factor",root, false,root.getNetworks());
+        CroCoNode factor = new CroCoNode("ENCODE (ChIP)-Factor",root, false,root.getNetworks());
         addOntologyNodes(Option.AntibodyTargetMapped,factor);
         CroCoNode allFactors = new CroCoNode("All factors",factor,true,factor.getNetworks());
         factor.getChildren().add(allFactors);
         
-        CroCoNode specie = new CroCoNode("Species",root, new GeneralFilter(Option.TaxId),false,root.getNetworks());
-        addOntologyNodes(Option.TaxId,specie);    
-
-        CroCoNode technique = new CroCoNode("Technique",root, new GeneralFilter(Option.NetworkType),false,root.getNetworks());
+        
+        CroCoNode technique = new CroCoNode("Experimental technique",root, new GeneralFilter(Option.NetworkType),false,root.getNetworks());
         addOntologyNodes(Option.NetworkType,technique);
     
-        CroCoNode devstage = new CroCoNode("Development-stage",root, new GeneralFilter(Option.developmentStage),false,root.getNetworks());
+        CroCoNode devstage = new CroCoNode("Development stage",root, new GeneralFilter(Option.developmentStage),false,root.getNetworks());
         addOntologyNodes(Option.developmentStage,devstage);
     
         CroCoNode treatment = new CroCoNode("Treatment",root, new GeneralFilter(Option.treatment),false,root.getNetworks());
@@ -443,6 +464,210 @@ public class NetworkOntology {
         
         return root;
     }
+    private void addBrenda(CroCoNode root) throws Exception
+    {
+        String oboRootElement = "BTO:0000000";
+        
+        OboReader reader = new OboReader(brendaOBO);
+        
+        OboElement rootElement = reader.getElement(oboRootElement);
+        
+        CroCoNode brenda = new CroCoNode("Tissues",root, false,root.getNetworks());
+        if ( root.getChildren() == null)
+            root.setChildren(new ArrayList<CroCoNode>());
+        
+        root.getChildren().add(brenda);
+        
+        HashMap<String, String> mapping = FileUtil.mappingFileReader(0, 1, brendaMapping).readMappingFile();
+        
+        HashSet<String> notFound = new HashSet<String>();
+
+        HashMap<OboElement,Set<NetworkHierachyNode>> elementsToNetwork  =new HashMap<OboElement,Set<NetworkHierachyNode>>();
+        
+        for(NetworkHierachyNode nh : root.getNetworks())
+        {
+            String cellLine = nh.getOptions().get(Option.cellLine) ;
+            if ( cellLine == null)
+                continue;
+            String map = mapping.get(cellLine);
+            if ( map == null){
+                notFound.add(cellLine);
+                continue;
+            }
+
+            map = map.replace("(non-specific)", "").trim();
+            OboElement element = reader.getElement(map);
+            if (! elementsToNetwork.containsKey(element))
+            {
+                elementsToNetwork.put(element, new HashSet<NetworkHierachyNode>());
+            }
+            elementsToNetwork.get(element).add(nh);
+        }
+          
+        CroCoLogger.getLogger().warn("Not mapped:" + notFound);
+       
+        
+        LinkedList<CroCoNode> par = new LinkedList<CroCoNode>();
+        LinkedList<OboElement> list = new LinkedList<OboElement>();
+        
+        list.add(rootElement);
+        par.add(brenda);
+
+        HashSet<OboElement> proc = new HashSet<OboElement>();
+        while(!list.isEmpty())
+        {
+            OboElement top = list.removeFirst();
+            CroCoNode nodeParent = par.removeFirst();
+            boolean canBeProc = true;
+            for(OboElement parent : top.parents)
+            {
+                if (! proc.contains(parent))
+                    canBeProc= false;
+            }
+            
+            if ( !top.id.equals(oboRootElement) && !canBeProc)
+            {
+                list.add(top);
+                par.add(nodeParent);
+                continue;
+            }
+           
+            List<OboElement> allChildren = top.getAllChildren();
+            Set<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
+            
+            for(OboElement child : allChildren)
+            {
+                if (! elementsToNetwork.containsKey(child))
+                    continue;
+                networks.addAll(elementsToNetwork.get(child));
+            }
+            if ( networks.size() == 0)
+                continue;
+            
+            String name = top.name;
+            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+            
+            CroCoNode node = new CroCoNode(name,nodeParent,top.children.size()==0,networks);
+            
+            
+            if ( nodeParent.getChildren() == null)
+                nodeParent.setChildren (new ArrayList<CroCoNode>());
+            
+            nodeParent.getChildren().add(node);
+            proc.add(top);
+            
+            for(OboElement child : top.children)
+            {
+                par.add(node);
+                list.add(child);
+            }
+            
+        }
+        makeSlim(brenda);
+        
+    }
+    private void addSpeciesObo(CroCoNode root, File obo, String oboRootElement) throws Exception{
+        OboReader reader = new OboReader(obo);
+        
+        OboElement rootElement = reader.getElement(oboRootElement);
+        
+        LinkedList<CroCoNode> par = new LinkedList<CroCoNode>();
+        LinkedList<OboElement> list = new LinkedList<OboElement>();
+        
+        
+        list.add(rootElement);
+        par.add(root);
+
+        HashMap<OboElement,Set<NetworkHierachyNode>> elementsToNetwork  =new HashMap<OboElement,Set<NetworkHierachyNode>>();
+        
+        for(OboElement element : reader.elements.values() )
+        {
+            GeneralFilter filter = new GeneralFilter(Option.TaxId,element.id.replaceAll("NCBITaxon:", ""));
+            Set<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
+            
+            for(NetworkHierachyNode nh : root.getNetworks())
+            {
+                if ( filter.accept(nh))
+                    networks.add(nh);  
+            }
+            elementsToNetwork.put(element, networks);
+        }
+        
+        HashSet<OboElement> proc = new HashSet<OboElement>();
+        while(!list.isEmpty())
+        {
+            OboElement top = list.removeFirst();
+            CroCoNode nodeParent = par.removeFirst();
+            boolean canBeProc = true;
+            for(OboElement parent : top.parents)
+            {
+                if (! proc.contains(parent))
+                    canBeProc= false;
+            }
+            
+            if ( !top.id.equals(oboRootElement) && !canBeProc)
+            {
+                list.add(top);
+                par.add(nodeParent);
+                continue;
+            }
+           
+            List<OboElement> allChildren = top.getAllChildren();
+            Set<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
+            
+            for(OboElement child : allChildren)
+            {
+                networks.addAll(elementsToNetwork.get(child));
+            }
+            CroCoNode node = new CroCoNode(top.name,nodeParent,top.children.size()==0,networks);
+            
+            if ( nodeParent.getChildren() == null)
+                nodeParent.setChildren (new ArrayList<CroCoNode>());
+            
+            nodeParent.getChildren().add(node);
+            proc.add(top);
+            
+            for(OboElement child : top.children)
+            {
+                par.add(node);
+                list.add(child);
+            }
+            
+        }
+        
+    }
+    
+    public void makeSlim(CroCoNode node)
+    {
+        Stack<CroCoNode> stack = new Stack<CroCoNode>();
+        stack.add(node);
+        
+        while(!stack.isEmpty())
+        {
+            CroCoNode top = stack.pop();
+            
+            if ( top.getChildren() == null)
+                continue;
+                
+            if ( top.getChildren().size() == 1 && top != node )
+            {
+                CroCoNode parent = top.getParent();
+                CroCoNode child = top.getChildren().get(0);
+                
+                parent.getChildren().remove(top);
+                parent.getChildren().add(child);
+                child.setParent(parent);
+                
+            }
+            
+           
+            for(CroCoNode child : top.getChildren())
+            {
+                stack.add(child);
+            }
+        }
+    }
+    
     private static String FACTOR_FILE="factors.gz";
     
     private void readFactors(List<NetworkHierachyNode> nodes) throws Exception
