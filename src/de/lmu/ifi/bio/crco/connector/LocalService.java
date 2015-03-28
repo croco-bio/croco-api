@@ -62,7 +62,14 @@ public class LocalService implements QueryService{
 		this.logger = logger;
 		
 	}
-	
+	public static void main(String[] args) throws Exception{
+	    System.out.println("Init instance");
+	    LocalService service = new LocalService();
+	    System.out.println("Get ontoloy");
+	    CroCoNode node = service.getNetworkOntology();
+	    System.out.println("Print root info");
+	    System.out.println(node.getName());
+	}
 	private List<NetworkHierachyNode> getNetworkHierachy(Integer  gId) throws Exception
 	{
 	    String sql = null;

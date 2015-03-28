@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
-import de.lmu.ifi.bio.crco.util.NetworkOntology.LeafNode;
+import de.lmu.ifi.bio.crco.util.ontology.NetworkOntology.LeafNode;
 
 public class CroCoNode implements Comparable<CroCoNode>
 {
@@ -199,8 +199,6 @@ public class CroCoNode implements Comparable<CroCoNode>
             {
                 if (! parents.contains(n.getName()))
                     possibleChildren.add(n);
-
-
             }
         }else
         {
@@ -224,13 +222,49 @@ public class CroCoNode implements Comparable<CroCoNode>
              getChildren().add(child);
 
         }
-        if ( nodeNetworks.size() > 0)
+        
+        if (isChildShowRootChildren() && nodeNetworks.size() > 0)
         {
             CroCoLogger.debug("Node %s has %d not assigned networks",getName(),nodeNetworks.size() );
             for(NetworkHierachyNode nh : nodeNetworks)
             {
                 CroCoNode leaf = new LeafNode(nh.getName(),nh);
                 getChildren().add(leaf);
+            }
+        }
+        else if ( nodeNetworks.size() > 0)
+        {
+            Set<String> parents = getParents();
+            possibleChildren.clear();
+            for(CroCoNode n : root.getChildren())
+            {
+                if (! parents.contains(n.getName()))
+                    possibleChildren.add(n);
+            }
+           
+            for(CroCoNode possibleChild :possibleChildren ){
+                
+                Set<NetworkHierachyNode> networks = getRelevantNetworks(this,possibleChild);
+                
+                if ( networks.size() == 0)
+                    continue;
+                 nodeNetworks.removeAll(networks);
+                 CroCoNode child = new CroCoNode(possibleChild);
+                   
+                 child.setNetworks(networks);
+                 child.setParent(this);
+                 getChildren().add(child);
+
+            }
+            
+            if ( nodeNetworks.size()> 0)
+            {
+                CroCoLogger.info("Node %s has %d not assigned networks",getName(),nodeNetworks.size() );
+                for(NetworkHierachyNode nh : nodeNetworks)
+                {
+                    CroCoNode leaf = new LeafNode(nh.getName(),nh);
+                    getChildren().add(leaf);
+                }
             }
         }
         Collections.sort(getChildren());

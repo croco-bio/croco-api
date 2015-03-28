@@ -47,8 +47,8 @@ import de.lmu.ifi.bio.crco.network.Network;
 import de.lmu.ifi.bio.crco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter;
 import de.lmu.ifi.bio.crco.util.ConsoleParameter.CroCoOption;
+import de.lmu.ifi.bio.crco.util.ontology.NetworkOntology;
 import de.lmu.ifi.bio.crco.util.CroCoLogger;
-import de.lmu.ifi.bio.crco.util.NetworkOntology;
 import de.lmu.ifi.bio.crco.util.Tuple;
 
 /**
