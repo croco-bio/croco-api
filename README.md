@@ -1,6 +1,8 @@
 General
 =========
-CroCo consists of five components:
+CroCo provides a new view on regulatory networks (transcription factor-target) for many species derived from context-specific ENCODE projects, the scientific literature and structured databases. Networks can be easily retrieved from a remote croco network repository (croco-repo) and combined via many networks operations.
+
+consists of five components:
 
 1. a network repository croco-repo,
 2. an Application Programming Interface (API): croco-api
