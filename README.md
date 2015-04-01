@@ -17,7 +17,7 @@ The croco-api provides functionalities to query a croco-repository (local and re
 
 croco-api installation
 =========
-see http://services.bio.ifi.lmu.de/croco-web for latest (stabil) build.
+see http://services.bio.ifi.lmu.de/croco-web for latest (stable) build.
 
 croco-api build (from source)
 =========
@@ -102,3 +102,7 @@ Read specific network (e.g. network with ID: 1149):
 ```Shell
 curl -d "<object-stream><int>1149</int><null/><boolean>false</boolean></object-stream>" http://141.84.2.12/croco-web/services/plain/readNetwork
 ```
+
+Contact & Bug-reports & Suggestions
+=========
+We are constantly improving the croco components. So if you find any bugs, or have general suggestions/comments, please send a mail to: robert.pesch@bio.ifi.lmu.de
