@@ -10,6 +10,7 @@ consists of five components:
 4. a web application: croco-web
 5. a web-service for remote access to the central repository: croco-service
 
+See also: http://services.bio.ifi.lmu.de/croco-web/
 
 croco-api
 =========
