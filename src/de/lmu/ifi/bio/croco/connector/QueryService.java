@@ -22,7 +22,7 @@ import de.lmu.ifi.bio.croco.util.Pair;
  *
  */
 public interface QueryService {
-	final static long version = 11l;
+	final static long version = 1l;
 	
 	/**
 	 * The current QueryService version
