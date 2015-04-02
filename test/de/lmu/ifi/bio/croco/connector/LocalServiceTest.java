@@ -42,7 +42,6 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		Connection connection = DatabaseConnection.getConnection();
 		logger.setLevel(Level.DEBUG);
-		QueryService service = new LocalService(logger);
 		
 		/*
 		List<Pair<Option, String>> options = new ArrayList<Pair<Option, String>>();
@@ -50,7 +49,13 @@ public class LocalServiceTest {
 		*/
 		Statement stat = connection.createStatement();
 		String condition = "bla'bsfd";
-		stat.execute(String.format("SELECT * FROM NetworkOption where value  like '%s'",condition));
+		try{
+		    stat.execute(String.format("SELECT * FROM NetworkOption where value  like '%s'",condition));
+		    assertTrue(false);
+		}catch(Exception e)
+		{
+		    //an exception is expected
+		}
 		stat.close();
 		
 		//service.findNetwork(options );
@@ -61,6 +66,8 @@ public class LocalServiceTest {
 	  
 	    LocalService service = new LocalService();
         CroCoNode rootOrig = service.getNetworkOntology();
+        
+        assertTrue(rootOrig.getChildren().size()>0);
       /*  
         System.out.println("WRITE");
         XStream xstream = new XStream();

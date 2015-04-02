@@ -12,9 +12,11 @@ import de.lmu.ifi.bio.croco.test.IntegrationTest;
 @Category(IntegrationTest.class)
 public class GenomeSequenceExtractorTest {
 
+    File HUMAN_GENOME_DIR = new File("/home/proj/biosoft/GENOMIC/HUMAN/HUMAN_GENOME_FASTA");
+    
 	@Test
 	public void testExtraction()  throws Exception{
-		GenomeSequenceExtractor extractor = new GenomeSequenceExtractor(new File("/home/proj/biosoft/GENOMIC/HUMAN/HUMAN_GENOME_FASTA"));
+		GenomeSequenceExtractor extractor = new GenomeSequenceExtractor(HUMAN_GENOME_DIR);
 		
 		//MA0002.2	0	5246	5256	+	12.0217	4.25768e-05	GGCTGTGGCTG
 		String dna = extractor.getDNASequence("19", 37152725+5246-1, 37152725+5256);

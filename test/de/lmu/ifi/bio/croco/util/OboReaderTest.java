@@ -18,7 +18,7 @@ public class OboReaderTest {
 
     @Test
     public void testBrenda() throws Exception{
-        File obo = new File("data/BrendaTissue.obo");
+        File obo = new File("data/obo/BrendaTissue.obo");
         
         OboReader reader = new OboReader(obo);
         
@@ -38,7 +38,7 @@ public class OboReaderTest {
         */
         LocalService service = new LocalService();
         
-        File mappingFile = new File("data/BrendaMapping");
+        File mappingFile = new File("data/obo/BrendaMapping");
         
         Iterator<String> it = FileUtil.getLineIterator(mappingFile);
         
@@ -83,7 +83,7 @@ public class OboReaderTest {
     
     @Test
     public void testSpecies() throws Exception{
-        File obo = new File("data/croco-sp.obo");
+        File obo = new File("data/obo/croco-sp.obo");
         
         OboReader reader = new OboReader(obo);
         

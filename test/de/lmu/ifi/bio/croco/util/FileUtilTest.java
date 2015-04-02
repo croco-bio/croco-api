@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,7 @@ public class FileUtilTest {
 	@Test
 	public void testGTFDistance5() throws Exception{
 		
-		File gtf = new File("data/GeneAnnotation/ENSG00000240583.gtf");
+		File gtf = new File("data/test/ENSG00000240583.gtf");
 		
 		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
 		assertEquals(1,genes.size());
@@ -57,7 +58,7 @@ public class FileUtilTest {
 	@Test
 	public void testGTFDistance4() throws Exception{
 		
-		File gtf = new File("data/GeneAnnotation/ENSG00000137752.gtf");
+		File gtf = new File("data/test/ENSG00000137752.gtf");
 		
 		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
 		assertEquals(1,genes.size());
@@ -87,7 +88,7 @@ public class FileUtilTest {
 	
 	@Test
 	public void testGTFDistance3() throws Exception{
-		File gtf = new File("data/GeneAnnotation/ENSG00000197948.gtf");
+		File gtf = new File("data/test/ENSG00000197948.gtf");
 		
 		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
 		assertEquals(1,genes.size());
@@ -112,7 +113,7 @@ public class FileUtilTest {
 	@Test
 	public void testGTFDistance2() throws Exception{
 		
-		File gtf = new File("data/GeneAnnotation/ENSG00000269407.gtf");
+		File gtf = new File("data/test/ENSG00000269407.gtf");
 		
 		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
 		assertEquals(1,genes.size());
@@ -135,7 +136,7 @@ public class FileUtilTest {
 	}
 	@Test
 	public void testGTFDistance1() throws Exception{
-		File gtf = new File("data/GeneAnnotation/ENSG00000180071.gtf");
+		File gtf = new File("data/test/ENSG00000180071.gtf");
 		
 		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
 		assertEquals(1,genes.size());
@@ -158,11 +159,10 @@ public class FileUtilTest {
 	
 	@Test
 	public void testReadGTF() throws Exception{
-		File gtf = new File("data/GeneAnnotation/Stat1.gtf.test");
+		File gtf = new File("data/test/Stat1.gtf");
 		
 		List<Gene> genes = FileUtil.getGenes(gtf, "protein_coding", null);
 		assertEquals(1,genes.size());
-		System.out.println(genes.get(0).getTranscripts());
 	}
 	
 	@Test
@@ -200,15 +200,28 @@ public class FileUtilTest {
 	@Test  
 	public void testReaderIterator() throws IOException
 	{
-	    File file = new File("/home/proj/biosoft/ws/croco-web/factors.gz");
+	    String[] lines = new String[3];
+	    lines[0] = "First line";
+	    lines[1] = "Second line";
+	    lines[2] = "3. line";
+        
 	    
-	    Iterator<String> it = FileUtil.getLineIterator(file);
+	    File tmp = File.createTempFile("croco.", ".test");
+	    tmp.deleteOnExit();
+	    PrintWriter pw = FileUtil.getPrintWriter(tmp);
+	    for(String l : lines)
+	        pw.write(l + "\n");
 	    
+	    pw.close();
+	    
+	    Iterator<String> it = FileUtil.getLineIterator(tmp);
+	    
+	    int k = 0;
 	    while(it.hasNext())
 	    {
-	       // System.out.println(it.next());
+	       assertEquals(lines[k++],it.next());
 	    }
-	    
+	    assertEquals(k,lines.length);
 	}
 	
 	@Test
@@ -222,11 +235,9 @@ public class FileUtilTest {
 		bw.close();
 		
 		HashMap<String, Set<String>> mappingNN = new FileUtil.MappingFileReader(0,1,tmpMappingFile).readNNMappingFile();
-		System.out.println(mappingNN);
 		assertEquals(mappingNN.size(),2);
 		
 		HashMap<String, String> mappingN1 = new FileUtil.MappingFileReader(0,1,tmpMappingFile).readMappingFile();
-		System.out.println(mappingN1);
 		assertEquals(mappingN1.size(),1);
 		
 		tmpMappingFile.delete();

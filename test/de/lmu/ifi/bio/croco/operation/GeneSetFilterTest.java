@@ -1,5 +1,7 @@
 package de.lmu.ifi.bio.croco.operation;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,6 +21,7 @@ import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.croco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.operation.GeneSetFilter.FilterType;
 import de.lmu.ifi.bio.croco.test.IntegrationTest;
 
 @Category(IntegrationTest.class)
@@ -84,12 +87,14 @@ public class GeneSetFilterTest {
 		readNetwork.setInput(ReadNetwork.QueryService, service);
 		
 		Network network = readNetwork.operate();
+		assertTrue(network.size()>0);
 		GeneSetFilter filter = new GeneSetFilter();
 	//	setFilter.setInput(, value)
 		HashSet<Entity> whiteList =new HashSet<Entity>();
 		whiteList.add(new Entity("ENSG00000103811"));
 	//	whiteList.add(new Entity("ENSG00000100092"));
 		filter.setInput(GeneSetFilter.genes, whiteList);
+		filter.setInput(GeneSetFilter.filterType, FilterType.GeneFilter);
 		filter.setInputNetwork(network);
 		network = filter.operate();
 		//System.out.println(network.getSize());

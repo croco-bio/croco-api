@@ -85,7 +85,7 @@ public abstract class Network  {
 	}
 	
 	public EdgeRepositoryStrategy getEdgeRepositoryStrategy() {
-        return this.getEdgeRepositoryStrategy();
+        return edgeRepository;
     }
 	
 	protected Network()

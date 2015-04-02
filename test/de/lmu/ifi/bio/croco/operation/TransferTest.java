@@ -3,18 +3,13 @@ package de.lmu.ifi.bio.croco.operation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import de.lmu.ifi.bio.croco.connector.BufferedService;
-import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
-import de.lmu.ifi.bio.croco.connector.RemoteWebService;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
@@ -86,14 +81,15 @@ public class TransferTest {
 		QueryService service = new LocalService(CroCoLogger.getLogger());
 
 
-		List<OrthologMappingInformation> orthologMappingInformatons = service.getOrthologMappingInformation(OrthologDatabaseType.InParanoid, Species.Human, new Species(9913));
+		List<OrthologMappingInformation> orthologMappingInformatons = service.getOrthologMappingInformation(OrthologDatabaseType.EnsemblCompara, Species.Human, new Species(9913));
 		assertEquals(1,orthologMappingInformatons.size());
 		OrthologMappingInformation mapping = orthologMappingInformatons.get(0);
 		List<OrthologMappingInformation> mappings = new ArrayList<OrthologMappingInformation>();
 		mappings.add(mapping);
 		
-		Network humanTestNetwork = service.readNetwork(106,null,false);
+		Network humanTestNetwork = service.readNetwork(3619,null,false);
 		assertTrue(humanTestNetwork.size() > 0);
+		assertEquals((Integer)humanTestNetwork.getTaxId(),(Integer)9606);
 		System.out.println("Human network size:\t" + humanTestNetwork.size());
 		
 		Transfer transfer = new Transfer();

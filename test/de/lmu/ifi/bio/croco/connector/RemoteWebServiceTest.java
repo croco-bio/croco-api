@@ -24,9 +24,9 @@ import de.lmu.ifi.bio.croco.test.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class RemoteWebServiceTest {
-	//public static String url="http://services.bio.ifi.lmu.de/croco-web/services";
-	public static String url="http://localhost:8080/croco-web/services/";
-	public static String url_local2="http://tomcluster64:1046/croco-web/services";
+	public static String url="http://services.bio.ifi.lmu.de/croco-web/services";
+	//public static String url="http://localhost:8080/croco-web/services/";
+	//public static String url_local2="http://tomcluster64:1046/croco-web/services";
 	
 	
 	@Test
@@ -39,7 +39,7 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testGetVersion() throws Exception{
 		Long version = RemoteWebService.getServiceVersion(url +"/getVersion");
-		assertEquals(version,(Long)RemoteWebService.version);
+		assertEquals(version,(Long)QueryService.version);
 	}
 	
 	@Test
