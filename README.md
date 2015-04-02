@@ -103,6 +103,9 @@ Read specific network (e.g. network with ID: 1149):
 ```Shell
 curl -d "<object-stream><int>1149</int><null/><boolean>false</boolean></object-stream>" http://141.84.2.12/croco-web/services/plain/readNetwork
 ```
+Note
+=========
+The newest source code may not alway be compactible with the remote croco instance. For always compactible version see http://services.bio.ifi.lmu.de/croco-web
 
 Contact & Bug-reports & Suggestions
 =========
