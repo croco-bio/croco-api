@@ -20,14 +20,14 @@ public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
 	public BindingEnrichedDirectedNetwork(Network network){
 		super(network);
 	}
-	public BindingEnrichedDirectedNetwork(NetworkHierachyNode node, boolean globalRepository){
+	public BindingEnrichedDirectedNetwork(NetworkHierachyNode node, EdgeRepositoryStrategy globalRepository){
 		super(node,globalRepository);
 	}
-	public BindingEnrichedDirectedNetwork(String name, Integer taxId, boolean globalRepository) {
+	public BindingEnrichedDirectedNetwork(String name, Integer taxId, EdgeRepositoryStrategy globalRepository) {
 		super(name, taxId, globalRepository);
 	}
 	public BindingEnrichedDirectedNetwork(String name, Integer taxId) {
-		super(name, taxId, false);
+		super(name, taxId, EdgeRepositoryStrategy.LOCAL);
 	}
 
 	public List<Peak> getBindings(int edgeId){

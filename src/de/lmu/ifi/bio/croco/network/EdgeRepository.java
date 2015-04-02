@@ -5,6 +5,11 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.util.Tuple;
 
+/**
+ * The mapping of (TF,TG) tuples to unique ids.
+ * @author pesch
+ *
+ */
 public class EdgeRepository {
 
 	private static EdgeRepository instance;
@@ -17,15 +22,30 @@ public class EdgeRepository {
 	
 	private TIntObjectHashMap<Tuple<Entity, Entity>> edgeIdToTuple = new TIntObjectHashMap<Tuple<Entity, Entity>>();
 	private TObjectIntHashMap<Tuple<Entity, Entity>> tuplesToEdgeId = new TObjectIntHashMap<Tuple<Entity, Entity>>();
-	int currentNewEdgeId= 1;
 	
-	public Tuple<Entity, Entity> getEdge(int id) {
-		if (! edgeIdToTuple.contains(id)){
+	
+	//the edge index counter
+	private int currentNewEdgeId= 1;
+	
+	/**
+	 * Returns the (TF,TG) tuple for an edge id.
+	 * @param edgeId -- the edge id
+	 * @return the (TF,TG) tuple
+	 */
+	public Tuple<Entity, Entity> getEdge(int edgeId) {
+		if (! edgeIdToTuple.contains(edgeId)){
 			return null;
 		}
-		return edgeIdToTuple.get(id);
+		return edgeIdToTuple.get(edgeId);
 	}
 	
+	
+	/**
+	 * Returns an edgeId for a given TF,TG tuple
+	 * @param edge -- the edges
+	 * @param createNew -- create new edge when not contained
+	 * @return the edge id
+	 */
 	public Integer getId(Tuple<Entity, Entity> edge, boolean createNew){
 		if ( createNew == true){
 		    
@@ -37,6 +57,9 @@ public class EdgeRepository {
 		}
 		return tuplesToEdgeId.get(edge);
 	}
+	/**
+	 * @return number of unique edges in the repository.
+	 */
 	public int getNumberOfEdges(){
 		return edgeIdToTuple.size();
 	}

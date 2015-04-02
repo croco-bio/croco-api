@@ -10,16 +10,16 @@ import de.lmu.ifi.bio.croco.util.Tuple;
 public class DirectedNetwork extends Network{
 
 
-	public DirectedNetwork(String name,Integer taxId, boolean globalRepository){
-		super(name, taxId,globalRepository);
+	public DirectedNetwork(String name,Integer taxId, EdgeRepositoryStrategy edgeRepository){
+		super(name, taxId,edgeRepository);
 	}
-	public DirectedNetwork(NetworkHierachyNode networkHierachyNode, boolean globalRepository){
-		super(networkHierachyNode,globalRepository);
+	public DirectedNetwork(NetworkHierachyNode networkHierachyNode, EdgeRepositoryStrategy edgeRepository){
+		super(networkHierachyNode,edgeRepository);
 	}
 	
 	
 	public DirectedNetwork(String name,Integer taxId){
-		super(name, taxId,false);
+		super(name, taxId,EdgeRepositoryStrategy.LOCAL);
 	}
 	
 	public DirectedNetwork(Network network) {
