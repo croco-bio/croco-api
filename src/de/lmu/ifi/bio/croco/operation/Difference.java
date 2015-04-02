@@ -45,7 +45,8 @@ public class Difference extends GeneralOperation{
 	public Network doOperation() {
 	
 		
-		Network ret = Network.getEmptyNetwork(this.getNetworks().get(0).getClass(), "Difference", this.getNetworks().get(0).getTaxId(), false);
+		Network ret = Network.getEmptyNetwork(this.getNetworks().get(0).getClass(),this.getNetworks().get(0));
+		ret.setName("Difference");
 		
 		Network net0 = this.getNetworks().get(0);
 		net0.setName(String.format("Difference (unique in %s", net0.getName()));

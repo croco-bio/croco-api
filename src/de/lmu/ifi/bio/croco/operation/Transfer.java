@@ -87,7 +87,8 @@ public class Transfer extends GeneralOperation{
 
 		Species targetSpecies = getSourceAndTargetSpeciesRepresentation(orthologMappingInformations.get(0),taxId).getSecond();
 		
-		Network ret =Network.getEmptyNetwork(network.getClass(), "Transferred", targetSpecies.getTaxId(),false );
+		Network ret =Network.getEmptyNetwork(network.getClass(), "Transferred", targetSpecies.getTaxId(),network.getEdgeRepositoryStrategy() );
+		
 		
 		CroCoLogger.getLogger().debug(String.format("Transfer %s (%d) to %d", network.toString(),network.getTaxId(), ret.getTaxId()));
 		for(int edgeId  : network.getEdgeIds()){
@@ -111,7 +112,7 @@ public class Transfer extends GeneralOperation{
 				}
 			}
 		}
-		CroCoLogger.getLogger().debug(String.format("Transferred network size: %d",ret.getSize()));
+		CroCoLogger.getLogger().debug(String.format("Transferred network size: %d",ret.size()));
 		
 		return ret;
 	}

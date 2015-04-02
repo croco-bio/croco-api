@@ -1,15 +1,12 @@
 package de.lmu.ifi.bio.croco.operation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.croco.network.Network;
-import de.lmu.ifi.bio.croco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
 /**
@@ -47,7 +44,7 @@ public class WriteNetwork extends GeneralOperation {
 		
 		try {
 			CroCoLogger.getLogger().info(String.format("Write network to %s",networkOutputFile));
-			NetworkHierachy.writeNetworkHierachyFile(network, networkOutputFile);
+			Network.writeNetwork(network, networkOutputFile);
 		} catch (Exception e) {
 			throw new OperationNotPossibleException("Could not write network",e);
 		}
@@ -56,7 +53,7 @@ public class WriteNetwork extends GeneralOperation {
 		if ( annotationOutputFile != null){
 			try {
 				CroCoLogger.getLogger().info(String.format("Write network annotation to %s",networkOutputFile));
-				NetworkHierachy.writeNetworkHierachyAnnotationFile(network, annotationOutputFile);
+				Network.writeNetwork(network, annotationOutputFile);
 			} catch (IOException e) {
 				throw new OperationNotPossibleException("Could not write network annotation",e);
 			}

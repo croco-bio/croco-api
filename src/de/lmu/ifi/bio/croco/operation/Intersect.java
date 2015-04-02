@@ -24,7 +24,7 @@ public class Intersect extends GeneralOperation{
 		
 		Network net0 = networks.get(0);
 		for(int i = 1 ; i < networks.size(); i++){
-			if ( networks.get(i).getSize() < net0.getSize()){
+			if ( networks.get(i).size() < net0.size()){
 				net0 = networks.get(i);
 			}
 		}

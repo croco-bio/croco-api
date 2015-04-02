@@ -41,7 +41,7 @@ public class SupportFilter extends GeneralOperation{
 		Integer minSupport = this.getParameter(Support);
 		
 		
-		Network ret =Network.getEmptyNetwork(network.getClass(), network.getName(),network.getTaxId(), false);
+		Network ret =Network.getEmptyNetwork(network.getClass(), network.getName(),network.getTaxId(), network.getEdgeRepositoryStrategy());
 		ret.setName(ret.getName() + ("SupportFilter =>" + minSupport));
 		
 		for(int edge: network.getEdgeIds()){
