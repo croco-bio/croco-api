@@ -370,13 +370,30 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * Init. a writer for the given file object.
+	 * In the case of .gz file name ending a GZIP compressed writer is returned.
+	 * @param file -- the output file
+	 * @return PrintWriter for file
+	 * @throws IOException
+	 */
     public static PrintWriter getPrintWriter(File file) throws IOException{
+       //check for compressing
         if ( file.getName().endsWith(".gz"))
         {
             return new PrintWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(file)) ));
         }
+        
         return new PrintWriter(file);
     }
+    
+    /**
+     * Returns a buffered reader for a file.
+     * Similar to the getPrintWriter() method gzip compression is supported. 
+     * @param file -- the input file
+     * @return BufferedReader for file
+     * @throws IOException
+     */
     public static BufferedReader getReader(File file) throws IOException{
         if ( file.getName().endsWith(".gz"))
         {

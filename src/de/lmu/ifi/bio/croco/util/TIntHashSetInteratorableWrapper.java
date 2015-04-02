@@ -6,7 +6,11 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.Iterator;
 
 
-
+/**
+ * Iterable wrapper for a trove TIntHashSet.
+ * @author pesch
+ *
+ */
 public class TIntHashSetInteratorableWrapper  implements Iterable<Integer>{
 	private TIntHashSet set;
 	public TIntHashSetInteratorableWrapper(TIntHashSet set){
