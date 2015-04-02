@@ -1,0 +1,72 @@
+[Term]
+id: NCBITaxon:1
+name: root
+namespace: ncbi_taxonomy
+synonym: "all" RELATED synonym []
+xref: GC_ID:1
+
+[Term]
+id: NCBITaxon:33213
+name: Bilateria
+namespace: ncbi_taxonomy
+xref: GC_ID:1
+is_a: NCBITaxon:1 ! root
+
+[Term]
+id: NCBITaxon:1206794
+name: Ecdysozoa
+namespace: ncbi_taxonomy
+xref: GC_ID:1
+is_a: NCBITaxon:33213 ! Bilateria
+
+[Term]
+id: NCBITaxon:7227
+name: Drosophila melanogaster
+namespace: ncbi_taxonomy
+synonym: "Drosophila melangaster" RELATED misspelling []
+synonym: "fruit fly" EXACT genbank_common_name []
+xref: GC_ID:1
+is_a: NCBITaxon:1206794 ! Ecdysozoa
+property_value: has_rank NCBITaxon:species
+
+[Term]
+id: NCBITaxon:6239
+name: Caenorhabditis elegans
+namespace: ncbi_taxonomy
+synonym: "nematode" EXACT common_name []
+synonym: "Rhabditis elegans" RELATED synonym []
+xref: GC_ID:1
+is_a: NCBITaxon:1206794 ! Ecdysozoa
+property_value: has_rank NCBITaxon:species
+
+[Term]
+id: NCBITaxon:117571
+name: Euteleostomi
+namespace: ncbi_taxonomy
+alt_id: NCBITaxon:40673
+synonym: "bony vertebrates" EXACT genbank_common_name []
+xref: GC_ID:1
+is_a: NCBITaxon:33213 ! Bilateria
+
+[Term]
+id: NCBITaxon:9606
+name: Homo sapiens
+namespace: ncbi_taxonomy
+synonym: "human" EXACT genbank_common_name []
+synonym: "man" EXACT common_name []
+xref: GC_ID:1
+is_a: NCBITaxon:117571 ! Euteleostomi
+property_value: has_rank NCBITaxon:species
+
+[Term]
+id: NCBITaxon:10090
+name: Mus musculus
+namespace: ncbi_taxonomy
+alt_id: NCBITaxon:85055
+synonym: "house mouse" EXACT genbank_common_name []
+synonym: "mice C57BL/6xCBA/CaJ hybrid" RELATED misspelling []
+synonym: "mouse" EXACT common_name []
+synonym: "Mus muscaris" RELATED misnomer []
+xref: GC_ID:1
+is_a: NCBITaxon:117571 ! Euteleostomi
+property_value: has_rank NCBITaxon:species

@@ -1,0 +1,85 @@
+MouseEncode	name	BTO
+10T1/2	10T1/2 cell	BTO:0003166
+416B	 416B cell	BTO:0002884
+A20	 A20 cell	BTO:0001930
+AtT-20	 AtT-20 cell	BTO:0001077
+C2C12	 C2C12 cell	BTO:0000165
+CH12	CH12.LX cell	BTO:0002493
+ES-D3	  ES-D3 cell	BTO:0001582
+ES-E14	ES-E14 cell	BTO:0005136
+MEF	MEF cell	BTO:0002572
+MEL	MEL cell	BTO:0004475
+NIH-3T3	NIH-3T3 cell	BTO:0000944
+Adrenal	adrenal gland	BTO:0000047
+Bladder	bladder	BTO:0000123
+Cerebellum	cerebellum	BTO:0000232
+Cerebrum	central nervous system	BTO:0000227
+BoneMarrow	bone marrow	BTO:0000141
+Colon	colon	BTO:0000269
+Duodenum	duodenum	BTO:0000365
+Fibroblast	fibroblast	BTO:0000452
+FrontalLobe	frontal lobe	BTO:0000484
+Heart	heart	BTO:0000562
+Limb	limb	BTO:0001492
+ForelimbBud	limb bud	BTO:0001640
+HindlimbBud	limb bud	BTO:0001640
+Liver	liver	BTO:0000759
+Lung	lung	BTO:0000763
+MammaryGland	mammary gland	BTO:0000817
+Mesoderm	mesoderm	BTO:0000839
+Muscle	muscle	BTO:0000887
+FatPad	adipose tissue	BTO:0001487
+Kidney	kidney	BTO:0000671
+LgIntestine	large intestine	BTO:0000706
+Ovary	ovary	BTO:0000975
+OlfactBulb	olfactory bulb	BTO:0000961
+Pancreas	pancreas	BTO:0000988
+Placenta	placenta	BTO:0001078
+Retina	retina	BTO:0001175
+SkMuscle	skeletal muscle	BTO:0001103
+SmIntestine	small intestine	BTO:0000651
+SubcFatPad	subcutaneous adipose tissue	BTO:0004042
+Spleen	spleen	BTO:0001281
+Stomach	stomach	BTO:0001307
+Testis	testis	BTO:0001363
+WholeBrain	brain	BTO:0000142
+GenitalFatPad	adipose tissue	BTO:0001487
+B-cell+AF8-(CD19)	B-lymphocyte	BTO:0000776
+B-cell+AF8-(CD43-)	B-lymphocyte	BTO:0000776
+B-cell_(CD43-)	B-lymphocyte	BTO:0000776
+B-cell_(CD19+)	B-lymphocyte	BTO:0000776
+BAT	brown adipose tissue	BTO:0000156
+T-Naive	T-lymphocyte	BTO:0000782
+mG/ER	MEL cell	BTO:0004475
+Megakaryo	megakaryocyte	BTO:0000843
+L1210	lymphoblast	BTO:0000772
+Patski	kidney	BTO:0000671
+3134	mammary gland	BTO:0000817
+BMDM	bone marrow-derived macrophage	BTO:0004732
+C127	mammary gland	BTO:0000817
+EpiSC-5	epidermal stem cell	BTO:0005098
+EpiSC-7	epidermal stem cell	BTO:0005098
+ES-46C	embryonic stem cell	BTO:0001086
+ES-Bruce4	embryonic stem cell	BTO:0001086
+ES-CJ7	embryonic stem cell	BTO:0001086
+ES-EM5Sox17huCD25	embryonic stem cell	BTO:0001086
+ES-TT2	embryonic stem cell	BTO:0001086
+ES-WW6	embryonic stem cell	BTO:0001086
+ES-WW6_F1KO	embryonic stem cell	BTO:0001086
+G1E	erythroid progenitor cell	BTO:0004911
+G1E-ER4	erythroid progenitor cell	BTO:0004911
+Thymus	thymus	BTO:0001374
+TReg	regulatory T-lymphocyte	BTO:0004520
+TReg-Activated	regulatory T-lymphocyte	BTO:0004520
+THelper-Activated	helper T-lymphocyte	BTO:0002417
+J185a	myoblast	BTO:0000222
+MEP	erythroid progenitor cell	BTO:0004911
+Myocyte	blood	BTO:0000089
+ZhBTc4	embryonic stem cell	BTO:0001086
+Cortex	cerebral cortex	BTO:0000233
+Erythrobl	erythroblast	BTO:0001571
+HeadlessEmbryo	embryoid body	BTO:0001718
+EPC_(CD117+_CD71+_TER119-)	liver	BTO:0000759
+EPC_(CD117-_CD71+_TER119+)	liver	BTO:0000759
+EPC_(CD117+_CD71+_TER119+)	liver	BTO:0000759
+EPC_(CD117+_CD71-_TER119-)	liver	BTO:0000759
