@@ -35,6 +35,7 @@ import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
@@ -202,7 +203,7 @@ public class RemoteWebService implements QueryService{
 			return (BindingEnrichedDirectedNetwork)performeOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
 		}
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
-		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
+		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		InputStream is = getStreamedData(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
 		BufferedReader br = null;
 		try{
@@ -283,7 +284,7 @@ public class RemoteWebService implements QueryService{
 		}
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
 
-		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),globalRepository);
+		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),globalRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		
 		
 		InputStream is = getStreamedData(baseUrl,"readNetwork",groupId,contextId,globalRepository);

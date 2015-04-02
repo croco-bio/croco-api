@@ -30,10 +30,11 @@ import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
-import de.lmu.ifi.bio.croco.processor.hierachy.NetworkHierachy;
+import de.lmu.ifi.bio.croco.processor.ontology.NetworkOntologyWriter;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.Pair;
 
@@ -169,12 +170,12 @@ public class BufferedService implements QueryService {
 		File networkFile = new File(baseDir + "/network-" + groupId + "_" + contextId + ".croco.gz");
 		if ( !networkFile.exists()){
 			Network network = service.readNetwork(groupId,contextId,globalRepository);
-			NetworkHierachy.writeNetworkHierachyFile(network, networkFile);
+			Network.writeNetwork(network, networkFile);
 			return network;
 		}
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
 		
-		return NetworkHierachy.getNetworkReader().setGloablRepository(globalRepository).setNetworkFile(networkFile).setNetworkHierachyNode(service.getNetworkHierachyNode(groupId)).readNetwork();
+		return Network.getNetworkReader().setEdgeRepositoryStrategy(globalRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL).setNetworkFile(networkFile).setNetworkHierachyNode(service.getNetworkHierachyNode(groupId)).readNetwork();
 		
 	}
 	/*

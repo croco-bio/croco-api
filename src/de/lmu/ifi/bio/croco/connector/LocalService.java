@@ -37,10 +37,10 @@ import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
-import de.lmu.ifi.bio.croco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.CroCoProperties;
 import de.lmu.ifi.bio.croco.util.FileUtil;
@@ -288,7 +288,7 @@ public class LocalService implements QueryService{
 		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
 		ResultSet res = stat.getResultSet();
-		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode,gloablRepository);
+		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode,gloablRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		while ( res.next()){
 			Entity tf = new Entity(res.getString(1));
 			Entity tg =new Entity(res.getString(2));
@@ -317,7 +317,7 @@ public class LocalService implements QueryService{
 		}
 		
 		stat.close();
-		logger.debug(String.format("Number of edges:%d",network.getSize()));
+		logger.debug(String.format("Number of edges:%d",network.size()));
 		return network;
 		
 	}
@@ -327,7 +327,7 @@ public class LocalService implements QueryService{
 		logger.debug("Load:\t" + groupId + " with context " + contextId + " global repo:" + gloablRepository);
 
 		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
-		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository);
+		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		if ( contextId == null){
 			Statement stat = DatabaseConnection.getConnection().createStatement();
 			stat.execute(String.format("SELECT network_file_location FROM NetworkHierachy where group_id = %d",groupId));
@@ -338,7 +338,7 @@ public class LocalService implements QueryService{
 			}
 			stat.close();
 			if ( networkFile.exists()){
-				return NetworkHierachy.getNetworkReader().setGroupId(groupId).setNetwork(network).setNetworkFile(networkFile).readNetwork();
+				return Network.getNetworkReader().setGroupId(groupId).setNetwork(network).setNetworkFile(networkFile).readNetwork();
 			}else{
 				CroCoLogger.getLogger().debug(String.format("Network file %s does not exist. Try to read from database",networkFile.toString()));
 			}
@@ -374,7 +374,7 @@ public class LocalService implements QueryService{
 		}
 		res.close();
 
-		logger.debug(String.format("Number of edges:%d",network.getSize()));
+		logger.debug(String.format("Number of edges:%d",network.size()));
 		stat.close();
 		return network;
 		
@@ -621,7 +621,7 @@ public class LocalService implements QueryService{
 			
 			if (! groupIdToNetworkSummary.containsKey(groupId)){
 				NetworkHierachyNode nh = new NetworkHierachyNode(groupId,name,null,type);
-				BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(name,null,false);
+				BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(name,null,EdgeRepositoryStrategy.LOCAL);
 				network.setHierachyNode(nh);
 				groupIdToNetworkSummary.put(groupId,network );
 			}
