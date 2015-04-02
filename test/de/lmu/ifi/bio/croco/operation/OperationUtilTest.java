@@ -39,7 +39,7 @@ public class OperationUtilTest {
 		root.addChild(child1);
 		
 		Network retNetwork = OperationUtil.process(service, root);
-		assertTrue(retNetwork.getSize()>0);
+		assertTrue(retNetwork.size()>0);
 	}
 	
 	
@@ -93,7 +93,7 @@ public class OperationUtilTest {
 		
 		int k =OperationUtil.getNumberOfOperations(root);
 		Network retNetwork = OperationUtil.process(service, root);
-		System.out.println(retNetwork.getSize());
+		System.out.println(retNetwork.size());
 	
 		
 		
@@ -186,7 +186,7 @@ public class OperationUtilTest {
 		
 		Network network = OperationUtil.process(service, root,pi);
 
-		assertTrue(network.getSize() > 0);
+		assertTrue(network.size() > 0);
 		
 		//System.out.println(network.getNetworkSummary());
 		

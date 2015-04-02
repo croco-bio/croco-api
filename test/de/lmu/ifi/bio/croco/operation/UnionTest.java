@@ -55,13 +55,13 @@ public class UnionTest {
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3734, 10090));
 		
 		BindingEnrichedDirectedNetwork net1 = (BindingEnrichedDirectedNetwork)  reader.operate();
-		assertTrue(net1.getSize()>0);
+		assertTrue(net1.size()>0);
 		
 		Union union = new Union();
 		union.setInputNetwork(net1,net1);
 		Network ret = union.operate();
-		assertTrue(ret.getSize()>0);
-		assertEquals(ret.getSize(),net1.getSize());
+		assertTrue(ret.size()>0);
+		assertEquals(ret.size(),net1.size());
 		
 		
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3735, 10090));
@@ -70,7 +70,7 @@ public class UnionTest {
 		union = new Union();
 		union.setInputNetwork(net1,net2);
 		ret = union.operate();
-		assertTrue(ret.getSize()>=net1.getSize() && ret.getSize() >= net2.getSize());
+		assertTrue(ret.size()>=net1.size() && ret.size() >= net2.size());
 		
 		
 		
@@ -102,7 +102,7 @@ public class UnionTest {
 			assertNotNull(network.getEdge(edgeId));
 		}
 		
-		assertEquals(network.getSize(),2);
+		assertEquals(network.size(),2);
 		
 		/*
 		network2.add(new Gene("c"), new Gene("b"), 0);

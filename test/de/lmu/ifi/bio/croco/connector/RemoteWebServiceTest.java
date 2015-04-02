@@ -121,7 +121,7 @@ public class RemoteWebServiceTest {
 		Network networks = service.readNetwork(10761,null,true);
 		
 		
-		assertTrue(networks.getSize() > 0);
+		assertTrue(networks.size() > 0);
 		for(int edgeId : networks.getEdgeIds()){
 			assertNotNull(networks.getAnnotation(edgeId, Network.EdgeOption.GroupId));
 			assertEquals(10761,networks.getAnnotation(edgeId, Network.EdgeOption.GroupId).get(0));
@@ -134,7 +134,7 @@ public class RemoteWebServiceTest {
 		RemoteWebService service = new RemoteWebService(url);
 		ContextTreeNode contextNode = service.getContextTreeNode("GO:0032502");
 		Network network = service.readNetwork(3619, contextNode.getContextId(),true);
-		assertTrue(network.getSize() > 0);
+		assertTrue(network.size() > 0);
 	
 	}
 }

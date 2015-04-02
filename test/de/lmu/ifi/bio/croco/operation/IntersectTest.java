@@ -18,6 +18,7 @@ import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.operation.intersect.BindingSiteOverlapCheck;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
@@ -65,8 +66,8 @@ public class IntersectTest {
 		intersect.setInput(Intersect.IntersectionAnnotationCheck, new BindingSiteOverlapCheck() );
 		intersect.setInputNetwork(net1,net1);
 		Network ret = intersect.operate();
-		System.out.println(ret.getSize() + " " + net1.getSize() );
-		assertEquals(ret.getSize(),net1.getSize());
+		System.out.println(ret.size() + " " + net1.size() );
+		assertEquals(ret.size(),net1.size());
 		
 		
 		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3735,10090));
@@ -76,12 +77,12 @@ public class IntersectTest {
 		intersect.setInput(Intersect.IntersectionAnnotationCheck, new BindingSiteOverlapCheck() );
 		intersect.setInputNetwork(net1,net2);
 		ret = intersect.operate();
-		System.out.println(ret.getSize() + " " + net1.getSize() + " " + net2.getSize());
+		System.out.println(ret.size() + " " + net1.size() + " " + net2.size());
 		
 		Intersect realIntersect = new Intersect();
 		realIntersect.setInputNetwork(net1,net2);
 		Network withoutCondition = realIntersect.operate();
-		System.out.println(withoutCondition.getSize() + " " + net1.getSize() + " " + net2.getSize());
+		System.out.println(withoutCondition.size() + " " + net1.size() + " " + net2.size());
 		assertTrue(withoutCondition.size() > ret.size());
 		
 		
@@ -101,25 +102,25 @@ public class IntersectTest {
 		Intersect intersect = new Intersect();
 		intersect.setInputNetwork(network1,network2);
 		Network intersected = intersect.doOperation();
-		assertEquals(1,intersected.getSize());
+		assertEquals(1,intersected.size());
 		System.out.println(intersected.getEdge(1));
 		
 	}
 	@Test
 	public void testSimpleIntersectionGlobalRepo() throws Exception{
 		//local repository
-		Network network1 = new DirectedNetwork("test",9606,true);
+		Network network1 = new DirectedNetwork("test",9606,EdgeRepositoryStrategy.GLOBAL);
 		network1.add(new Gene("a"), new Gene("b"), 0);
 		network1.add(new Gene("c"), new Gene("d"), 0);
 		
 		
-		Network network2 = new DirectedNetwork("test",9606,true);
+		Network network2 = new DirectedNetwork("test",9606,EdgeRepositoryStrategy.GLOBAL);
 		network2.add(new Gene("a"), new Gene("b"), 1);
 		
 		Intersect intersect = new Intersect();
 		intersect.setInputNetwork(network1,network2);
 		Network intersected = intersect.doOperation();
-		assertEquals(1,intersected.getSize());
+		assertEquals(1,intersected.size());
 		for(int edgeId : intersected.getEdgeIds()){
 			assertEquals(2,intersected.getAnnotation(edgeId,Network.EdgeOption.GroupId).size());
 		}
@@ -140,8 +141,8 @@ public class IntersectTest {
 		union.setInputNetwork(net1,net2);
 		Network unified = union.doOperation();
 		
-		System.out.println(net1.getSize() + " " + net2.getSize() +  " " + unified.getSize() + " " + intersected.getSize());
-		float frac = (float)intersected.getSize()/(float)unified.getSize();
+		System.out.println(net1.size() + " " + net2.size() +  " " + unified.size() + " " + intersected.size());
+		float frac = (float)intersected.size()/(float)unified.size();
 		System.out.println(frac);
 	}
 }

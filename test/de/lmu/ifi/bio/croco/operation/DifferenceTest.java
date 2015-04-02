@@ -35,7 +35,7 @@ public class DifferenceTest {
 	//	assertTrue(operation.accept(network2));
 		Network network = operation.operate();
 		
-		assertEquals(network.getSize(),1);
+		assertEquals(network.size(),1);
 		System.out.println(network.getEdgeIds());
 	}
 }

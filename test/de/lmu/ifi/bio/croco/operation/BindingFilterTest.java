@@ -24,13 +24,13 @@ public class BindingFilterTest {
 	public void testRealNetwork() throws Exception{
 		QueryService service = new LocalService();
 		BindingEnrichedDirectedNetwork network = service.readBindingEnrichedNetwork(4286, null, false);
-		System.out.println(network.getSize());
+		System.out.println(network.size());
 		BindingFilter filter = new BindingFilter();
 		filter.setInput(BindingFilter.Distance, 10);
 		filter.setInputNetwork(network);
 		filter.setInput(GeneralOperation.QueryService, new LocalService());
 		Network ret = filter.operate();
-		System.out.println(ret.getSize());
+		System.out.println(ret.size());
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class BindingFilterTest {
 		bindings.add(new TFBSPeak(null,7576905 ,7576905,null,null,null));
 
 		network.addEdge(new Gene("TF1"), new Gene("ENSG00000141510"),null,(List)bindings);
-		assertEquals(network.getSize(),1);
+		assertEquals(network.size(),1);
 		
 		BindingFilter filter = new BindingFilter();
 		filter.setInput(BindingFilter.Distance, 100);
@@ -48,13 +48,13 @@ public class BindingFilterTest {
 		filter.setInput(GeneralOperation.QueryService, new LocalService());
 		
 		Network ret = filter.operate();
-		assertEquals(ret.getSize(),1);
+		assertEquals(ret.size(),1);
 		
 		
 		bindings = new ArrayList<TFBSPeak>();
 		bindings.add(new TFBSPeak(null,7590957 ,7590957,null,null,null));
 		network.addEdge(new Gene("TF2"), new Gene("ENSG00000141510"),null,(List)bindings);
-		assertEquals(network.getSize(),2);
+		assertEquals(network.size(),2);
 		
 		filter = new BindingFilter();
 		filter.setInput(BindingFilter.Distance, 100);
@@ -62,7 +62,7 @@ public class BindingFilterTest {
 		filter.setInput(GeneralOperation.QueryService, new LocalService());
 		
 		ret = filter.operate();
-		assertEquals(ret.getSize(),1);
+		assertEquals(ret.size(),1);
 		
 	}
 	

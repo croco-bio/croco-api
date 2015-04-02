@@ -18,6 +18,7 @@ import de.lmu.ifi.bio.croco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.croco.data.exceptions.ParameterNotWellDefinedException;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
 public class ShuffleTest {
@@ -29,7 +30,7 @@ public class ShuffleTest {
 	 */
 	@Test
 	public void testShuffleSimple() throws OperationNotPossibleException, ParameterNotWellDefinedException {
-		DirectedNetwork network = new DirectedNetwork("Test",null,false);
+		DirectedNetwork network = new DirectedNetwork("Test",null,EdgeRepositoryStrategy.LOCAL);
 
 		network.add(new Entity("A"), new Entity("B"));
 		network.add(new Entity("A"), new Entity("C"));
@@ -70,12 +71,12 @@ public class ShuffleTest {
 	private float getSim(Network network1, Network network2) throws OperationNotPossibleException, ParameterNotWellDefinedException{
 		Intersect intersect = new Intersect();
 		intersect.setInputNetwork(network1,network2);
-		return (float)intersect.operate().size()/(float)network1.getSize();
+		return (float)intersect.operate().size()/(float)network1.size();
 	}
 	
 	@Test
 	public void testShuffle2() throws OperationNotPossibleException, ParameterNotWellDefinedException {
-		DirectedNetwork network = new DirectedNetwork("Test",null,false);
+		DirectedNetwork network = new DirectedNetwork("Test",null,EdgeRepositoryStrategy.LOCAL);
 
 		network.add(new Entity("A"), new Entity("B"));
 		network.add(new Entity("A"), new Entity("C"));

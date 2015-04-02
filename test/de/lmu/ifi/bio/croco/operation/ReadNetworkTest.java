@@ -34,7 +34,7 @@ public class ReadNetworkTest {
 		reader.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(2219,9606));
 		
 		Network network = reader.operate();
-		assertTrue(network.getSize() > 0);
+		assertTrue(network.size() > 0);
 		
 		ContextTreeNode rootNode = service.getContextTreeNode("GO:0008150");
 		reader.setInput(ReadNetwork.ContextTreeNode,rootNode);

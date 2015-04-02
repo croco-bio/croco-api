@@ -68,7 +68,7 @@ public class TransferTest {
 		List<OrthologMappingInformation> mappings = new ArrayList<OrthologMappingInformation>();
 		mappings.add(mapping);
 		Network flyNetwork = service.readNetwork(86,null,false);
-		assertTrue(flyNetwork.getSize() > 0);
+		assertTrue(flyNetwork.size() > 0);
 		
 		Transfer transfer = new Transfer();
 		transfer.setInputNetwork(flyNetwork);
@@ -76,8 +76,8 @@ public class TransferTest {
 		transfer.setInput(Transfer.OrthologRepository, OrthologRepository.getInstance(service));
 		
 		Network transferred = transfer.operate();
-		assertTrue(transferred.getSize() > 0);
-		System.out.println("Human ensembl network size:\t" + transferred.getSize());
+		assertTrue(transferred.size() > 0);
+		System.out.println("Human ensembl network size:\t" + transferred.size());
 
 	}
 	
@@ -93,8 +93,8 @@ public class TransferTest {
 		mappings.add(mapping);
 		
 		Network humanTestNetwork = service.readNetwork(106,null,false);
-		assertTrue(humanTestNetwork.getSize() > 0);
-		System.out.println("Human network size:\t" + humanTestNetwork.getSize());
+		assertTrue(humanTestNetwork.size() > 0);
+		System.out.println("Human network size:\t" + humanTestNetwork.size());
 		
 		Transfer transfer = new Transfer();
 		transfer.setInputNetwork(humanTestNetwork);
@@ -102,8 +102,8 @@ public class TransferTest {
 		transfer.setInput(Transfer.OrthologRepository, OrthologRepository.getInstance(service));
 		
 		Network transferred = transfer.operate();
-		assertTrue(transferred.getSize() > 0);
-		System.out.println("Cow ensembl network size:\t" + transferred.getSize());
+		assertTrue(transferred.size() > 0);
+		System.out.println("Cow ensembl network size:\t" + transferred.size());
 
 	}
 }

@@ -34,7 +34,7 @@ public class NetworkTest {
 		network1.add(new Gene("a"), new Gene("b"), 0);
 		network1.add(new Gene("a"), new Gene("b"), 0);
 		
-		assertEquals(network1.getSize(),1);
+		assertEquals(network1.size(),1);
 		
 		Network network2 = new DirectedNetwork("test",9606);
 		network2.add(new Gene("a"), new Gene("b"), 0);
