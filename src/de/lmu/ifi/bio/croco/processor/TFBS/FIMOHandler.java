@@ -20,18 +20,18 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.cli.CommandLine;
 
-import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.data.Entity;
+import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
-import de.lmu.ifi.bio.croco.data.genome.Strand;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
 import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.DNARegion;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
-import de.lmu.ifi.bio.croco.processor.hierachy.NetworkHierachy;
+import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.FileUtil;
@@ -191,7 +191,7 @@ public class FIMOHandler extends TFBSHandler {
 		
 		File annotationFile = new File(baseFile + ".annotation.gz");
 		BufferedWriter bwAnnotation = new BufferedWriter(new OutputStreamWriter( new GZIPOutputStream(new FileOutputStream(annotationFile)) ));
-		DirectedNetwork network = new DirectedNetwork(ConsoleParameter.motifSetName.getValue(cmdLine),ConsoleParameter.taxId.getValue(cmdLine),false);
+		DirectedNetwork network = new DirectedNetwork(ConsoleParameter.motifSetName.getValue(cmdLine),ConsoleParameter.taxId.getValue(cmdLine),EdgeRepositoryStrategy.LOCAL);
 		
 		int skipped=0;
 		int processed = 0;
@@ -258,10 +258,10 @@ public class FIMOHandler extends TFBSHandler {
 		bwInfo.flush();
 		bwInfo.close();
 		
-		CroCoLogger.getLogger().info(String.format("%s network size: %d",ConsoleParameter.motifSetName.getValue(cmdLine),network.getSize()));
+		CroCoLogger.getLogger().info(String.format("%s network size: %d",ConsoleParameter.motifSetName.getValue(cmdLine),network.size()));
 		bwAnnotation.close();
 		File networkFile = new File(baseFile + ".network.gz");
-		NetworkHierachy.writeNetworkHierachyFile(network,networkFile);
+		Network.writeNetwork(network,networkFile);
 	
 	}
 	

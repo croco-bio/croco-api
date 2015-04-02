@@ -25,8 +25,9 @@ import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
+import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.processor.TFBS.FIMOHandler;
-import de.lmu.ifi.bio.croco.processor.hierachy.NetworkHierachy;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
@@ -227,7 +228,7 @@ public class DNaseTFBSExtWriter {
 				HashMap<String, IntervalTree<Peak>> openChromPeaks = GenomeUtil.createPeakIntervalTree(file,0,1,2,7,null); 
 				bwInfo.write(String.format("%s: %s\n",Option.numberOfPeak.name(),GenomeUtil.countPeaks(openChromPeaks)));
 				
-				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,false);
+				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,EdgeRepositoryStrategy.LOCAL);
 				
 				int k = 0;
 				for(Entry<String, IntervalTree<Peak>> openChrom : openChromPeaks.entrySet()){
@@ -286,7 +287,7 @@ public class DNaseTFBSExtWriter {
 					}
 					
 				}
-				NetworkHierachy.writeNetworkHierachyFile(network, networkFile);
+				Network.writeNetwork(network, networkFile);
 				StringBuffer factorStr = new StringBuffer();
 				
 				for(Entity factor: network.getFactors()){

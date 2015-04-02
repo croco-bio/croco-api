@@ -24,7 +24,8 @@ import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
-import de.lmu.ifi.bio.croco.processor.hierachy.NetworkHierachy;
+import de.lmu.ifi.bio.croco.network.Network;
+import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter.IntegerValueHandler;
@@ -208,7 +209,7 @@ public class ChIPExtWriter {
 				
 				//List<TFBSPeak> targets = getTFBSPeaks(peaks,promoterTrees, chromosomNamePrefix,chromosomNameMapping);
 				
-				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,false);
+				DirectedNetwork network = new DirectedNetwork(aggregations.getKey(),taxId,EdgeRepositoryStrategy.LOCAL);
 
 				for(Entry<String, IntervalTree<Peak>> chipBinding  : chipBindings.entrySet()){
 					String chrom = chipBinding.getKey();
@@ -256,7 +257,7 @@ public class ChIPExtWriter {
 						
 					}
 				}
-				NetworkHierachy.writeNetworkHierachyFile(network, networkFile);
+				Network.writeNetwork(network, networkFile);
 				bwAnnotation.flush();
 				bwAnnotation.close();
 				
