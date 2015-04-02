@@ -105,7 +105,7 @@ curl -d "<object-stream><int>1149</int><null/><boolean>false</boolean></object-s
 ```
 Note
 =========
-The newest source code may not alway be compactible with the remote croco instance. For always compactible version see http://services.bio.ifi.lmu.de/croco-web
+The newest source code may not always be compatible with the remote croco instance. For croco-service compatible versions see: http://services.bio.ifi.lmu.de/croco-web.
 
 Contact & Bug-reports & Suggestions
 =========
