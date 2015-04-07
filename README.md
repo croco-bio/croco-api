@@ -40,7 +40,7 @@ Access to the remote  (java with croco-api)
 
 Instansiate a remote web service object:
 ```Java
-RemoteWebService remoteService = new RemoteWebService("http://services.bio.ifi.de/croco-web/services/");
+RemoteWebService remoteService = new RemoteWebService("http://services.bio.ifi.lmu.de/croco-web/services/");
 ```
 
 Retrieve the network ontology:
