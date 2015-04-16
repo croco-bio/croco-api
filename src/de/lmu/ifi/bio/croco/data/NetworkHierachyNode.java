@@ -40,6 +40,10 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
         return options;
     }
 
+	public String toString()
+	{
+	    return name;
+	}
     public void setOptions(HashMap<Option,String> options) {
         this.options = options;
     }

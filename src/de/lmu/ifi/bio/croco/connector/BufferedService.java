@@ -81,9 +81,9 @@ public class BufferedService implements QueryService {
 	*/
 	
 	@Override
-	public CroCoNode getNetworkOntology() throws Exception {
+	public CroCoNode<NetworkHierachyNode> getNetworkOntology() throws Exception {
 	    File ontologyFile = new File(baseDir + "/ontology.croco.gz");
-	    CroCoNode rootNode = null;
+	    CroCoNode<NetworkHierachyNode> rootNode = null;
 	    if (! ontologyFile.exists())
 	    {
 	        rootNode= service.getNetworkOntology();
@@ -96,7 +96,7 @@ public class BufferedService implements QueryService {
 	    return rootNode;
 	}
 	
-	private CroCoNode readOntology(File file) throws Exception
+	private CroCoNode<NetworkHierachyNode> readOntology(File file) throws Exception
 	{
 	    CroCoLogger.getLogger().info("Write ontology file:" + file);
 	    XStream xstream = new XStream();
@@ -105,12 +105,12 @@ public class BufferedService implements QueryService {
         
         ObjectInputStream in = xstream.createObjectInputStream(new InputStreamReader( new GZIPInputStream(new FileInputStream(file))));
         
-        CroCoNode obj = (CroCoNode)  in.readObject();
+        CroCoNode<NetworkHierachyNode> obj = (CroCoNode<NetworkHierachyNode>)  in.readObject();
 	
         in.close();
         return obj;
 	}
-	private void writeOntology(File file, CroCoNode node) throws Exception
+	private void writeOntology(File file, CroCoNode<NetworkHierachyNode> node) throws Exception
 	{
 	    CroCoLogger.getLogger().info("Read ontology from file:" + file);
 	    XStream xstream = new XStream();

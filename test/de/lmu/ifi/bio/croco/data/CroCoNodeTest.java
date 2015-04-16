@@ -15,7 +15,7 @@ public class CroCoNodeTest {
     public void testFilter()  throws Exception{
         LocalService service = new LocalService();
         
-        CroCoNode onto = service.getNetworkOntology();
+        CroCoNode<NetworkHierachyNode> onto = service.getNetworkOntology();
         
         GeneralFilter g1 = new GeneralFilter(Option.NetworkType,NetworkType.OpenChrom.name());
         GeneralFilter g2 = new GeneralFilter(Option.TaxId,10090+"");
@@ -23,18 +23,18 @@ public class CroCoNodeTest {
         GeneralFilter g4 = new GeneralFilter(Option.MotifSet,"Combined set");
         GeneralFilter g5 = new GeneralFilter(Option.OpenChromType,"DNase");
         
-        assertTrue(onto.getNetworks().size()>0);
+        assertTrue(onto.getData().size()>0);
         
-        CroCoNode filtered = onto.getNode("Filtered",g1,g2,g3,g4,g5);
+        CroCoNode<NetworkHierachyNode> filtered = onto.getNode("Filtered",g1,g2,g3,g4,g5);
         
         String[] esCellLineNames = new String[]{"ES-CJ7","ES-E14","ES-WW6","ES-WW6_F1KO"};
         
         for(String cellLine : esCellLineNames)
         {
             GeneralFilter g6 = new GeneralFilter(Option.cellLine,cellLine);
-            CroCoNode t = filtered.getNode(cellLine, g6);
+            CroCoNode<NetworkHierachyNode> t = filtered.getNode(cellLine, g6);
             
-            assertTrue(t.getNetworks().size()>0);
+            assertTrue(t.getData().size()>0);
         }
         
         

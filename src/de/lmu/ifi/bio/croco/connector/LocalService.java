@@ -66,7 +66,7 @@ public class LocalService implements QueryService{
 	    System.out.println("Init instance");
 	    LocalService service = new LocalService();
 	    System.out.println("Get ontoloy");
-	    CroCoNode node = service.getNetworkOntology();
+	    CroCoNode<NetworkHierachyNode> node = service.getNetworkOntology();
 	    System.out.println("Print root info");
 	    System.out.println(node.getName());
 	}
@@ -660,7 +660,7 @@ public class LocalService implements QueryService{
 	
 	
     @Override
-    public CroCoNode getNetworkOntology() throws Exception{
+    public CroCoNode<NetworkHierachyNode> getNetworkOntology() throws Exception{
         
         HashMap<Integer,NetworkHierachyNode> idToNetwork = new HashMap<Integer,NetworkHierachyNode>();
         
@@ -674,7 +674,7 @@ public class LocalService implements QueryService{
         CroCoLogger.debug(sql);
         stat.execute(sql);
          
-        HashMap<Integer,CroCoNode> networkToCroCoNode = new HashMap<Integer,CroCoNode>();
+        HashMap<Integer,CroCoNode<NetworkHierachyNode>> networkToCroCoNode = new HashMap<Integer,CroCoNode<NetworkHierachyNode>>();
         HashMap<Integer,Integer> nodeToParent = new HashMap<Integer,Integer>();
         
         ResultSet res = stat.getResultSet();
@@ -690,7 +690,7 @@ public class LocalService implements QueryService{
             {
                 nodes.add(idToNetwork.get(Integer.valueOf(nId)));
             }
-            CroCoNode node = new CroCoNode(name,null,true,nodes);
+            CroCoNode<NetworkHierachyNode> node = new CroCoNode<NetworkHierachyNode>(name,null,true,nodes);
             
             networkToCroCoNode.put(id, node);
             nodeToParent.put(id, pId);
@@ -703,17 +703,17 @@ public class LocalService implements QueryService{
 
         for(Integer id : nodeToParent.keySet())
         {
-            CroCoNode node = networkToCroCoNode.get(id);
+            CroCoNode<NetworkHierachyNode> node = networkToCroCoNode.get(id);
             Integer parentId = nodeToParent.get(id);
             if ( parentId >= 0)
             {
-                CroCoNode parent = networkToCroCoNode.get(parentId);
+                CroCoNode<NetworkHierachyNode> parent = networkToCroCoNode.get(parentId);
                 node.setParent(parent);
                 if ( parent.getChildren() == null)
                 {
                     parent.setChildShowRootChildren(false);
                     
-                    parent.setChildren( new ArrayList<CroCoNode>());
+                    parent.setChildren( new ArrayList<CroCoNode<NetworkHierachyNode>>());
                     parent.getChildren().add(node);
                 }    else{
                     parent.getChildren().add(node);
@@ -722,7 +722,7 @@ public class LocalService implements QueryService{
             }
             
         }
-        CroCoNode root =  networkToCroCoNode.get(0) ;
+        CroCoNode<NetworkHierachyNode> root =  networkToCroCoNode.get(0) ;
         if (root== null)
         {
             throw new Exception("Root node not found.");

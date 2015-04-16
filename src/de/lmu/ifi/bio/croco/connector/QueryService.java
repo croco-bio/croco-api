@@ -103,5 +103,5 @@ public interface QueryService {
 	 * @return --
 	 * @throws Exception
 	 */
-	public CroCoNode getNetworkOntology() throws Exception;
+	public CroCoNode<NetworkHierachyNode> getNetworkOntology() throws Exception;
 }

@@ -40,7 +40,7 @@ public class BufferedLocalServiceTest {
         
         assertEquals(0,service.getBufferedFiles().length);    
      
-        CroCoNode root =service.getNetworkOntology();
+        CroCoNode<NetworkHierachyNode> root =service.getNetworkOntology();
         int childrenSize = root.getChildren().size();
         assertEquals(1,service.getBufferedFiles().length);    
         root =service.getNetworkOntology();
@@ -55,12 +55,12 @@ public class BufferedLocalServiceTest {
         
         assertEquals(0,service.getBufferedFiles().length);    
      
-        CroCoNode root =service.getNetworkOntology();
+        CroCoNode<NetworkHierachyNode> root =service.getNetworkOntology();
         assertEquals(1,service.getBufferedFiles().length);    
         
         Random rnd = new Random(0);
         
-        List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>(root.getNetworks());
+        List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>(root.getData());
         
         assertTrue(networks.size()>0);
         
