@@ -40,7 +40,7 @@ Access to the remote  (java with croco-api)
 
 Instansiate a remote web service object:
 ```Java
-RemoteWebService remoteService = new RemoteWebService("http://services.bio.ifi/croco-web/services/");
+RemoteWebService remoteService = new RemoteWebService("http://services.bio.ifi.lmu.de/croco-web/services/");
 ```
 
 Retrieve the network ontology:
@@ -103,6 +103,9 @@ Read specific network (e.g. network with ID: 1149):
 ```Shell
 curl -d "<object-stream><int>1149</int><null/><boolean>false</boolean></object-stream>" http://141.84.2.12/croco-web/services/plain/readNetwork
 ```
+Note
+=========
+The newest source code may not always be compatible with the remote croco instance. For croco-service compatible versions see: http://services.bio.ifi.lmu.de/croco-web.
 
 Contact & Bug-reports & Suggestions
 =========
