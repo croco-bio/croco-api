@@ -1,0 +1,122 @@
+package de.lmu.ifi.bio.croco.util.ontology;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+
+import de.lmu.ifi.bio.croco.data.CroCoNode;
+import de.lmu.ifi.bio.croco.util.CroCoLogger;
+import de.lmu.ifi.bio.croco.util.ontology.OboReader.OboElement;
+
+public class Ontology {
+    
+    
+
+    public static<E> void addObo( HashMap<OboElement,HashSet<E>> elementsToNetwork,CroCoNode<E> root , OboElement rootElement)
+    {
+        //propagate annotations
+        LinkedList<CroCoNode<E>> par = new LinkedList<CroCoNode<E>>();
+        LinkedList<OboElement> list = new LinkedList<OboElement>();
+        
+        list.add(rootElement);
+        par.add(root);
+
+        HashSet<OboElement> proc = new HashSet<OboElement>();
+        while(!list.isEmpty())
+        {
+            OboElement top = list.removeFirst();
+            
+            CroCoNode<E> nodeParent = par.removeFirst();
+            boolean canBeProc = true;
+            for(OboElement parent : top.parents)
+            {
+                if (! proc.contains(parent))
+                    canBeProc= false;
+            }
+            
+            if ( !top.id.equals(rootElement.id) && !canBeProc)
+            {
+                list.add(top);
+                par.add(nodeParent);
+                continue;
+            }
+           
+            List<OboElement> allChildren = top.getAllChildren();
+            Set<E> networks = new HashSet<E>();
+            
+            for(OboElement child : allChildren)
+            {
+                if (! elementsToNetwork.containsKey(child))
+                    continue;
+                networks.addAll(elementsToNetwork.get(child));
+            }
+            if ( networks.size() == 0)
+                continue;
+            
+            String name = top.name;
+            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+            
+            CroCoNode<E> node = new CroCoNode<E>(name,nodeParent,top.children.size()==0,networks);
+            
+            proc.add(top);
+            
+            for(OboElement child : top.children)
+            {
+                par.add(node);
+                list.add(child);
+            }
+            
+        }
+
+        
+        makeSlim(root);
+        
+    }
+    public static<E> void makeSlim(CroCoNode<E> node)
+    {
+        CroCoLogger.getLogger().debug("Make slim");
+        
+        HashSet<CroCoNode<E>> p = new HashSet<CroCoNode<E>>();
+        Stack<CroCoNode<E>> stack = new Stack<CroCoNode<E>>();
+        stack.add(node);
+        
+        while(!stack.isEmpty())
+        {
+            CroCoNode<E> top = stack.pop();
+            
+            
+            if ( p.contains(top))
+                continue;
+            
+            p.add(top);
+               
+            
+            if ( top.getChildren() == null)
+                continue;
+                
+            if ( top.getChildren().size() == 1 && top != node )
+            {
+                
+                CroCoNode<E> parent = top.getParent();
+                CroCoNode<E> child = top.getChildren().get(0);
+                
+                
+                parent.getChildren().remove(top);
+                child.setParent(parent);
+
+            }
+            
+           
+            for(CroCoNode<E> child : top.getChildren())
+            {
+                stack.add(child);
+            }
+        }
+    }
+
+    
+}

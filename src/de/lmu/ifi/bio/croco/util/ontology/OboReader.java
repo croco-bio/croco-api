@@ -40,11 +40,11 @@ public class OboReader {
     
     public class OboElement
     {
-        List<OboElement> parents = new ArrayList<OboElement>();
-        List<OboElement> children = new ArrayList<OboElement>();
+        public List<OboElement> parents = new ArrayList<OboElement>();
+        public List<OboElement> children = new ArrayList<OboElement>();
         
-        String id = null;
-        String name = null;
+        public String id = null;
+        public String name = null;
      
         List<String> synonym = new ArrayList<String>();
         
@@ -123,6 +123,26 @@ public class OboReader {
     {
         return elements.get(id);
     }
+    
+    public List<OboElement> getRoots(boolean filterSingleton)
+    {
+        List<OboElement> roots = new ArrayList<OboElement>();
+        
+        for(OboElement el : elements.values())
+        {
+            if (el.getParents().size() == 0)
+            {
+                if ( filterSingleton &&  el.getChildren().size() == 0)
+                    continue;
+                
+                roots.add(el);
+                
+            }
+        }
+        
+        return roots;
+    }
+    
     public OboReader(File file) throws Exception
     {
         Iterator<String> it = FileUtil.getLineIterator(file);

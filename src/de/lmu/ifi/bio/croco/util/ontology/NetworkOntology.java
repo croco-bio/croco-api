@@ -389,10 +389,7 @@ public class NetworkOntology {
             parent.getChildren().add(factorNode);
         }
     }
-    public void readOntology()
-    {
-        
-    }
+    
     public CroCoNode<NetworkHierachyNode> createNetworkOntology() throws Exception
     {
         
@@ -482,8 +479,9 @@ public class NetworkOntology {
         
         HashSet<String> notFound = new HashSet<String>();
 
-        HashMap<OboElement,Set<NetworkHierachyNode>> elementsToNetwork  =new HashMap<OboElement,Set<NetworkHierachyNode>>();
+        HashMap<OboElement,HashSet<NetworkHierachyNode>> elementsToNetwork  =new HashMap<OboElement,HashSet<NetworkHierachyNode>>();
         
+        //init mapping
         for(NetworkHierachyNode nh : root.getData())
         {
             String cellLine = nh.getOptions().get(Option.cellLine) ;
@@ -505,85 +503,20 @@ public class NetworkOntology {
         }
           
         CroCoLogger.getLogger().warn("Not mapped:" + notFound);
-       
         
-        LinkedList<CroCoNode<NetworkHierachyNode>> par = new LinkedList<CroCoNode<NetworkHierachyNode>>();
-        LinkedList<OboElement> list = new LinkedList<OboElement>();
+        Ontology.addObo(elementsToNetwork,root,rootElement);
         
-        list.add(rootElement);
-        par.add(brenda);
 
-        HashSet<OboElement> proc = new HashSet<OboElement>();
-        while(!list.isEmpty())
-        {
-            OboElement top = list.removeFirst();
-            CroCoNode<NetworkHierachyNode> nodeParent = par.removeFirst();
-            boolean canBeProc = true;
-            for(OboElement parent : top.parents)
-            {
-                if (! proc.contains(parent))
-                    canBeProc= false;
-            }
-            
-            if ( !top.id.equals(oboRootElement) && !canBeProc)
-            {
-                list.add(top);
-                par.add(nodeParent);
-                continue;
-            }
-           
-            List<OboElement> allChildren = top.getAllChildren();
-            Set<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
-            
-            for(OboElement child : allChildren)
-            {
-                if (! elementsToNetwork.containsKey(child))
-                    continue;
-                networks.addAll(elementsToNetwork.get(child));
-            }
-            if ( networks.size() == 0)
-                continue;
-            
-            String name = top.name;
-            name = name.substring(0, 1).toUpperCase() + name.substring(1);
-            
-            CroCoNode<NetworkHierachyNode> node = new CroCoNode<NetworkHierachyNode>(name,nodeParent,top.children.size()==0,networks);
-            
-            
-            if ( nodeParent.getChildren() == null)
-                nodeParent.setChildren (new ArrayList<CroCoNode<NetworkHierachyNode>>());
-            
-            nodeParent.getChildren().add(node);
-            proc.add(top);
-            
-            for(OboElement child : top.children)
-            {
-                par.add(node);
-                list.add(child);
-            }
-            
-        }
-        makeSlim(brenda);
-        
     }
     private void addSpeciesObo(CroCoNode<NetworkHierachyNode> root, File obo, String oboRootElement) throws Exception{
         OboReader reader = new OboReader(obo);
         
-        OboElement rootElement = reader.getElement(oboRootElement);
-        
-        LinkedList<CroCoNode<NetworkHierachyNode>> par = new LinkedList<CroCoNode<NetworkHierachyNode>>();
-        LinkedList<OboElement> list = new LinkedList<OboElement>();
-        
-        
-        list.add(rootElement);
-        par.add(root);
-
-        HashMap<OboElement,Set<NetworkHierachyNode>> elementsToNetwork  =new HashMap<OboElement,Set<NetworkHierachyNode>>();
+        HashMap<OboElement,HashSet<NetworkHierachyNode>> elementsToNetwork  =new HashMap<OboElement,HashSet<NetworkHierachyNode>>();
         
         for(OboElement element : reader.elements.values() )
         {
             GeneralFilter filter = new GeneralFilter(Option.TaxId,element.id.replaceAll("NCBITaxon:", ""));
-            Set<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
+            HashSet<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
             
             for(NetworkHierachyNode nh : root.getData())
             {
@@ -592,82 +525,13 @@ public class NetworkOntology {
             }
             elementsToNetwork.put(element, networks);
         }
+
+        OboElement rootElement = reader.getElement(oboRootElement);
         
-        HashSet<OboElement> proc = new HashSet<OboElement>();
-        while(!list.isEmpty())
-        {
-            OboElement top = list.removeFirst();
-            CroCoNode<NetworkHierachyNode> nodeParent = par.removeFirst();
-            boolean canBeProc = true;
-            for(OboElement parent : top.parents)
-            {
-                if (! proc.contains(parent))
-                    canBeProc= false;
-            }
-            
-            if ( !top.id.equals(oboRootElement) && !canBeProc)
-            {
-                list.add(top);
-                par.add(nodeParent);
-                continue;
-            }
-           
-            List<OboElement> allChildren = top.getAllChildren();
-            Set<NetworkHierachyNode> networks = new HashSet<NetworkHierachyNode>();
-            
-            for(OboElement child : allChildren)
-            {
-                networks.addAll(elementsToNetwork.get(child));
-            }
-            CroCoNode<NetworkHierachyNode> node = new CroCoNode<NetworkHierachyNode>(top.name,nodeParent,top.children.size()==0,networks);
-            
-            if ( nodeParent.getChildren() == null)
-                nodeParent.setChildren (new ArrayList<CroCoNode<NetworkHierachyNode>>());
-            
-            nodeParent.getChildren().add(node);
-            proc.add(top);
-            
-            for(OboElement child : top.children)
-            {
-                par.add(node);
-                list.add(child);
-            }
-            
-        }
+        Ontology.addObo(elementsToNetwork,root,rootElement);
         
     }
-    
-    public void makeSlim(CroCoNode<NetworkHierachyNode> node)
-    {
-        Stack<CroCoNode<NetworkHierachyNode>> stack = new Stack<CroCoNode<NetworkHierachyNode>>();
-        stack.add(node);
-        
-        while(!stack.isEmpty())
-        {
-            CroCoNode<NetworkHierachyNode> top = stack.pop();
-            
-            if ( top.getChildren() == null)
-                continue;
-                
-            if ( top.getChildren().size() == 1 && top != node )
-            {
-                CroCoNode<NetworkHierachyNode> parent = top.getParent();
-                CroCoNode<NetworkHierachyNode> child = top.getChildren().get(0);
-                
-                parent.getChildren().remove(top);
-                parent.getChildren().add(child);
-                child.setParent(parent);
-                
-            }
-            
-           
-            for(CroCoNode<NetworkHierachyNode> child : top.getChildren())
-            {
-                stack.add(child);
-            }
-        }
-    }
-    
+
     private static String FACTOR_FILE="factors.gz";
     
     private void readFactors(List<NetworkHierachyNode> nodes) throws Exception

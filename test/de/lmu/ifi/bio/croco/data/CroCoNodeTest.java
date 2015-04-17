@@ -1,8 +1,6 @@
 package de.lmu.ifi.bio.croco.data;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -40,5 +38,18 @@ public class CroCoNodeTest {
         
     }
 
-
+    @Test
+    public void cloneTest() throws Exception
+    {
+        LocalService service = new LocalService();
+        
+        CroCoNode<NetworkHierachyNode> root = service.getNetworkOntology();
+        System.out.println(root.getData().size());
+        System.out.println("ROOT:" + root.getChildren());
+        CroCoNode cloned = new CroCoNode(root);
+        cloned.setData(root.getData());
+        cloned.initChildren(root);
+        
+        System.out.println(cloned.getChildren());
+    }
 }

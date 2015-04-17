@@ -708,15 +708,12 @@ public class LocalService implements QueryService{
             if ( parentId >= 0)
             {
                 CroCoNode<NetworkHierachyNode> parent = networkToCroCoNode.get(parentId);
-                node.setParent(parent);
                 if ( parent.getChildren() == null)
                 {
                     parent.setChildShowRootChildren(false);
-                    
-                    parent.setChildren( new ArrayList<CroCoNode<NetworkHierachyNode>>());
-                    parent.getChildren().add(node);
+                    node.setParent(parent);
                 }    else{
-                    parent.getChildren().add(node);
+                    node.setParent(parent);
                         
                 }
             }
