@@ -24,7 +24,7 @@ import com.thoughtworks.xstream.io.StreamException;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.exceptions.CroCoException;
@@ -202,7 +202,7 @@ public class RemoteWebService implements QueryService{
 		if ( contextId != null){
 			return (BindingEnrichedDirectedNetwork)performeOperation(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
 		}
-		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		NetworkMetaInformation networkNode = this.getNetworkMetaInformation(groupId);
 		BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		InputStream is = getStreamedData(baseUrl,"readBindingEnrichedNetwork",groupId,contextId,gloablRepository);
 		BufferedReader br = null;
@@ -282,7 +282,7 @@ public class RemoteWebService implements QueryService{
 		if ( contextId != null){
 			return 	 (Network)performeOperation(baseUrl,"readNetwork",groupId,contextId,false);
 		}
-		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		NetworkMetaInformation networkNode = this.getNetworkMetaInformation(groupId);
 
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),globalRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		
@@ -322,8 +322,8 @@ public class RemoteWebService implements QueryService{
 	}
 	
 	@Override
-	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-		return (NetworkHierachyNode)performeOperation(baseUrl,"getNetworkHierachyNode",groupId);
+	public NetworkMetaInformation getNetworkMetaInformation(Integer groupId) throws Exception {
+		return (NetworkMetaInformation)performeOperation(baseUrl,"getNetworkMetaInformation",groupId);
 	}
 
 	@Override
@@ -376,12 +376,14 @@ public class RemoteWebService implements QueryService{
 		return (List<Gene>)performeOperation(baseUrl,"getGenes",species,onlyCoding,context);
 	}
     @Override
-    public CroCoNode getNetworkOntology() throws Exception {
+    public CroCoNode getNetworkOntology(boolean restricted) throws Exception {
+        if ( restricted == false) throw new Exception("Only restricted access is possible for remote access.");
+        
         return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology");
     }
     @Override
-    public List<NetworkHierachyNode> getNetworkHierachy() throws Exception {
-        return (List<NetworkHierachyNode>)performeOperation(baseUrl,"getNetworkHierachy");
+    public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
+        return (List<NetworkMetaInformation>)performeOperation(baseUrl,"getNetworkMetaInformation");
     }
 
 

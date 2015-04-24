@@ -1,7 +1,7 @@
 package de.lmu.ifi.bio.croco.network;
 
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.OrderedPair;
 import de.lmu.ifi.bio.croco.util.Tuple;
@@ -13,8 +13,8 @@ public class DirectedNetwork extends Network{
 	public DirectedNetwork(String name,Integer taxId, EdgeRepositoryStrategy edgeRepository){
 		super(name, taxId,edgeRepository);
 	}
-	public DirectedNetwork(NetworkHierachyNode networkHierachyNode, EdgeRepositoryStrategy edgeRepository){
-		super(networkHierachyNode,edgeRepository);
+	public DirectedNetwork(NetworkMetaInformation metaInfo, EdgeRepositoryStrategy edgeRepository){
+		super(metaInfo,edgeRepository);
 	}
 	
 	

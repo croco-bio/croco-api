@@ -14,7 +14,7 @@ import org.junit.Test;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.NetworkOperationNode;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.network.Network;
@@ -34,7 +34,7 @@ public class OperationUtilTest {
 		NetworkOperationNode root = new NetworkOperationNode(null,9695,new Union());
 		ReadNetwork reader = new ReadNetwork();
 		reader.setInput(ReadNetwork.QueryService, service);
-		reader.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(252,9606));
+		reader.setInput(ReadNetwork.NetworkMetaInformation, service.getNetworkMetaInformation(252) );
 		NetworkOperationNode child1  = new NetworkOperationNode(root, 9606, reader);
 		root.addChild(child1);
 		
@@ -51,7 +51,7 @@ public class OperationUtilTest {
 		NetworkOperationNode root = new NetworkOperationNode(null,9695,new Difference());
 		ReadNetwork reader = new ReadNetwork();
 		reader.setInput(ReadNetwork.QueryService, service);
-		reader.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(252,9606));
+		reader.setInput(ReadNetwork.NetworkMetaInformation, service.getNetworkMetaInformation(252));
 		NetworkOperationNode child1  = new NetworkOperationNode(root, 9606, reader);
 		root.addChild(child1);
 		
@@ -61,15 +61,15 @@ public class OperationUtilTest {
 		
 		ReadNetwork reader1 = new ReadNetwork();
 		reader1.setInput(ReadNetwork.QueryService, service); 
-		reader1.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(2218,9606));
+		reader1.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(2218) );
 		
 		ReadNetwork reader2 = new ReadNetwork();
 		reader2.setInput(ReadNetwork.QueryService, service);
-		reader2.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(2219,9606));
+		reader2.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(2219));
 		
 		ReadNetwork reader3 = new ReadNetwork();
 		reader3.setInput(ReadNetwork.QueryService, service);
-		reader3.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(2220,9606));
+		reader3.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(2220) );
 		
 		intersect.addChild(new NetworkOperationNode(null,9606,reader1));
 		intersect.addChild(new NetworkOperationNode(null,9606,reader2));
@@ -106,7 +106,7 @@ public class OperationUtilTest {
 	    QueryService service = new LocalService(CroCoLogger.getLogger());
         
 	    ReadNetwork read= new ReadNetwork();
-	    read.setInput(ReadNetwork.NetworkHierachyNode,service.getNetworkHierachyNode(3592));
+	    read.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(3592));
 	    read.setInput(ReadNetwork.GlobalRepository, false);
 	    read.setInput(ReadNetwork.QueryService, service);
 	    Network network = read.operate();
@@ -170,13 +170,13 @@ public class OperationUtilTest {
 		
 		ReadNetwork reader1 = new ReadNetwork();
 		reader1.setInput(ReadNetwork.QueryService, service);
-		reader1.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(299,9606));
+		reader1.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(299) );
 		
 		root.addChild(new NetworkOperationNode(null,9606,reader1));
 		
 		ReadNetwork reader2 = new ReadNetwork();
 		reader2.setInput(ReadNetwork.QueryService, service);
-		reader2.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(399,9606));
+		reader2.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(399) );
 		
 		root.addChild(new NetworkOperationNode(null,9606,reader2));
 		

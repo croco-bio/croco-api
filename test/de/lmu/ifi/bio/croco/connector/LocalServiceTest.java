@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 import com.thoughtworks.xstream.XStream;
 
 import de.lmu.ifi.bio.croco.data.CroCoNode;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
@@ -65,7 +65,7 @@ public class LocalServiceTest {
 	{
 	  
 	    LocalService service = new LocalService();
-        CroCoNode rootOrig = service.getNetworkOntology();
+        CroCoNode rootOrig = service.getNetworkOntology(false);
         
         assertTrue(rootOrig.getChildren().size()>0);
       /*  
@@ -156,7 +156,7 @@ public class LocalServiceTest {
 		options.add(new Pair<Option,String>(Option.cellLine, "K562"));
 		options.add(new Pair<Option,String>(Option.EdgeType, "Directed"));
 		
-		List<NetworkHierachyNode> networks = service.findNetwork(options);
+		List<NetworkMetaInformation> networks = service.findNetwork(options);
 		System.out.println(networks.size());
 	}
 	*/
@@ -165,11 +165,11 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		logger.setLevel(Level.DEBUG);
 		LocalService service = new LocalService(logger);
-		List<NetworkHierachyNode> nodes = service.getNetworkHierachy();
+		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformation();
 		
 
 		
-		for(NetworkHierachyNode child : nodes)
+		for(NetworkMetaInformation child : nodes)
 		{
 		 //   if ( child.getFactors().size() > 1)
 		 //       System.out.println(child.getOptions().get(Option.TaxId) + "\t" + child.getFactors().size() + " " + child.getOptions());
@@ -182,7 +182,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		
 		QueryService service = new LocalService(logger);
-		List<NetworkHierachyNode> root = service.getNetworkHierachy();
+		List<NetworkMetaInformation> root = service.getNetworkMetaInformation();
 		System.out.println(root.size());
 	}
 

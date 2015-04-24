@@ -15,7 +15,7 @@ import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.connector.RemoteWebService;
 import de.lmu.ifi.bio.croco.data.IdentifierType;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
@@ -28,16 +28,16 @@ public class UnionTest {
     public void testUnionK562() throws Exception{
         RemoteWebService remoteService = new RemoteWebService("http://localhost:8080/croco-web/services");
         BufferedService service = new BufferedService(remoteService,new File("networkBufferDir/")); 
-        List<NetworkHierachyNode> k562Networks =  service.getNetworkHierachy().getNode("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
+        List<NetworkMetaInformation> k562Networks =  service.getNetworkHierachy().getNode("/H. sapiens/Context-Specific Networks/Open Chromatin (TFBS)/DNase I hypersensitive sites (DNase)/High Confidence/JASPAR/K562/").getAllChildren();
         
         ReadNetwork reader = new ReadNetwork();
         reader.setInput(ReadNetwork.QueryService, service);
-        reader.setInput(ReadNetwork.NetworkHierachyNode, k562Networks.get(0));
+        reader.setInput(ReadNetwork.NetworkMetaInformation, k562Networks.get(0));
             
         Network k562_rep1 = reader.operate();
         
         reader.setInput(ReadNetwork.QueryService, service);
-        reader.setInput(ReadNetwork.NetworkHierachyNode, k562Networks.get(1));
+        reader.setInput(ReadNetwork.NetworkMetaInformation, k562Networks.get(1));
             
         Network k562_rep2 = reader.operate();
         
@@ -52,7 +52,7 @@ public class UnionTest {
 		QueryService service = new LocalService();
 		
 		reader.setInput(ReadBindingNetwork.QueryService, service);
-		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3734, 10090));
+		reader.setInput(ReadBindingNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(3734));
 		
 		BindingEnrichedDirectedNetwork net1 = (BindingEnrichedDirectedNetwork)  reader.operate();
 		assertTrue(net1.size()>0);
@@ -64,7 +64,7 @@ public class UnionTest {
 		assertEquals(ret.size(),net1.size());
 		
 		
-		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3735, 10090));
+		reader.setInput(ReadBindingNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(3735) );
 		BindingEnrichedDirectedNetwork net2 = (BindingEnrichedDirectedNetwork)  reader.operate();
 		
 		union = new Union();

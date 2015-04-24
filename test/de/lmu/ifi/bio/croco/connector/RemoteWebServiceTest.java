@@ -12,7 +12,7 @@ import org.junit.experimental.categories.Category;
 
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
@@ -46,7 +46,7 @@ public class RemoteWebServiceTest {
 	public void testGetNetworkHierachy() throws Exception{
 		RemoteWebService service = new RemoteWebService(url);
 		
-		List<NetworkHierachyNode> nodes = service.getNetworkHierachy();
+		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformation();
 		
 	}
 	@Test
@@ -54,7 +54,7 @@ public class RemoteWebServiceTest {
 	{
 	    RemoteWebService service = new RemoteWebService(url);
         
-        CroCoNode ontology = service.getNetworkOntology();
+        CroCoNode ontology = service.getNetworkOntology(false);
         System.out.println(ontology);
 	}
 	@Test
@@ -97,7 +97,7 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testListNetwork() throws Exception {
 		RemoteWebService service = new RemoteWebService(url);
-		List<NetworkHierachyNode> networks = service.getNetworkHierachy();
+		List<NetworkMetaInformation> networks = service.getNetworkMetaInformation();
 
 		assertTrue(networks != null);
 		assertTrue(networks.size()>0);

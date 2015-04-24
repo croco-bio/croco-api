@@ -5,7 +5,7 @@ import java.util.List;
 
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
@@ -20,7 +20,7 @@ public class ReadBindingNetwork extends ReadNetwork {
 	
 	@Override
 	protected Network doOperation() throws OperationNotPossibleException {
-		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode );
+	    NetworkMetaInformation node = this.getParameter(NetworkMetaInformation );
 		QueryService service = this.getParameter(QueryService);
 		ContextTreeNode contextTreeNode = this.getParameter(ContextTreeNode);
 		
@@ -52,7 +52,7 @@ public class ReadBindingNetwork extends ReadNetwork {
 	@Override
 	public void checkParameter() throws OperationNotPossibleException {
 		QueryService service = this.getParameter(QueryService);
-		NetworkHierachyNode node = this.getParameter(NetworkHierachyNode);
+		NetworkMetaInformation node = this.getParameter(NetworkMetaInformation);
 		
 		if ( service == null) throw new OperationNotPossibleException("Query service is null");
 		if ( node == null) throw new OperationNotPossibleException("No node given");
@@ -66,7 +66,7 @@ public class ReadBindingNetwork extends ReadNetwork {
 	@Override
 	public List<Parameter<?>> getParameters() {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
-		parameters.add(NetworkHierachyNode);
+		parameters.add(NetworkMetaInformation);
 		parameters.add(GlobalRepository);
 		parameters.add(QueryService);
 		parameters.add(ContextTreeNode);

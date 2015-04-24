@@ -12,7 +12,7 @@ import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TransferredPeak;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
@@ -28,7 +28,7 @@ public class TransferBindingsTest {
 		QueryService service = new LocalService();
 		
 		reader.setInput(ReadBindingNetwork.QueryService, service);
-		reader.setInput(ReadBindingNetwork.NetworkHierachyNode, new NetworkHierachyNode(3720,9606));
+		reader.setInput(ReadBindingNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(3720) );
 		
 		BindingEnrichedDirectedNetwork net = (BindingEnrichedDirectedNetwork)  reader.operate();
 	//	System.out.println(net.getSize());

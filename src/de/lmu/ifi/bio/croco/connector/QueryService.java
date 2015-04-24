@@ -5,8 +5,7 @@ import java.util.List;
 
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
-import de.lmu.ifi.bio.croco.data.Option;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
@@ -14,7 +13,6 @@ import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
-import de.lmu.ifi.bio.croco.util.Pair;
 
 /**
  * Provides various queries to the croco-repo
@@ -22,7 +20,7 @@ import de.lmu.ifi.bio.croco.util.Pair;
  *
  */
 public interface QueryService {
-	final static long version = 1l;
+	final static long version = 11l;
 	
 	/**
 	 * The current QueryService version
@@ -35,8 +33,8 @@ public interface QueryService {
 	public List<NetworkHierachyNode> findNetwork(List<Pair<Option,String>> options) throws Exception;
 	*/
 	
-	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception;
-	public List<NetworkHierachyNode> getNetworkHierachy() throws Exception;
+	public NetworkMetaInformation getNetworkMetaInformation(Integer groupId) throws Exception;
+	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception;
 	
 	/**
 	 * Returns network annotations for a specific network id
@@ -103,5 +101,5 @@ public interface QueryService {
 	 * @return --
 	 * @throws Exception
 	 */
-	public CroCoNode<NetworkHierachyNode> getNetworkOntology() throws Exception;
+	public CroCoNode<NetworkMetaInformation> getNetworkOntology(boolean onlyPublic) throws Exception;
 }

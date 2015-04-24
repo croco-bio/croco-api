@@ -1,16 +1,16 @@
 package de.lmu.ifi.bio.croco.data;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
+import de.lmu.ifi.bio.croco.util.FileUtil;
 import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology.LeafNode;
-import de.lmu.ifi.bio.croco.util.ontology.OboReader.OboElement;
 
 /**
  * Ontology node
@@ -18,14 +18,14 @@ import de.lmu.ifi.bio.croco.util.ontology.OboReader.OboElement;
  *
  * @param <E> -- elements assigend to ontology node
  */
-public class CroCoNode<E> implements Comparable<CroCoNode<E>>
+public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E>>
 {
     public interface Filter<E>
     {
         public boolean accept(E nh);
     }
     
-    static public class FactorFilter implements Filter<NetworkHierachyNode>
+    static public class FactorFilter implements Filter<NetworkMetaInformation>
     {
         Set<String> factors = null;
         public FactorFilter(Set<String> factors)
@@ -33,7 +33,7 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
             this.factors = factors;
         }
         @Override
-        public boolean accept(NetworkHierachyNode nh) {
+        public boolean accept(NetworkMetaInformation nh) {
             for(String factor : factors)
             {
                 if ( nh.getFactors().contains(factor)) return true;
@@ -43,7 +43,7 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
         
     }
     
-    static public class NameFilter implements Filter<NetworkHierachyNode>
+    static public class NameFilter implements Filter<NetworkMetaInformation>
     {
         String name;
         
@@ -53,12 +53,12 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
         }
 
         @Override
-        public boolean accept(NetworkHierachyNode nh) {
+        public boolean accept(NetworkMetaInformation nh) {
             return nh.getName().equals(name);
         }
     }
     
-    static public class GeneralFilter implements Filter<NetworkHierachyNode>
+    static public class GeneralFilter implements Filter<NetworkMetaInformation>
     {
         Option option;
         String value;
@@ -84,7 +84,7 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
         
         
         @Override
-        public boolean accept(NetworkHierachyNode nh) {
+        public boolean accept(NetworkMetaInformation nh) {
             if ( debug )
             {
                 CroCoLogger.debug("Apply option/id/value: %s/%d/%s on  name/group_id: %s (%d) with options: %s ",option.name(),option.ordinal(),value,nh.getName(),nh.getGroupId(),nh.getOptions().toString());
@@ -108,27 +108,67 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
     }
     public String getName()
     {
+        if ( name == null)
+            return id;
+        
         return name;
     }
-    public CroCoNode()
-    {
-        
-    }
+    
     public void setRootParentNames(Set<String> rootParentNames) {
         this.rootParentNames = rootParentNames;
     }
+    
+    public CroCoNode<E> getChild(String id)
+    {
+        for(CroCoNode<E> c : this.getAllChildren())
+        {
+            if ( id.equals(c.id)) 
+                return c;
+        }
+        
+        return null;
+    }
+    
+    public Set<CroCoNode<E>> getAllChildren()
+    {
+        HashSet<CroCoNode<E>> ret = new HashSet<CroCoNode<E>> ();
+        Stack<CroCoNode<E>> stack = new Stack<CroCoNode<E>>();
+        stack.add(this);
+        
+        while(!stack.isEmpty())
+        {
+            CroCoNode<E> top = stack.pop();
+            if ( ret.contains(top)) continue;
+            
+            ret.add(top);
+            
+            if ( top.getChildren() == null) continue;
+            
+            for(  CroCoNode<E> child: top.getChildren())
+            {
+                stack.add(child);
+            }
+            
+        }
+        
+        return ret;
+        
+    }
+    
     public void setParent(CroCoNode<E> parent) {
         if ( parent == null)
             return;
-        
-        
         
         if ( parent.getChildren() == null)
         {
             parent.setChildren(new ArrayList<CroCoNode<E>>());
         }
         parent.getChildren().add(this);
-        this.parent = parent;
+        
+        if ( this.parents == null)
+            this.parents = new ArrayList<CroCoNode<E>>();
+        
+        this.parents.add(parent);
     }
     public void setChildren(List<CroCoNode<E>> children) {
         this.children = children;
@@ -136,27 +176,24 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
     public void setFromCloned(CroCoNode<E> fromCloned) {
         this.fromCloned = fromCloned;
     }
-    public void setChildShowRootChildren(boolean childShowRootChildren) {
-        this.childShowRootChildren = childShowRootChildren;
-    }
+
     public void setData(Set<E> data) {
         this.data = data;
     }
 
     private String name;
+    private String id;
     private Set<String> rootParentNames = null;
-    private CroCoNode<E> parent;
+    private List<CroCoNode<E>> parents;
     private List<CroCoNode<E>> children = null;
     private CroCoNode<E> fromCloned;
    
     
-    public CroCoNode<E> getNode(String name, Filter<E> ... filters) throws Exception{
-        return CroCoNode.getNode(name,this, filters);
+    public Set<E> getData(String id, Filter<E> ... filters) throws Exception{
+        return CroCoNode.getData(id,this, filters);
     } 
-    public static<E> CroCoNode<E> getNode(String name,CroCoNode<E> rootNode,Filter<E> ... filters) throws Exception
+    public static<E extends Identifiable> Set<E> getData(String id,CroCoNode<E> rootNode,Filter<E> ... filters) throws Exception
     {
-        CroCoNode<E> node = new CroCoNode<E>(name);
-        
         Set<E> ret = new HashSet<E>(rootNode.getData());
         
         for(Filter<E> filter : filters)
@@ -169,34 +206,11 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
             }
             ret = filtered;
         }
-        node.setData(ret);
         
-        return node;
-        /*
-        String[] tokens = path.split("/");
+        return ret;
 
-        for(String token : tokens){
-            if(token.length() == 0) continue;
-            NetworkHierachyNode newRoot = null;
-            for(NetworkHierachyNode child : rootNode.getChildren()){
-                if ( child.getName().equals(token)) {
-                    newRoot = child;
-                    break;
-                }
-            }
-            if ( newRoot == null) throw new Exception(String.format("Network not found for path %s stopped at %s (id: %d).",path,token,rootNode.getGroupId()));
-            rootNode = newRoot;
-        }
-        return rootNode;
-        */
     }
     
-    
-    private boolean childShowRootChildren;
-    public boolean isChildShowRootChildren() {
-        return childShowRootChildren;
-    }
-
     private Set<E> data;
 
     public void initChildren(CroCoNode<E> root) throws Exception
@@ -205,49 +219,28 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
         {
             throw new Exception("Children already set");
         }
-        
         HashSet<E> nodeNetworks = new HashSet<E>(getData());
         
         List<CroCoNode<E>> possibleChildren = new ArrayList<CroCoNode<E>>();
        
         setChildren( new ArrayList<CroCoNode<E>>());
         
-        if ( this.getData().size() == 1)
-        {
-            E element = getData().iterator().next();
-            CroCoNode<E> leaf = new LeafNode<E>(element.toString(),element);
-            leaf.setParent(this);
-            return;
-        }
         //list possible children
-        if ( isChildShowRootChildren())
+        if ( getFromCloned().getChildren() != null)
         {
-            Set<String> parents = getParents();
-            for(CroCoNode<E> n : root.getChildren())
+            for(CroCoNode<E> n : getFromCloned().getChildren())
             {
-                if (! parents.contains(n.getName()))
-                    possibleChildren.add(n);
+                possibleChildren.add(n);
             }
-        }else
-        {
-            if ( getFromCloned().getChildren() != null)
-            {
-                for(CroCoNode<E> n : getFromCloned().getChildren())
-                {
-                    possibleChildren.add(n);
-                }    
-            }
-                    
-            
         }
 
         //add possible children
         for(CroCoNode<E> possibleChild :possibleChildren ){
            
             Set<E> data = getRelevantData(this,possibleChild);
-            
             if ( data.size() == 0)
-                continue;
+               continue;
+            
              nodeNetworks.removeAll(data);
              CroCoNode<E> child = new CroCoNode<E>(possibleChild);
                
@@ -255,51 +248,39 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
              child.setParent(this);
 
         }
-        
-        //not assigned networks
-        if (isChildShowRootChildren() && nodeNetworks.size() > 0)
+
+        if ( nodeNetworks.size() > 0)
         {
-            CroCoLogger.debug("Node %s has %d not assigned networks",getName(),nodeNetworks.size() );
-            for(E nh : nodeNetworks)
-            {
-                CroCoNode<E> leaf = new LeafNode<E>(nh.toString(),nh);
-                getChildren().add(leaf);
-            }
-        }
-        else if ( nodeNetworks.size() > 0)
-        {
-            Set<String> parents = getParents();
+            Set<String> parents = getParents(root);
             possibleChildren.clear();
+           
+            //show dimensions with >2 data points
             for(CroCoNode<E> n : root.getChildren())
             {
-                if (! parents.contains(n.getName()))
-                    possibleChildren.add(n);
-            }
-           
-            for(CroCoNode<E> possibleChild :possibleChildren ){
-                
-                Set<E> data = getRelevantData(this,possibleChild);
-                
-                if ( data.size() == 0)
-                    continue;
-                 nodeNetworks.removeAll(data);
-                 CroCoNode<E> child = new CroCoNode<E>(possibleChild);
-                   
-                 child.setData(data);
-                 child.setParent(this);
-
-            }
-            
-            if ( nodeNetworks.size()> 0)
-            {
-                CroCoLogger.info("Node %s has %d not assigned networks",getName(),nodeNetworks.size() );
-                for(E nh : nodeNetworks)
+                if (! parents.contains(n.getId()) && !n.id.equals(this.getId()) )
                 {
-                    CroCoNode<E> leaf = new LeafNode<E>(nh.toString(),nh);
-                    leaf.setParent(this);
+                    Set<E> data = getRelevantData(this,n);
+                    if ( data.size() < 2)
+                        continue;
+                     nodeNetworks.removeAll(data);
+                     CroCoNode<E> child = new CroCoNode<E>(n);
+                       
+                     child.setData(data);
+                     child.setParent(this);
                 }
             }
         }
+        //no further categorization is possible
+        if ( nodeNetworks.size()> 0)
+        {
+            CroCoLogger.info("Node %s has %d not assigned networks",getName(),nodeNetworks.size() );
+            for(E nh : nodeNetworks)
+            {
+                CroCoNode<E> leaf = new LeafNode<E>(nh.getId(),nh.toString(),nh);
+                leaf.setParent(this);
+            }
+        }
+        
         Collections.sort(getChildren());
     }
     private Set<E> getRelevantData(CroCoNode<E> parent, CroCoNode<E> child)
@@ -313,67 +294,88 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
         
         return data;
     }
-    protected CroCoNode(String name)
+    public CroCoNode(String id, String name)
     {
+        this.id = id;
         this.name = name;
     }
-    public CroCoNode<E> getParent()
+    public List<CroCoNode<E>> getParent()
     {
-        return parent;
+        return this.parents;
     }
+    
+    //added for xstream
+    public CroCoNode(){}
+    
     public CroCoNode(CroCoNode<E> node)
     {
         if ( node == null)
             throw new RuntimeException("Node cannot be null (init failed).");
         this.name = node.name;
+        this.id = node.id;
         this.fromCloned = node;
-        this.childShowRootChildren = node.childShowRootChildren;
-    }
-    public CroCoNode(String name, CroCoNode<E> parent,boolean childShowRootChildren,Set<E> data)
-    {
-        
-        this.setParent(parent);
-        
-        this.data = data;
-        this.name = name;
-        this.childShowRootChildren = childShowRootChildren;
     }
     
-    public CroCoNode(String name, CroCoNode<E> parent,Filter<E> filter, boolean childShowRootChildren,Set<E> data)
+    public CroCoNode(String id, String name, CroCoNode<E> parent,Set<E> data)
     {
+        this(id,name,parent,null,data);
+    }
+    
+    public CroCoNode(String id,String name,CroCoNode<E> parent,Filter<E> filter, Set<E> data)
+    {
+
         this.setParent(parent);
+        this.id = id;
         this.name = name;
-        this.data = new HashSet<E>();
-        this.childShowRootChildren = childShowRootChildren;
-        for(E nh : data)
+        if ( filter != null)
         {
-            if (filter == null ||  filter.accept(nh))
-                this.data.add(nh);
+            this.data= data;
         }
+        else
+        {
+            this.data = new HashSet<E>();
+            for(E nh : data)
+            {
+                if (filter == null ||  filter.accept(nh))
+                    this.data.add(nh);
+            }
+        }
+        
         
     }
     public String toString()
     {
-        return String.format("%s (%d data)",name,data==null?0:data.size()) ;
+        return String.format("%s (%d data)",this.getName(),data==null?0:data.size()) ;
     }
     public List<CroCoNode<E>> getChildren()
     {
         return children;
     }
-    public Set<String> getParents()
+    public Set<String> getParents(CroCoNode<E> root)
     {
+        HashSet<String> dimensions = new HashSet<String>();
+        
+        for(CroCoNode<E> c : root.getChildren())
+        {
+            dimensions.add(c.getId());
+        }
+        
         if (rootParentNames == null)
         {
             rootParentNames = new HashSet<String>();
             
-            CroCoNode<E> parent =(CroCoNode<E>) getParent();;
+            List<CroCoNode<E>> parents = this.parents;
             
-            while(parent != null)
+            while(parents != null)
             {
-                if ( !parent.childShowRootChildren)
-                    rootParentNames.add(parent.name);
-                
-                parent = (CroCoNode<E>)parent.getParent();
+                for(CroCoNode<E> parent : parents)
+                {
+                    if ( dimensions.contains(parent.getId()))
+                        rootParentNames.add(parent.getId());
+                    
+                    parents = parent.getParent();
+                        
+                }
             }
         }
         return rootParentNames;
@@ -381,7 +383,7 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
     
     @Override
     public int compareTo(CroCoNode<E>  o) {
-        return this.name.compareTo(((CroCoNode<E>) o).name);
+        return this.getName().toUpperCase().compareTo(((CroCoNode<E>) o).getName().toUpperCase());
     }
     public Set<E> getData() {
         return data;
@@ -389,8 +391,27 @@ public class CroCoNode<E> implements Comparable<CroCoNode<E>>
     public CroCoNode<E> getFromCloned() {
         return fromCloned;
     }
+    public String getId() {
+        return id;
+    }
     
-    
-
+    public static<E extends Identifiable> void printAsObo(PrintWriter pw, CroCoNode<E> root) 
+    {
+        for(CroCoNode<E> c : root.getAllChildren() )
+        {
+            pw.printf("[Term]\n");
+            pw.printf("id: %s\n", c.getId());
+            pw.printf("name: %s\n", c.getName());
+            if ( c.getParent() != null)
+            {
+                for(CroCoNode<E> p : c.getParent())
+                {
+                    pw.printf("is_a: %s ! %s\n", p.getId(),p.getName());
+                }    
+            }
+            pw.print("\n");
+        }
+        
+    }
 
 }

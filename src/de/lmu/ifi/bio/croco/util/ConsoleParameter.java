@@ -110,6 +110,8 @@ public class ConsoleParameter {
 			try{
 				ret = handler.getValue(cmdLine,this.name);
 			}catch(Exception e){
+			   
+			    
 				throw new CroCoParameterException(e,String.format("Can not read parameter %s with handler %s",this.name,handler.getClass().getSimpleName()));
 			}
 			return ret;

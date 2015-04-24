@@ -1,19 +1,11 @@
 package de.lmu.ifi.bio.croco.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-
-import de.lmu.ifi.bio.croco.data.genome.Gene;
-import de.lmu.ifi.bio.croco.util.StringUtil;
 
 
-public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
+public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformation>, Identifiable {
  
 	private Integer groupId;
 	private String name;
@@ -30,7 +22,29 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 	private HashMap<Option,String> options = new HashMap<Option,String>();
 	
 	//added for xsteam
-	public NetworkHierachyNode(){}
+	public NetworkMetaInformation(){}
+
+	public NetworkMetaInformation(Integer groupId, String name,  Integer taxId, NetworkType type)
+	{
+	    this.groupId = groupId;
+
+	    this.type = type;
+	    this.name = name;
+	    this.taxId = taxId;
+
+	    this.options.put(Option.TaxId,taxId+"");
+	    this.options.put(Option.NetworkType,type.name());
+	}
+	/*
+	public NetworkMetaInformation(NetworkMetaInformation node){
+	    this.groupId = node.getGroupId();
+	    this.name = node.getName();
+	    this.taxId = node.getTaxId();
+	    this.selected = node.isSelected();
+	    this.type = node.getType();
+	    this.options = node.options;
+	}
+	*/
 	
 	public NetworkType getType() {
 		return type;
@@ -66,17 +80,6 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 
 
 
-	
-	public NetworkHierachyNode(NetworkHierachyNode node){
-		this.groupId = node.getGroupId();
-		this.name = node.getName();
-		this.taxId = node.getTaxId();
-		this.selected = node.isSelected();
-		this.type = node.getType();
-		this.options = node.options;
-	}
-	
-
 
 	 
 	 public Integer getGroupId() {
@@ -111,41 +114,31 @@ public  class NetworkHierachyNode  implements Comparable<NetworkHierachyNode> {
 		this.options.put(Option.TaxId,taxId+"");
 	}
 
-	public NetworkHierachyNode(Integer groupId, Integer taxId){
-		this.groupId = groupId;
-		this.taxId = taxId;
-		this.name = groupId +"";
-	}
+
 	private Integer parentGroupId;
 	public Integer getParentGroupdId(){
 		return parentGroupId;
 	}
 	
-	public NetworkHierachyNode(Integer groupId, String name,  Integer taxId, NetworkType type)
-	{
-        this.groupId = groupId;
-        
-        this.type = type;
-        this.name = name;
-        this.taxId = taxId;
-        
-        this.options.put(Option.TaxId,taxId+"");
-        this.options.put(Option.NetworkType,type.name());
-	}
-	
-	public int compareTo(NetworkHierachyNode o) {
+	    
+	   
+	public int compareTo(NetworkMetaInformation o) {
 		return name.toLowerCase().compareTo(o.getName().toLowerCase());
 	}
 	
 	public boolean equals(Object o){
-		if ( o instanceof NetworkHierachyNode && ((NetworkHierachyNode) o).getGroupId().equals(this.groupId))
+		if ( o instanceof NetworkMetaInformation && ((NetworkMetaInformation) o).getGroupId().equals(this.groupId))
 			return true;
 		else
 			return false;
 		
 	}
-	
-	
+
+    @Override
+    public String getId() {
+        return groupId+"";
+    }
+
 
 
 }

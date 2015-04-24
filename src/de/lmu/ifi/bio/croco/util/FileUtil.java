@@ -418,7 +418,6 @@ public class FileUtil {
         public boolean hasNext() {
             try{
                 if ( (currentLine =bw.readLine()) != null) return true;
-                CroCoLogger.debug("Close file");
                 bw.close();
             }catch(IOException e)
             {

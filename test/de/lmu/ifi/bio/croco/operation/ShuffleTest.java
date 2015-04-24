@@ -53,7 +53,7 @@ public class ShuffleTest {
 		QueryService local = new LocalService(CroCoLogger.getLogger());
 		BufferedService service = new BufferedService(local,new File("/tmp"));
 		
-		reader.setInput(ReadNetwork.NetworkHierachyNode, service.getNetworkHierachyNode(4903));
+		reader.setInput(ReadNetwork.NetworkMetaInformation, service.getNetworkMetaInformation(4903));
 		reader.setInput(ReadNetwork.QueryService, service);
 		reader.setInput(ReadNetwork.GlobalRepository, true);
 		Network network = reader.operate();

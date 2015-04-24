@@ -2,6 +2,8 @@ package de.lmu.ifi.bio.croco.data;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import org.junit.Test;
 
 import de.lmu.ifi.bio.croco.connector.LocalService;
@@ -13,7 +15,7 @@ public class CroCoNodeTest {
     public void testFilter()  throws Exception{
         LocalService service = new LocalService();
         
-        CroCoNode<NetworkHierachyNode> onto = service.getNetworkOntology();
+        CroCoNode<NetworkMetaInformation> onto = service.getNetworkOntology(false);
         
         GeneralFilter g1 = new GeneralFilter(Option.NetworkType,NetworkType.OpenChrom.name());
         GeneralFilter g2 = new GeneralFilter(Option.TaxId,10090+"");
@@ -23,16 +25,19 @@ public class CroCoNodeTest {
         
         assertTrue(onto.getData().size()>0);
         
-        CroCoNode<NetworkHierachyNode> filtered = onto.getNode("Filtered",g1,g2,g3,g4,g5);
+        Set<NetworkMetaInformation> filtered = onto.getData("Filtered",g1,g2,g3,g4,g5);
         
         String[] esCellLineNames = new String[]{"ES-CJ7","ES-E14","ES-WW6","ES-WW6_F1KO"};
+        
+        CroCoNode<NetworkMetaInformation> es = new CroCoNode<NetworkMetaInformation>("ES","ES",null,filtered);
         
         for(String cellLine : esCellLineNames)
         {
             GeneralFilter g6 = new GeneralFilter(Option.cellLine,cellLine);
-            CroCoNode<NetworkHierachyNode> t = filtered.getNode(cellLine, g6);
             
-            assertTrue(t.getData().size()>0);
+            Set<NetworkMetaInformation> t = es.getData(cellLine, g6);
+            
+            assertTrue(t.size()>0);
         }
         
         
@@ -43,7 +48,7 @@ public class CroCoNodeTest {
     {
         LocalService service = new LocalService();
         
-        CroCoNode<NetworkHierachyNode> root = service.getNetworkOntology();
+        CroCoNode<NetworkMetaInformation> root = service.getNetworkOntology(false);
         System.out.println(root.getData().size());
         System.out.println("ROOT:" + root.getChildren());
         CroCoNode cloned = new CroCoNode(root);

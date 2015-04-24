@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TransferredPeak;
@@ -64,16 +64,16 @@ public abstract class Network  {
 	private EdgeRepositoryStrategy edgeRepository;
 	private String name;
 	private NetworkSummary networkSummary;
-	private NetworkHierachyNode hierachyNode;
+	private NetworkMetaInformation hierachyNode;
 	
 	//todo
 	private HashMap<Option,String> networkInfo = new HashMap<Option,String>();
 	protected TIntHashSet edges;
 
-	public NetworkHierachyNode getHierachyNode() {
+	public NetworkMetaInformation getHierachyNode() {
 		return hierachyNode;
 	}
-	public void setHierachyNode(NetworkHierachyNode hierachyNode) {
+	public void setHierachyNode(NetworkMetaInformation hierachyNode) {
 		this.hierachyNode = hierachyNode;
 	}
 
@@ -260,7 +260,7 @@ public abstract class Network  {
 		this.initEdgeRepository();
 	}
 	
-	public Network(NetworkHierachyNode node,EdgeRepositoryStrategy edgeRepository) {
+	public Network(NetworkMetaInformation node,EdgeRepositoryStrategy edgeRepository) {
 		this.name = node.getName();
 		this.taxId = node.getTaxId();
 		this.edges = new TIntHashSet();
@@ -487,7 +487,7 @@ public abstract class Network  {
     }
 
 	
-	public NetworkHierachyNode getNetworkHierachyNode() {
+	public NetworkMetaInformation getNetworkMetaInformation() {
 		return this.hierachyNode;
 	}
 
@@ -507,14 +507,14 @@ public abstract class Network  {
         private HashMap<Option,String> infos;
         private EdgeRepositoryStrategy edgeRepository = EdgeRepositoryStrategy.LOCAL;
         private File networkFile;
-        private NetworkHierachyNode node;
+        private NetworkMetaInformation node;
         
         public NetworkReader setNetworkInfo(File networkInfoFile) throws IOException{
             this.infos = readInfoFile(networkInfoFile);
             return this;
         }
     
-        public NetworkReader setNetworkHierachyNode(NetworkHierachyNode node){
+        public NetworkReader setNetworkMetaInformation(NetworkMetaInformation node){
             this.node = node;
             this.groupId = node.getGroupId();
             return this;

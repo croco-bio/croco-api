@@ -2,15 +2,12 @@ package de.lmu.ifi.bio.croco.connector;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,12 +16,10 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.base.Joiner;
-
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.data.Species;
@@ -43,8 +38,7 @@ import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.CroCoProperties;
-import de.lmu.ifi.bio.croco.util.FileUtil;
-import de.lmu.ifi.bio.croco.util.Pair;
+import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology;
 
 /**
  * Uses a direct database connection to query the database.
@@ -66,35 +60,44 @@ public class LocalService implements QueryService{
 	    System.out.println("Init instance");
 	    LocalService service = new LocalService();
 	    System.out.println("Get ontoloy");
-	    CroCoNode<NetworkHierachyNode> node = service.getNetworkOntology();
+	    CroCoNode<NetworkMetaInformation> node = service.getNetworkOntology(false);
 	    System.out.println("Print root info");
 	    System.out.println(node.getName());
 	}
-	private List<NetworkHierachyNode> getNetworkHierachy(Integer  gId) throws Exception
+	private List<NetworkMetaInformation> getMetaInformation(Integer  gId,boolean onlyPublic) throws Exception
 	{
-	    String sql = null;
-	    if ( gId == null)
-	        sql = "SELECT nh.group_id ,  name,  tax_id,network_type FROM NetworkHierachy nh";
-	    else
-	        sql = String.format("SELECT nh.group_id ,  name, tax_id,network_type FROM NetworkHierachy nh where nh.group_id=%d",gId);
-	       
+	    String sql = "SELECT nh.group_id ,  name,  tax_id,network_type FROM NetworkMetaInformation nh";
+	    boolean where=false;
+	    
+	    if ( gId != null)
+	    {
+	        sql += String.format(" where nh.group_id=%d",gId);
+	        where=true;
+	    }
+	    
+	    if  (onlyPublic)
+	    {
+	        if( where)
+	            sql +=" and restricted=0";
+	        else
+	            sql +=" where restricted=0";
+	    }
+	    
 	    PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement(sql);
         CroCoLogger.getLogger().debug(sql);
 
-        List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>();
+        List<NetworkMetaInformation> networks = new ArrayList<NetworkMetaInformation>();
 
         stat.execute();
 
         ResultSet res = stat.getResultSet();
-        HashMap<Integer,NetworkHierachyNode> groupIdToNH = new  HashMap<Integer,NetworkHierachyNode>();
+        HashMap<Integer,NetworkMetaInformation> groupIdToNH = new  HashMap<Integer,NetworkMetaInformation>();
         while(res.next()){
             Integer groupId = res.getInt(1);
 
             String name = res.getString(2);
             Integer taxId = res.getInt(3);
 
-
-           
             if ( res.wasNull())  taxId = null;
             NetworkType type = null;
             Integer networkTypeID = res.getInt(4);
@@ -104,7 +107,7 @@ public class LocalService implements QueryService{
                 CroCoLogger.getLogger().error(String.format("Unknown network type %d",networkTypeID));
             }
 
-            NetworkHierachyNode nhn = new NetworkHierachyNode(groupId,name,taxId,type);
+            NetworkMetaInformation nhn = new NetworkMetaInformation(groupId,name,taxId,type);
             networks.add(nhn);
             groupIdToNH.put(groupId, nhn);
 
@@ -128,7 +131,8 @@ public class LocalService implements QueryService{
             Option option = Option.values()[res.getInt(2)];
             String value = res.getString(3);
             
-            groupIdToNH.get(groupId).addOption(option, value);
+            if (groupIdToNH.containsKey(groupId) )
+                groupIdToNH.get(groupId).addOption(option, value);
         }
         
         
@@ -137,14 +141,14 @@ public class LocalService implements QueryService{
 	}
 	
 	@Override
-	public List<NetworkHierachyNode> getNetworkHierachy() throws Exception {
-	    return getNetworkHierachy(null);
+	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
+	    return getMetaInformation(null,false);
 	}
 
 
 	@Override
-	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-	    List<NetworkHierachyNode> ret = getNetworkHierachy(groupId);
+	public NetworkMetaInformation getNetworkMetaInformation(Integer groupId) throws Exception {
+	    List<NetworkMetaInformation> ret = getMetaInformation(groupId,false);
 	    
 	    if ( ret == null || ret.size() == 0)
 	        return null;
@@ -266,7 +270,7 @@ public class LocalService implements QueryService{
 	}
 	@Override
 	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId,Boolean gloablRepository) throws Exception {
-		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		NetworkMetaInformation networkNode = this.getNetworkMetaInformation(groupId);
 		
 		if ( !networkNode.getType().equals(NetworkType.ChIP) && !networkNode.getType().equals(NetworkType.TFBS) &&  !networkNode.getType().equals(NetworkType.OpenChrom) ){
 			throw new Exception(String.format("Network %d has no binding annotations",groupId));
@@ -326,11 +330,11 @@ public class LocalService implements QueryService{
 	
 		logger.debug("Load:\t" + groupId + " with context " + contextId + " global repo:" + gloablRepository);
 
-		NetworkHierachyNode networkNode = this.getNetworkHierachyNode(groupId);
+		NetworkMetaInformation networkNode = this.getNetworkMetaInformation(groupId);
 		Network network = new DirectedNetwork(networkNode.getName(),networkNode.getTaxId(),gloablRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL);
 		if ( contextId == null){
 			Statement stat = DatabaseConnection.getConnection().createStatement();
-			stat.execute(String.format("SELECT network_file_location FROM NetworkHierachy where group_id = %d",groupId));
+			stat.execute(String.format("SELECT network_file_location FROM NetworkMetaInformation where group_id = %d",groupId));
 			ResultSet res = stat.getResultSet();
 			File networkFile = null;
 			if ( res.next()){
@@ -511,7 +515,7 @@ public class LocalService implements QueryService{
 	@Override
 	public BufferedImage getRenderedNetwork(Integer groupId) throws Exception {
 		File networkFile = null;
-		String sql =String.format("SELECT network_file_location from NetworkHierachy where group_id=%d",groupId);
+		String sql =String.format("SELECT network_file_location from NetworkMetaInformation where group_id=%d",groupId);
 		CroCoLogger.getLogger().debug(sql);
 		Statement stat = DatabaseConnection.getConnection().createStatement();
 		stat.execute(sql);
@@ -599,7 +603,7 @@ public class LocalService implements QueryService{
 							"binding_start , binding_end, binding_p_value      , binding_motif ," +
 							"open_chrom_start , open_chrom_end " +
 					"FROM Network2Binding n " +
-					"JOIN NetworkHierachy nh on nh.group_id = n.group_id  " +
+					"JOIN NetworkMetaInformation nh on nh.group_id = n.group_id  " +
 					"where gene1 = ? and gene2 = ?"
 			);
 			stat.setString(1, factor);
@@ -620,7 +624,7 @@ public class LocalService implements QueryService{
 			NetworkType type = NetworkType.values()[res.getInt(3)];
 			
 			if (! groupIdToNetworkSummary.containsKey(groupId)){
-				NetworkHierachyNode nh = new NetworkHierachyNode(groupId,name,null,type);
+				NetworkMetaInformation nh = new NetworkMetaInformation(groupId,name,null,type);
 				BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(name,null,EdgeRepositoryStrategy.LOCAL);
 				network.setHierachyNode(nh);
 				groupIdToNetworkSummary.put(groupId,network );
@@ -657,73 +661,14 @@ public class LocalService implements QueryService{
 		return version;
 	}
 
-	
-	
     @Override
-    public CroCoNode<NetworkHierachyNode> getNetworkOntology() throws Exception{
+    public CroCoNode<NetworkMetaInformation> getNetworkOntology(boolean onlyPublic) throws Exception{
         
-        HashMap<Integer,NetworkHierachyNode> idToNetwork = new HashMap<Integer,NetworkHierachyNode>();
+        File oboFile =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntologyFile") );
+        File oboMapping =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntoloyMappingFile") );
         
-        for(NetworkHierachyNode network : getNetworkHierachy())
-        {
-            idToNetwork.put(network.getGroupId(), network);
-        }
-        
-        Statement stat = DatabaseConnection.getConnection().createStatement();
-        String sql ="SELECT node_id,parent_node_id,name,network_ids FROM NetworkOntology";
-        CroCoLogger.debug(sql);
-        stat.execute(sql);
-         
-        HashMap<Integer,CroCoNode<NetworkHierachyNode>> networkToCroCoNode = new HashMap<Integer,CroCoNode<NetworkHierachyNode>>();
-        HashMap<Integer,Integer> nodeToParent = new HashMap<Integer,Integer>();
-        
-        ResultSet res = stat.getResultSet();
-        int k = 0;
-        while(res.next())
-        {
-            Integer id = res.getInt(1);
-            Integer pId = res.getInt(2);
-            String name = res.getString(3);
-            
-            Set<NetworkHierachyNode> nodes = new HashSet<NetworkHierachyNode>();
-            for(String nId : res.getString(4).trim().split(" "))
-            {
-                nodes.add(idToNetwork.get(Integer.valueOf(nId)));
-            }
-            CroCoNode<NetworkHierachyNode> node = new CroCoNode<NetworkHierachyNode>(name,null,true,nodes);
-            
-            networkToCroCoNode.put(id, node);
-            nodeToParent.put(id, pId);
-            //networkToCroCoNode.put(id, );
-            k++;
-        }
-        res.close();
-        stat.close();
-        CroCoLogger.debug("Found %d ontology nodes.",k);
-
-        for(Integer id : nodeToParent.keySet())
-        {
-            CroCoNode<NetworkHierachyNode> node = networkToCroCoNode.get(id);
-            Integer parentId = nodeToParent.get(id);
-            if ( parentId >= 0)
-            {
-                CroCoNode<NetworkHierachyNode> parent = networkToCroCoNode.get(parentId);
-                if ( parent.getChildren() == null)
-                {
-                    parent.setChildShowRootChildren(false);
-                    node.setParent(parent);
-                }    else{
-                    node.setParent(parent);
-                        
-                }
-            }
-            
-        }
-        CroCoNode<NetworkHierachyNode> root =  networkToCroCoNode.get(0) ;
-        if (root== null)
-        {
-            throw new Exception("Root node not found.");
-        }
+        CroCoNode<NetworkMetaInformation> root = new CroCoNode<NetworkMetaInformation>("Root","0",null, new HashSet<NetworkMetaInformation>(this.getMetaInformation(null, onlyPublic)));
+        NetworkOntology.readOntology(root, oboFile, oboMapping);
         
         return root;
     }

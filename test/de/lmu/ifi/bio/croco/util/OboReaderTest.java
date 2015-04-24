@@ -9,10 +9,10 @@ import java.util.List;
 import org.junit.Test;
 
 import de.lmu.ifi.bio.croco.connector.LocalService;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Option;
-import de.lmu.ifi.bio.croco.util.ontology.OboReader;
-import de.lmu.ifi.bio.croco.util.ontology.OboReader.OboElement;
+import de.lmu.ifi.bio.croco.util.ontology.Obo;
+import de.lmu.ifi.bio.croco.util.ontology.Obo.OboElement;
 
 public class OboReaderTest {
 
@@ -20,7 +20,7 @@ public class OboReaderTest {
     public void testBrenda() throws Exception{
         File obo = new File("data/obo/BrendaTissue.obo");
         
-        OboReader reader = new OboReader(obo);
+        Obo reader = new Obo(obo);
         
         OboElement e = reader.getElement("BTO:0000165");
         
@@ -44,9 +44,9 @@ public class OboReaderTest {
         
         HashMap<String, String> mapping = FileUtil.mappingFileReader(0, 1, mappingFile).readMappingFile();
         
-        List<NetworkHierachyNode> nhs = service.getNetworkHierachy();
+        List<NetworkMetaInformation> nhs = service.getNetworkMetaInformation();
         HashSet<String> notFound = new HashSet<String>();
-        for(NetworkHierachyNode nh : nhs)
+        for(NetworkMetaInformation nh : nhs)
         {
             Integer taxId = Integer.valueOf(nh.getOptions().get(Option.TaxId));
             
@@ -85,7 +85,7 @@ public class OboReaderTest {
     public void testSpecies() throws Exception{
         File obo = new File("data/obo/croco-sp.obo");
         
-        OboReader reader = new OboReader(obo);
+        Obo reader = new Obo(obo);
         
         System.out.println(reader.getElement("NCBITaxon:9606").getParents());
         

@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import de.lmu.ifi.bio.croco.data.CroCoNode;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
@@ -40,10 +40,10 @@ public class BufferedLocalServiceTest {
         
         assertEquals(0,service.getBufferedFiles().length);    
      
-        CroCoNode<NetworkHierachyNode> root =service.getNetworkOntology();
+        CroCoNode<NetworkMetaInformation> root =service.getNetworkOntology(false);
         int childrenSize = root.getChildren().size();
         assertEquals(1,service.getBufferedFiles().length);    
-        root =service.getNetworkOntology();
+        root =service.getNetworkOntology(false);
         assertEquals(root.getChildren().size(),childrenSize);
     }
     
@@ -55,12 +55,12 @@ public class BufferedLocalServiceTest {
         
         assertEquals(0,service.getBufferedFiles().length);    
      
-        CroCoNode<NetworkHierachyNode> root =service.getNetworkOntology();
+        CroCoNode<NetworkMetaInformation> root =service.getNetworkOntology(false);
         assertEquals(1,service.getBufferedFiles().length);    
         
         Random rnd = new Random(0);
         
-        List<NetworkHierachyNode> networks = new ArrayList<NetworkHierachyNode>(root.getData());
+        List<NetworkMetaInformation> networks = new ArrayList<NetworkMetaInformation>(root.getData());
         
         assertTrue(networks.size()>0);
         

@@ -1,6 +1,7 @@
 package de.lmu.ifi.bio.croco.util.ontology;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,7 +15,13 @@ import java.util.regex.Pattern;
 import de.lmu.ifi.bio.croco.util.FileUtil;
 
 
-public class OboReader {
+public class Obo {
+    Pattern TERM = Pattern.compile("\\[(\\w+)\\]");
+    Pattern SEP = Pattern.compile(":");
+    Pattern SYNONYM = Pattern.compile("\"([^\"]+)\"");
+    
+    HashMap<String,OboElement> elements = new HashMap<String,OboElement>();
+    
     public enum OboField
     {
         //Term fields
@@ -22,7 +29,8 @@ public class OboReader {
         NAME("name"),
         SYNONYM("synonym"),
         IS_A("is_a"),
-        relationship("relationship")
+        relationship("relationship"),
+        alt_id("alt_id")
         ;
         String name;
         OboField(String name)
@@ -44,9 +52,11 @@ public class OboReader {
         public List<OboElement> children = new ArrayList<OboElement>();
         
         public String id = null;
+        
+        public List<String> altIds = new ArrayList<String>();
         public String name = null;
      
-        List<String> synonym = new ArrayList<String>();
+        public List<String> synonym = new ArrayList<String>();
         
         @Override
         public String toString()
@@ -110,12 +120,7 @@ public class OboReader {
         }
         
     }
-    Pattern TERM = Pattern.compile("\\[(\\w+)\\]");
-    Pattern SEP = Pattern.compile(":");
-    Pattern SYNONYM = Pattern.compile("\"([^\"]+)\"");
-    
-    HashMap<String,OboElement> elements = new HashMap<String,OboElement>();
-    
+
     public Collection<OboElement> getElements() {
         return elements.values();
     }
@@ -143,33 +148,53 @@ public class OboReader {
         return roots;
     }
     
-    public OboReader(File file) throws Exception
+    
+    public Obo(File file) throws IOException
     {
         Iterator<String> it = FileUtil.getLineIterator(file);
         
         OboElement current = null;
         
         HashMap<String,String> relations = new HashMap<String,String>();
+        List<String> additionalReferences = new ArrayList<String>();
+        
+        List<OboElement> el = new ArrayList<OboElement>();
         
         String type = null;
         while(it.hasNext())
         {
             String line = it.next();
-            
             if ( line.trim().length() ==0)
                 continue;
+            
             
             java.util.regex.Matcher matcher = TERM.matcher(line);
             if (matcher.matches())
             {
-                type = matcher.group(1);
-                if ( current != null)
-                {
-                    
-                    elements.put(current.id,current);
-                    
-                }
                 
+                type = matcher.group(1);
+                
+                if ( current != null && current.id != null)
+                {
+                    if ( current.id == null)
+                        throw new RuntimeException(line);
+
+                    if (! relations.containsKey(current.id) && additionalReferences.size() > 0)
+                    {
+                        for(String add: additionalReferences)
+                        {
+                            relations.put(current.id, add);     
+                            
+                        }
+                    }
+                    el.add(current);
+                    elements.put(current.id,current);
+                    for(String altId : current.altIds)
+                    {
+                        elements.put(altId,current);
+                    }
+                }
+                additionalReferences = new ArrayList<String>();
                 current = new OboElement();
                 continue;
             }
@@ -179,6 +204,10 @@ public class OboReader {
                 String[] tokens = SEP.split(line,2);
                 String key = tokens[0];
                 String value = tokens[1].trim();
+                if ( OboField.alt_id.name.equals(key))
+                {
+                   current.altIds.add(value);
+                }
                 if ( OboField.ID.name.equals(key))
                 {
                     current.id = value;
@@ -201,27 +230,52 @@ public class OboReader {
                     }
                 }else if ( OboField.relationship.name.equals(key))
                 {
-                    relations.put(current.id, value.split(" ")[1].trim());
+                       String[] ref =  value.split("\\s+");
+                       if ( ref[0].trim().equals("part_of"))
+                       {
+                           relations.put(current.id, ref[1].trim());     
+                       }else{
+                           additionalReferences.add(ref[1].trim());
+                        //   additionalReferences.put(current.id, ref[1].trim());     
+                       }
+                       
+                   
                 }
             }
         
         }
-        elements.put(current.id,current);
-       
-        for(OboElement element : elements.values())
+        if ( current.id != null)
+        {
+            el.add(current);
+            elements.put(current.id,current);
+        }
+        
+        for(OboElement element :el)
         {
             if ( relations.containsKey(element.id))
             {
                 OboElement parent = elements.get(relations.get(element.id));
-                //String parentId = is_a_relations.get(element.id);
-                parent.children.add(element);
-                element.parents.add(parent);
+                 //String parentId = is_a_relations.get(element.id);
+                 parent.children.add(element);
+                 element.parents.add(parent);
+                 
+                 continue;
             }
+     
         }
-        
-        
     }
- 
+    public static void main(String[] args) throws Exception
+    {
+         Obo reader = new Obo(new File("/home/users/pesch/workspace/EWMS/taxIds.obo"));
+      //  OboReader reader = new OboReader(new File("/mnt/biostor1/Data/PubMed/Synonyms/obo/BrendaTissueOBO_web.obo"));
+        
+        OboElement element =reader.getElement("NCBITaxon:10090");
+        System.out.println(element );
+        
+        System.out.println(element.getParents());
+        
+        System.out.println(element.getRoot());
+    }
     
   
 }

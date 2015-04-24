@@ -11,7 +11,8 @@ import java.util.Set;
 
 public class CroCoProperties {
 	private Properties props;
-
+	private static String configFileName = "croco.config";
+	
 	public Properties getProperties(){
 		return props;
 	}
@@ -32,17 +33,19 @@ public class CroCoProperties {
 	
 	public static CroCoProperties getInstance() throws IOException{
 		if ( instance == null){
-			InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("resources/connet.config");
-			System.out.println("Open: resources/connet.config");
+		    System.out.println("Open: resources/" + configFileName);
+		    InputStream stream = CroCoLogger.class.getClassLoader().getResourceAsStream("resources/" + configFileName);
 			if ( stream == null){ //last try
-				File file = new File("connet.config");
+			    System.out.println("Failed. Typ to open ./" + configFileName);
+	                
+				File file = new File(configFileName);
 				if ( file.exists()){
 					stream = new FileInputStream(file);
 				}
 				// stream = CroCoLogger.class.getClassLoader().getResourceAsStream("conf/connet.config");
 			}
 			if ( stream == null){
-				throw new IOException("Can not find:\t connet.config");
+				throw new IOException("Can not find croco-configuration file:"+configFileName);
 			}
 
 			instance = new CroCoProperties(stream);

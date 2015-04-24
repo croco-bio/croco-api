@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
@@ -57,7 +57,7 @@ public class GeneSetFilterTest {
 		QueryService service = new LocalService();
 		ReadNetwork readNetwork = new ReadNetwork();
 		
-		readNetwork.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(8532,9606));
+		readNetwork.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(8532) );
 		readNetwork.setInput(ReadNetwork.QueryService, service);
 		Network network = readNetwork.operate();
 		System.out.println(network.size());
@@ -78,12 +78,12 @@ public class GeneSetFilterTest {
 	}
 	
 	@Test
-	public void test() throws CroCoException, SQLException, IOException {
+	public void test() throws Exception {
 		QueryService service = new LocalService();
 		
 		ReadNetwork readNetwork = new ReadNetwork();
 		
-		readNetwork.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(10174,9606));
+		readNetwork.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(10174) );
 		readNetwork.setInput(ReadNetwork.QueryService, service);
 		
 		Network network = readNetwork.operate();

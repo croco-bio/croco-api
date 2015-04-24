@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.XStream;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
@@ -34,9 +34,7 @@ import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
-import de.lmu.ifi.bio.croco.processor.ontology.NetworkOntologyWriter;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
-import de.lmu.ifi.bio.croco.util.Pair;
 
 public class BufferedService implements QueryService {
 	private File baseDir;
@@ -81,12 +79,12 @@ public class BufferedService implements QueryService {
 	*/
 	
 	@Override
-	public CroCoNode<NetworkHierachyNode> getNetworkOntology() throws Exception {
-	    File ontologyFile = new File(baseDir + "/ontology.croco.gz");
-	    CroCoNode<NetworkHierachyNode> rootNode = null;
+	public CroCoNode<NetworkMetaInformation> getNetworkOntology(boolean resricted) throws Exception {
+	    File ontologyFile = new File(String.format("%s/ontology.croco%s.gz",baseDir.toString(),resricted?".restricted.":""));
+	    CroCoNode<NetworkMetaInformation> rootNode = null;
 	    if (! ontologyFile.exists())
 	    {
-	        rootNode= service.getNetworkOntology();
+	        rootNode= service.getNetworkOntology(resricted);
 	        if ( rootNode != null) 
 	            writeOntology(ontologyFile,rootNode);
 	    }else{
@@ -96,7 +94,7 @@ public class BufferedService implements QueryService {
 	    return rootNode;
 	}
 	
-	private CroCoNode<NetworkHierachyNode> readOntology(File file) throws Exception
+	private CroCoNode<NetworkMetaInformation> readOntology(File file) throws Exception
 	{
 	    CroCoLogger.getLogger().info("Write ontology file:" + file);
 	    XStream xstream = new XStream();
@@ -105,12 +103,12 @@ public class BufferedService implements QueryService {
         
         ObjectInputStream in = xstream.createObjectInputStream(new InputStreamReader( new GZIPInputStream(new FileInputStream(file))));
         
-        CroCoNode<NetworkHierachyNode> obj = (CroCoNode<NetworkHierachyNode>)  in.readObject();
+        CroCoNode<NetworkMetaInformation> obj = (CroCoNode<NetworkMetaInformation>)  in.readObject();
 	
         in.close();
         return obj;
 	}
-	private void writeOntology(File file, CroCoNode<NetworkHierachyNode> node) throws Exception
+	private void writeOntology(File file, CroCoNode<NetworkMetaInformation> node) throws Exception
 	{
 	    CroCoLogger.getLogger().info("Read ontology from file:" + file);
 	    XStream xstream = new XStream();
@@ -175,7 +173,7 @@ public class BufferedService implements QueryService {
 		}
 		CroCoLogger.getLogger().debug(String.format("Read buffered output:%s",networkFile.getAbsoluteFile().toString()));
 		
-		return Network.getNetworkReader().setEdgeRepositoryStrategy(globalRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL).setNetworkFile(networkFile).setNetworkHierachyNode(service.getNetworkHierachyNode(groupId)).readNetwork();
+		return Network.getNetworkReader().setEdgeRepositoryStrategy(globalRepository?EdgeRepositoryStrategy.GLOBAL:EdgeRepositoryStrategy.LOCAL).setNetworkFile(networkFile).setNetworkMetaInformation(service.getNetworkMetaInformation(groupId)).readNetwork();
 		
 	}
 	/*
@@ -202,15 +200,15 @@ public class BufferedService implements QueryService {
 	}
 	*/
 	@Override
-	public List<NetworkHierachyNode> getNetworkHierachy() throws Exception {
-		return service.getNetworkHierachy();
+	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
+		return service.getNetworkMetaInformation();
 	}
 
 
 
 	@Override
-	public NetworkHierachyNode getNetworkHierachyNode(Integer groupId) throws Exception {
-		return this.service.getNetworkHierachyNode(groupId);
+	public NetworkMetaInformation getNetworkMetaInformation(Integer groupId) throws Exception {
+		return this.service.getNetworkMetaInformation(groupId);
 	}
 	
 

@@ -9,12 +9,11 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 
-
 import com.google.common.base.Joiner;
 
 import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter.CroCoOption;
 
 public class GenerateFactorList {
@@ -34,12 +33,12 @@ public class GenerateFactorList {
         PrintWriter pw = new PrintWriter(outFile);
         
         LocalService service = new LocalService();
-        List<NetworkHierachyNode> networks = service.getNetworkHierachy();
+        List<NetworkMetaInformation> networks = service.getNetworkMetaInformation();
         CroCoLogger.info("Generate factor stat for: %d networks",networks.size());
         PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement("SELECT distinct(gene1) FROM Network where group_id= ?");
         
         int k = 0;
-        for(NetworkHierachyNode network : networks)
+        for(NetworkMetaInformation network : networks)
         {
             CroCoLogger.info("Generate stat for: %d", network.getGroupId());
             stat.setInt(1, network.getGroupId());

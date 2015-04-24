@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
@@ -20,7 +20,7 @@ public class BindingEnrichedDirectedNetwork extends DirectedNetwork{
 	public BindingEnrichedDirectedNetwork(Network network){
 		super(network);
 	}
-	public BindingEnrichedDirectedNetwork(NetworkHierachyNode node, EdgeRepositoryStrategy globalRepository){
+	public BindingEnrichedDirectedNetwork(NetworkMetaInformation node, EdgeRepositoryStrategy globalRepository){
 		super(node,globalRepository);
 	}
 	public BindingEnrichedDirectedNetwork(String name, Integer taxId, EdgeRepositoryStrategy globalRepository) {

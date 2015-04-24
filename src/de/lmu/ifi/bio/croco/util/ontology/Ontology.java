@@ -9,14 +9,31 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.lmu.ifi.bio.croco.data.CroCoNode;
+import de.lmu.ifi.bio.croco.data.Identifiable;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
-import de.lmu.ifi.bio.croco.util.ontology.OboReader.OboElement;
+import de.lmu.ifi.bio.croco.util.ontology.Obo.OboElement;
 
 public class Ontology {
     
     
-
-    public static<E> void addObo( HashMap<OboElement,HashSet<E>> elementsToNetwork,CroCoNode<E> root , OboElement rootElement)
+    public static interface LabelExtraction
+    {
+        public String getName(OboElement element);
+    }
+    
+    static public class Name implements LabelExtraction
+    {
+        @Override
+        public String getName(OboElement element) {
+            return element.name;
+        }
+        
+    }
+    public static<E  extends Identifiable> void addObo( HashMap<OboElement,HashSet<E>> elementsToNetwork,CroCoNode<E> root , OboElement rootElement,boolean makeSlim)
+    {
+        addObo(elementsToNetwork,root,rootElement, new Name(),makeSlim);
+    }
+    public static<E  extends Identifiable> void addObo( HashMap<OboElement,HashSet<E>> elementsToNetwork,CroCoNode<E> root , OboElement rootElement,LabelExtraction nameExtraction, boolean makeSlim)
     {
         //propagate annotations
         LinkedList<CroCoNode<E>> par = new LinkedList<CroCoNode<E>>();
@@ -29,7 +46,6 @@ public class Ontology {
         while(!list.isEmpty())
         {
             OboElement top = list.removeFirst();
-            
             CroCoNode<E> nodeParent = par.removeFirst();
             boolean canBeProc = true;
             for(OboElement parent : top.parents)
@@ -37,19 +53,17 @@ public class Ontology {
                 if (! proc.contains(parent))
                     canBeProc= false;
             }
-            
             if ( !top.id.equals(rootElement.id) && !canBeProc)
             {
                 list.add(top);
                 par.add(nodeParent);
                 continue;
             }
-           
             List<OboElement> allChildren = top.getAllChildren();
             Set<E> networks = new HashSet<E>();
-            
             for(OboElement child : allChildren)
             {
+      
                 if (! elementsToNetwork.containsKey(child))
                     continue;
                 networks.addAll(elementsToNetwork.get(child));
@@ -57,11 +71,9 @@ public class Ontology {
             if ( networks.size() == 0)
                 continue;
             
-            String name = top.name;
-            name = name.substring(0, 1).toUpperCase() + name.substring(1);
-            
-            CroCoNode<E> node = new CroCoNode<E>(name,nodeParent,top.children.size()==0,networks);
-            
+            String name = nameExtraction.getName(top);//top.name;
+        
+            CroCoNode<E> node = new CroCoNode<E>(top.getId(),name,nodeParent,networks);
             proc.add(top);
             
             for(OboElement child : top.children)
@@ -71,14 +83,13 @@ public class Ontology {
             }
             
         }
-
-        
-        makeSlim(root);
+        if ( makeSlim)
+            makeSlim(root);
         
     }
-    public static<E> void makeSlim(CroCoNode<E> node)
+    public static<E extends Identifiable> void makeSlim(CroCoNode<E> node)
     {
-        CroCoLogger.getLogger().debug("Make slim");
+      //  CroCoLogger.getLogger().debug("Make slim");
         
         HashSet<CroCoNode<E>> p = new HashSet<CroCoNode<E>>();
         Stack<CroCoNode<E>> stack = new Stack<CroCoNode<E>>();
@@ -87,7 +98,6 @@ public class Ontology {
         while(!stack.isEmpty())
         {
             CroCoNode<E> top = stack.pop();
-            
             
             if ( p.contains(top))
                 continue;
@@ -98,15 +108,18 @@ public class Ontology {
             if ( top.getChildren() == null)
                 continue;
                 
-            if ( top.getChildren().size() == 1 && top != node )
+            if ( top.getChildren().size() == 1  && top != node)
             {
                 
-                CroCoNode<E> parent = top.getParent();
+                List<CroCoNode<E>> parents = top.getParent();
                 CroCoNode<E> child = top.getChildren().get(0);
                 
-                
-                parent.getChildren().remove(top);
-                child.setParent(parent);
+                for(CroCoNode<E> parent : parents)
+                {
+                    parent.getChildren().remove(top);
+                    child.setParent(parent);
+                    child.getParent().remove(top);
+                }
 
             }
             

@@ -1,35 +1,26 @@
 package de.lmu.ifi.bio.croco.processor.ontology;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -39,12 +30,10 @@ import com.google.common.io.Files;
 import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.data.Option;
-import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
-import de.lmu.ifi.bio.croco.network.Network.EdgeOption;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter;
 import de.lmu.ifi.bio.croco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
@@ -59,8 +48,8 @@ import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology;
 public class NetworkOntologyWriter  {
 	private static CroCoOption<File> TMP_DIR = new CroCoOption<File>("tmpDir",new ConsoleParameter.FileExistHandler()).isRequired().setArgs(1).setDescription("Gene name to ensembl mapping");
 	private static CroCoOption<Boolean> IMPORT_ONLY_HIERACHY = new CroCoOption<Boolean>("only_hir",new ConsoleParameter.FlagHandler()).setDescription("(Re)-import only the hierachy including the meta-data.");
-    
-
+	public static CroCoOption<File> ONTOLOGY_OUT = new CroCoOption<File>("ontology_out_file",new ConsoleParameter.FileHandler()).isRequired().setArgs(1).setDescription("OBO (croco-network) out-file");
+    public static CroCoOption<File> ONTOLOGY_MAPPING_OUT = new CroCoOption<File>("ontology_mapping_file",new ConsoleParameter.FileHandler()).isRequired().setArgs(1).setDescription("OBO (croco-network) mapping-out file");
 
 	/**
 	 * Imports a file based croco hierarchy into a SQL database.
@@ -72,7 +61,7 @@ public class NetworkOntologyWriter  {
 	    ConsoleParameter parameter = new ConsoleParameter();
 		parameter.register(
 				ConsoleParameter.repositoryDir,
-				TMP_DIR,IMPORT_ONLY_HIERACHY
+				TMP_DIR,IMPORT_ONLY_HIERACHY,ONTOLOGY_OUT
 		);
 		CommandLine cmdLine = parameter.parseCommandLine(args, NetworkOntologyWriter.class);
 		
@@ -93,7 +82,7 @@ public class NetworkOntologyWriter  {
         
 		Statement stat = connection.createStatement();
 		
-		stat.execute("DELETE FROM NetworkHierachy");
+		stat.execute("DELETE FROM NetworkMetaInformation");
 		stat.execute("DELETE FROM NetworkOption");
         
 		if ( !onlyHierachy)
@@ -138,8 +127,8 @@ public class NetworkOntologyWriter  {
 		CroCoLogger.getLogger().info("Create network ontology");
         NetworkOntology onto = new NetworkOntology();
         
-        CroCoNode root = onto.createNetworkOntology();
-        onto.persistNetworkOntology(root);
+        CroCoNode<NetworkMetaInformation> root = onto.createNetworkOntology();
+        onto.writeNetworkOntology(root,ONTOLOGY_OUT.getValue(cmdLine),ONTOLOGY_MAPPING_OUT.getValue(cmdLine));
 	}
 	
 	private static int getNextId(AtomicInteger nextId)
@@ -231,7 +220,7 @@ public class NetworkOntologyWriter  {
 
 	
 	static class NetworkProcessor implements CroCoRepositoryProcessor{
-		private PreparedStatement hierachy;
+		private PreparedStatement metaInfo;
 		private PreparedStatement networkOptions;
 		
 		private BufferedWriter bwNetwork;
@@ -253,7 +242,7 @@ public class NetworkOntologyWriter  {
 			
 			
 			this.connection = connection;
-			this.hierachy = connection.prepareStatement("INSERT INTO NetworkHierachy(group_id, name,tax_id,network_type,network_file_location,hash) values(?,?,?,?,?,?)");
+			this.metaInfo = connection.prepareStatement("INSERT INTO NetworkMetaInformation(group_id, name,tax_id,network_type,network_file_location,hash) values(?,?,?,?,?,?)");
 			
 			if ( networkFile != null)
 			    bwNetwork = new BufferedWriter(new FileWriter(networkFile));
@@ -358,7 +347,7 @@ public class NetworkOntologyWriter  {
 			CroCoLogger.getLogger().debug("Process:" + networkFile);
 			
 			if ( counter++ % 300 == 0){
-				hierachy.executeBatch();
+			    metaInfo.executeBatch();
 				networkOptions.executeBatch();
 			}
 			
@@ -366,13 +355,13 @@ public class NetworkOntologyWriter  {
 			
 			//Integer newRootId = groupIdCounter++;
 			HashMap<Option, String> infoAnnotations = Network.readInfoFile(infoFile);
-			hierachy.setInt( 1, networkId);
-			hierachy.setString(2, infoAnnotations.get(Option.NetworkName));
-			hierachy.setInt(3,Integer.valueOf(infoAnnotations.get(Option.TaxId)));
-			hierachy.setInt(4, NetworkType.valueOf(infoAnnotations.get(Option.NetworkType)).ordinal());
-			hierachy.setString(5,  networkFile.toString().replace(repositoryDir.toString(), "") );
+			metaInfo.setInt( 1, networkId);
+			metaInfo.setString(2, infoAnnotations.get(Option.NetworkName));
+			metaInfo.setInt(3,Integer.valueOf(infoAnnotations.get(Option.TaxId)));
+			metaInfo.setInt(4, NetworkType.valueOf(infoAnnotations.get(Option.NetworkType)).ordinal());
+			metaInfo.setString(5,  networkFile.toString().replace(repositoryDir.toString(), "") );
 			long hash= Files.hash(networkFile,   Hashing.crc32()).padToLong();
-			hierachy.setLong(6, hash);
+			metaInfo.setLong(6, hash);
 			
 			Network network = Network.getNetworkReader().setNetworkFile(networkFile).readNetwork();
             int edges = network.size();
@@ -400,7 +389,7 @@ public class NetworkOntologyWriter  {
 			    bwNetwork.flush();
 			if ( bwAnnotation != null)
 			    bwAnnotation.flush();
-			hierachy.addBatch();
+			metaInfo.addBatch();
 			
 			if ( this.bwNetwork != null)
 			    addtoNetwork(networkId,network);
@@ -423,8 +412,8 @@ public class NetworkOntologyWriter  {
 		    networkOptions.executeBatch();
 		    networkOptions.close();
 		    
-			hierachy.executeBatch();
-			hierachy.close();
+		    metaInfo.executeBatch();
+			metaInfo.close();
 			if ( bwNetwork != null)
 			{
     			bwNetwork.flush();

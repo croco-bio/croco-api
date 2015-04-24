@@ -4,11 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
-import de.lmu.ifi.bio.croco.data.NetworkHierachyNode;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
@@ -21,7 +20,7 @@ public class ReadNetworkTest {
 		ReadNetwork reader = new ReadNetwork();
 		reader.setInput(ReadNetwork.QueryService, service);
 		reader.setNetworkPathParameter("/OpenChromTFBS/Human/DNase/0.000001/JASPAR/K562/[replicate=2]");
-		System.out.println(reader.getParameter(ReadNetwork.NetworkHierachyNode).getGroupId());
+		System.out.println(reader.getParameter(ReadNetwork.NetworkMetaInformation).getGroupId());
 	}
 	*/
 	@Test
@@ -31,7 +30,7 @@ public class ReadNetworkTest {
 		
 		ReadNetwork reader = new ReadNetwork();
 		reader.setInput(ReadNetwork.QueryService, service);
-		reader.setInput(ReadNetwork.NetworkHierachyNode, new NetworkHierachyNode(2219,9606));
+		reader.setInput(ReadNetwork.NetworkMetaInformation,service.getNetworkMetaInformation(2219) );
 		
 		Network network = reader.operate();
 		assertTrue(network.size() > 0);
