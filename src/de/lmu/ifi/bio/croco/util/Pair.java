@@ -77,6 +77,9 @@ public class Pair<FIRST,SECOND> implements Tuple<FIRST,SECOND>, Comparable<Pair<
 		throw new UnsupportedOperationException();
 	}
 
+    public static<FIRST,SECOND> Pair<FIRST,SECOND> create(FIRST first, SECOND second) {
+            return new Pair<FIRST,SECOND> (first,second);
+    }
 
 	
 }
