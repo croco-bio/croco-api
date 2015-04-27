@@ -1,0 +1,4660 @@
+[Term]
+id: croco:135
+name: HPAF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:272
+name: HLH-30
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:188
+name: PBDEFetal
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:560
+name: High confidence
+is_a: croco:559 ! Transcription Factor Binding Site (TFBS) prediction
+
+[Term]
+id: croco:28
+name: Cerebrum
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000725
+name: hematopoietic stem cell
+is_a: BTO:0002666 ! adult stem cell
+
+[Term]
+id: BTO:0000782
+name: T-lymphocyte
+is_a: BTO:0000775 ! lymphocyte
+
+[Term]
+id: BTO:0002493
+name: CH12.LX cell
+is_a: BTO:0001518 ! B-lymphoma cell line
+
+[Term]
+id: croco:92
+name: GM20000
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000854
+name: zygote
+is_a: BTO:0000174 ! embryonic structure
+
+[Term]
+id: croco:146
+name: HVMF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001085
+name: vascular system
+is_a: BTO:0000088 ! cardiovascular system
+
+[Term]
+id: croco:149
+name: K562
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:230
+name: ZhBTc4
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:222
+name: Treg_Wb78495824
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:157
+name: Lung
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:377
+name: STAT1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:490
+name: TRL
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:465
+name: NHR-25
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:499
+name: HKB
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:651
+name: UniPROBE
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: croco:629
+name: Wei et al. 2010
+is_a: croco:620 ! High confidence
+
+[Term]
+id: croco:105
+name: HCM
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:658
+name: Jaspar 2014
+is_a: croco:654 ! High confidence
+
+[Term]
+id: croco:317
+name: FOSL2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:281
+name: ATF3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:195
+name: RPMI-7951
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:428
+name: FOXP2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:21
+name: Caco-2
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:662
+name: Wei et al. 2010
+is_a: croco:654 ! High confidence
+
+[Term]
+id: BTO:0001518
+name: B-lymphoma cell line
+is_a: BTO:0001586 ! lymphoid cell line
+
+[Term]
+id: croco:605
+name: Species filtered
+is_a: croco:603 ! Directed
+
+[Term]
+id: croco:306
+name: JUN
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001255
+name: skin fibroblast
+is_a: BTO:0001253 ! skin
+
+[Term]
+id: croco:294
+name: BR
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:94
+name: H1-neurons
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:308
+name: ZNF384
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:527
+name: INV
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:98
+name: HAc
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:664
+name: Jaspar 2014
+is_a: croco:655 ! Mid. confidence
+
+[Term]
+id: croco:372
+name: MBD4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:224
+name: U2OS
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:128
+name: HMVEC-dLy-Neo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:533
+name: E2F1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:253
+name: SMC3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:223
+name: Treg_Wb83319432
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0002580
+name: chronic myeloid leukemia cell line
+is_a: BTO:0000740 ! myeloid leukemia cell line
+
+[Term]
+id: croco:517
+name: GTF3C2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001086
+name: embryonic stem cell
+is_a: BTO:0000379 ! embryo
+
+[Term]
+id: croco:727
+name: DIFF_4d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:627
+name: UniPROBE
+is_a: croco:620 ! High confidence
+
+[Term]
+id: croco:399
+name: GTF2B
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:158
+name: Lung_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000839
+name: mesoderm
+is_a: BTO:0000556 ! germ layer
+
+[Term]
+id: croco:45
+name: FatPad
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:162
+name: Medullo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:root
+name: croco:root
+
+[Term]
+id: BTO:0000315
+name: ectoderm
+is_a: BTO:0000556 ! germ layer
+
+[Term]
+id: croco:86
+name: GM18951
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:478
+name: MAFK
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:152
+name: LgIntestine
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:154
+name: Limb
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:11
+name: B-cell_(CD19+)
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000439
+name: eye
+is_a: BTO:0000282 ! head
+
+[Term]
+id: croco:87
+name: GM19099
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:51
+name: ForelimbBud
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:174
+name: NHBE
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0002417
+name: helper T-lymphocyte
+is_a: BTO:0000782 ! T-lymphocyte
+
+[Term]
+id: croco:60
+name: GM08714
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:417
+name: CG16778
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:137
+name: HPF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000816
+name: breast cell line
+is_a: BTO:0000149 ! breast
+
+[Term]
+id: croco:575
+name: Wang et al. 2012
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: croco:453
+name: NHR-21
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:404
+name: NR3C1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:472
+name: SP4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:375
+name: NFYA
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:297
+name: GATAE
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:99
+name: HAEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:309
+name: JUND
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:362
+name: R02D3.7
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:340
+name: TCF12
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000759
+name: liver
+is_a: BTO:0001491 ! viscus
+
+[Term]
+id: croco:722
+name: diffProtD_14hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:78
+name: GM12891
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:47
+name: fHeart
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:35
+name: EPC_(CD117+_CD71+_TER119+)
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:716
+name: diffProtA_5d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:489
+name: MEF-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:625
+name: Jaspar 2014
+is_a: croco:620 ! High confidence
+
+[Term]
+id: croco:516
+name: FKH-10
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:104
+name: HCFaa
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:16
+name: BoneMarrow
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:498
+name: PQM-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:383
+name: FTZ-F1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:699
+name: White-prepupae-(WPP)
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:595
+name: Kherapour conf. 0.70
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:541
+name: UNC-62
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:261
+name: MYC
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:667
+name: Wang et al. 2012
+is_a: croco:655 ! Mid. confidence
+
+[Term]
+id: croco:348
+name: BAB1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:341
+name: EN
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:277
+name: ZC3H11A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:476
+name: MAFF
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:50
+name: fLung
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:4
+name: A549
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:529
+name: CBT
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:425
+name: GTF2F1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:364
+name: HR39
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:262
+name: MYB
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:549
+name: EXD
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:305
+name: ZNF143
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:257
+name: ELK4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:694
+name: Late-Embryonic-stage
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:279
+name: PHA-4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:237
+name: M. musculus
+is_a: croco:238 ! All species
+
+[Term]
+id: croco:103
+name: HCF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:6
+name: AG04450
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:380
+name: STAT3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000706
+name: large intestine
+is_a: BTO:0000511 ! gastrointestinal tract
+
+[Term]
+id: BTO:0001090
+name: mouth
+is_a: BTO:0000282 ! head
+
+[Term]
+id: croco:293
+name: AMA-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:175
+name: NHBE_RA
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000256
+name: myoblast cell line
+is_a: BTO:0000222 ! myoblast
+
+[Term]
+id: BTO:0001281
+name: spleen
+is_a: BTO:0001491 ! viscus
+
+[Term]
+id: croco:206
+name: Spleen
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:144
+name: HTR8svn
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001286
+name: skin cancer cell
+is_a: BTO:0001253 ! skin
+
+[Term]
+id: croco:552
+name: C16A3.4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:598
+name: Kherapour conf. 0.90
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: croco:486
+name: CHD2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:479
+name: ZIP-8
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:421
+name: CEH-30
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:585
+name: Kherapour conf. 0.20
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:159
+name: M059J
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:743
+name: Hypoxia_LacAcid
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0001020
+name: periodontal ligament
+is_a: BTO:0001090 ! mouth
+
+[Term]
+id: croco:118
+name: HGF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:368
+name: HSF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:119
+name: HindlimbBud
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:682
+name: Embryos-20-24-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: BTO:0000400
+name: sarcoma cell line
+is_a: BTO:0001103 ! skeletal muscle
+
+[Term]
+id: croco:83
+name: GM18505
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:345
+name: POU5F1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:302
+name: STAT5A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:246
+name: ATF2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:652
+name: Wang et al. 2012
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: croco:355
+name: DISCO
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:252
+name: GABPB1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:132
+name: HMVEC_LLy
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:49
+name: Fibroblast
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:690
+name: Larvae-L1-stage
+is_a: croco:669 ! Development stage
+
+[Term]
+id: BTO:0001103
+name: skeletal muscle
+is_a: BTO:0001486 ! skeletal system
+
+[Term]
+id: NCBITaxon:6239
+name: Caenorhabditis elegans
+is_a: NCBITaxon:1206794 ! Ecdysozoa
+
+[Term]
+id: croco:644
+name: UniPROBE
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:459
+name: UBX
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:378
+name: STAT2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:433
+name: CNC
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:506
+name: AHA-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000353
+name: lung cell line
+is_a: BTO:0000203 ! respiratory system
+
+[Term]
+id: croco:369
+name: ZFP384
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:556
+name: BRM
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000651
+name: small intestine
+is_a: BTO:0000511 ! gastrointestinal tract
+
+[Term]
+id: croco:200
+name: SK-N-SH
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:20
+name: C2C12
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:170
+name: MRT_G401
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000174
+name: embryonic structure
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:115
+name: HepG2
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:182
+name: OlfactBulb
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000988
+name: pancreas
+is_a: BTO:0001491 ! viscus
+
+[Term]
+id: croco:331
+name: BRCA1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:240
+name: Compendium
+is_a: croco:root ! croco:root
+
+[Term]
+id: croco:688
+name: Fed-L1-stage-larvae
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:228
+name: WholeBrain
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:226
+name: Urothelia
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:523
+name: SRF
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:424
+name: ZBTB33
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:427
+name: CEH-38
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:129
+name: HMVEC-dNeo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:692
+name: Larvae-L3-stage
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:15
+name: BMDM
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:53
+name: G1E
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001912
+name: breast adenocarcinoma cell line
+is_a: BTO:0000356 ! breast cancer cell line
+
+[Term]
+id: croco:381
+name: PAX-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:299
+name: ZBTB7A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:452
+name: GMEB-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:36
+name: EPC_(CD117+_CD71+_TER119-)
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000843
+name: megakaryocyte
+is_a: BTO:0001441 ! marrow cell
+
+[Term]
+id: croco:292
+name: GATA1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001035
+name: hematopoietic cell line
+is_a: BTO:0000574 ! hematopoietic cell
+
+[Term]
+id: BTO:0001614
+name: colorectal cell line
+is_a: BTO:0001613 ! colorectum
+
+[Term]
+id: croco:434
+name: NHR-116
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:319
+name: FOSL1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:571
+name: Combined set
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: croco:721
+name: diffProtC_48hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0001363
+name: testis
+is_a: BTO:0000082 ! male reproductive system
+
+[Term]
+id: croco:143
+name: HSMMtube
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:622
+name: Neph et. al
+is_a: croco:617 ! Digital Genomic Footprinting (DGF)
+
+[Term]
+id: croco:645
+name: Wang et al. 2012
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:409
+name: NHR-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:235
+name: D. melanogaster
+is_a: croco:238 ! All species
+
+[Term]
+id: croco:1
+name: 3134
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:239
+name: Bilateria
+is_a: croco:233 ! Species
+
+[Term]
+id: croco:726
+name: diffProtD_7hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:712
+name: DEX_50nM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:356
+name: DAF-12
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:315
+name: NR2F2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:236
+name: H. sapiens
+is_a: croco:238 ! All species
+
+[Term]
+id: croco:482
+name: JUN-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:167
+name: mG/ER
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:244
+name: ENCODE (ChIP)-Factor
+is_a: croco:root ! croco:root
+
+[Term]
+id: croco:624
+name: Combined set
+is_a: croco:620 ! High confidence
+
+[Term]
+id: BTO:0001424
+name: uterus
+is_a: BTO:0000083 ! female reproductive system
+
+[Term]
+id: BTO:0000136
+name: bronchoalveolar system
+is_a: BTO:0000203 ! respiratory system
+
+[Term]
+id: BTO:0001586
+name: lymphoid cell line
+is_a: BTO:0000753 ! lymphoid tissue
+
+[Term]
+id: croco:307
+name: ZNF263
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:276
+name: FOS-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:324
+name: RCOR2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:663
+name: Combined set
+is_a: croco:655 ! Mid. confidence
+
+[Term]
+id: croco:311
+name: BCL11A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:43
+name: ES-WW6
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001484
+name: nervous system
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:247
+name: SMARCB1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000203
+name: respiratory system
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: BTO:0000161
+name: lung fibroblast cell line
+is_a: BTO:0000452 ! fibroblast
+
+[Term]
+id: BTO:0000970
+name: osteosarcoma cell
+is_a: BTO:0001103 ! skeletal muscle
+
+[Term]
+id: BTO:0000608
+name: hepatoma cell
+is_a: BTO:0000414 ! epithelial cell
+
+[Term]
+id: croco:30
+name: CMK
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:492
+name: SIN3A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:328
+name: PRD
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:686
+name: Embryos-8-12-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: BTO:0001520
+name: umbilical vein endothelial cell line
+is_a: BTO:0001519 ! endothelial cell line
+
+[Term]
+id: croco:739
+name: EtOH_0.01pct
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:197
+name: SAEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:507
+name: SKN-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:125
+name: HMVEC-dBl-Ad
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001679
+name: Th2 cell
+is_a: BTO:0002417 ! helper T-lymphocyte
+
+[Term]
+id: BTO:0002241
+name: eyelid
+is_a: BTO:0000282 ! head
+
+[Term]
+id: croco:758
+name: UT189
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0001491
+name: viscus
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:446
+name: NHR-129
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:139
+name: HRE
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:602
+name: Text-Mining
+is_a: croco:558 ! Experimental technique
+
+[Term]
+id: croco:653
+name: Wei et al. 2010
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: BTO:0000416
+name: epithelium
+is_a: BTO:0000634 ! integument
+
+[Term]
+id: croco:510
+name: CREB1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:76
+name: GM12875
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000634
+name: integument
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:480
+name: TCF3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000573
+name: artery
+is_a: BTO:0001102 ! blood vessel
+
+[Term]
+id: croco:717
+name: diffProtA_9d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:219
+name: Thymus
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:25
+name: CD4+_Naive_Wb11970640
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:367
+name: CUX1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:207
+name: Spleen_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:267
+name: MEF2A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:416
+name: EP300
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:286
+name: D
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:468
+name: NEJ
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:117
+name: HFF-Myc
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:710
+name: DEX_100nM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:731
+name: EqS_2.0pct_5d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:618
+name: DNase I hypersensitive sites (DNase)
+is_a: croco:616 ! Open Chromatin (TFBS)
+
+[Term]
+id: croco:528
+name: SBB
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:338
+name: SREBF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:740
+name: EtOH_0.02pct
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:737
+name: Estradiol_ctrl_0hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:474
+name: BCL3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:313
+name: NFATC1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:337
+name: TEAD4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000135
+name: aorta
+is_a: BTO:0000573 ! artery
+
+[Term]
+id: croco:295
+name: SC
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:403
+name: PRDM1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000944
+name: NIH-3T3 cell
+is_a: BTO:0001958 ! embryonic fibroblast cell line
+
+[Term]
+id: croco:74
+name: GM12873
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:151
+name: Kidney_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:457
+name: KR
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:735
+name: Estradiol_10nM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:124
+name: HMVEC-dAd
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:310
+name: XRCC4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:494
+name: UBTF
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:410
+name: YY1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:467
+name: NR4A1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:241
+name: ENCODE
+is_a: croco:240 ! Compendium
+
+[Term]
+id: croco:80
+name: GM13976
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:548
+name: CTCFL
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:512
+name: IRF4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:39
+name: Erythrobl
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:414
+name: GSB-N
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000082
+name: male reproductive system
+is_a: BTO:0000081 ! reproductive system
+
+[Term]
+id: BTO:0000414
+name: epithelial cell
+is_a: BTO:0000416 ! epithelium
+
+[Term]
+id: croco:747
+name: IFNg30
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0002441
+name: pericyte
+is_a: BTO:0001085 ! vascular system
+
+[Term]
+id: croco:447
+name: ZKSCAN1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:350
+name: ZEB1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:687
+name: Embryos-8-16-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: BTO:0000404
+name: epidermis
+is_a: BTO:0001253 ! skin
+
+[Term]
+id: croco:314
+name: RUN
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:77
+name: GM12878
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:755
+name: serum_starved_media
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:632
+name: Jaspar 2014
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: croco:63
+name: GM10847
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:349
+name: KAT2A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000519
+name: gingiva
+is_a: BTO:0001090 ! mouth
+
+[Term]
+id: croco:127
+name: HMVEC-dLy-Ad
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:89
+name: GM19238
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:395
+name: NHR-10
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000570
+name: hematopoietic system
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:736
+name: Estradiol_10nM_30m
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0001421
+name: uterine cervix
+is_a: BTO:0001424 ! uterus
+
+[Term]
+id: croco:268
+name: MEF2C
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:180
+name: NIH-3T3
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:67
+name: GM12866
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:616
+name: Open Chromatin (TFBS)
+is_a: croco:558 ! Experimental technique
+
+[Term]
+id: croco:526
+name: NR2C2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:205
+name: SmIntestine
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:250
+name: LIN-15B
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:225
+name: U87
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:757
+name: TNFa
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:637
+name: High confidence
+is_a: croco:618 ! DNase I hypersensitive sites (DNase)
+
+[Term]
+id: croco:481
+name: EOR-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0002768
+name: mammary epithelial cell line
+is_a: BTO:0000816 ! breast cell line
+
+[Term]
+id: croco:545
+name: ZTF-7
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001486
+name: skeletal system
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:621
+name: Mid. confidence
+is_a: croco:617 ! Digital Genomic Footprinting (DGF)
+
+[Term]
+id: croco:3
+name: A20
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:597
+name: Kherapour conf. 0.80
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: BTO:0000740
+name: myeloid leukemia cell line
+is_a: BTO:0001035 ! hematopoietic cell line
+
+[Term]
+id: croco:675
+name: Embryos-0-12-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: BTO:0001619
+name: skin fibroblast cell line
+is_a: BTO:0000452 ! fibroblast
+
+[Term]
+id: croco:166
+name: Mesoderm
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:483
+name: NFE2L2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:750
+name: insulin
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:165
+name: MEL
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:700
+name: White-prepupae-(WPP)+12-hrs
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:213
+name: Th1_Wb33676984
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:172
+name: NB4
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000938
+name: neuron
+is_a: BTO:0001484 ! nervous system
+
+[Term]
+id: croco:609
+name: Database
+is_a: croco:558 ! Experimental technique
+
+[Term]
+id: croco:543
+name: NHR-6
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:557
+name: TAF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001760
+name: myotube
+is_a: BTO:0000222 ! myoblast
+
+[Term]
+id: croco:229
+name: WI-38
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:572
+name: Jaspar 2014
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: croco:542
+name: ARID3A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:391
+name: NHR-12
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:109
+name: HeadlessEmbryo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:725
+name: diffProtD_3hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0000669
+name: embryonic cell line
+is_a: BTO:0000379 ! embryo
+
+[Term]
+id: croco:300
+name: DPY-27
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:116
+name: HFF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:462
+name: NHR-28
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:520
+name: NHR-76
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:220
+name: TReg
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:393
+name: ELT-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:145
+name: HUVEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:746
+name: IFNa6h
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0003091
+name: urogenital system
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:441
+name: KNI
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:19
+name: bone_marrow_MSC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:46
+name: fBrain
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:258
+name: JUMU
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:567
+name: UniPROBE
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:385
+name: HPL-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:704
+name: 4OHTAM_1uM_12hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:38
+name: EPC_(CD117-_CD71+_TER119+)
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001883
+name: acute myeloid leukemia cell line
+is_a: BTO:0000740 ! myeloid leukemia cell line
+
+[Term]
+id: croco:633
+name: Transfac v9.3
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: croco:278
+name: RFX5
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:290
+name: GATA3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:491
+name: SEM-4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000183
+name: pancreatic cell line
+is_a: BTO:0000988 ! pancreas
+
+[Term]
+id: croco:683
+name: Embryos-3-8-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:654
+name: High confidence
+is_a: croco:619 ! Formaldehyde-Assisted Isolation of Regulatory Elements (FAIRE)
+
+[Term]
+id: croco:387
+name: ZNF217
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:40
+name: ES-Bruce4
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:603
+name: Directed
+is_a: croco:602 ! Text-Mining
+
+[Term]
+id: croco:674
+name: Embryos
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:392
+name: CHINMO
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:693
+name: Larvae-L4-stage
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:271
+name: EBF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:283
+name: ZNF274
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:753
+name: OHUrea
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:101
+name: HBVP
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:275
+name: THAP1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:607
+name: Species filtered
+is_a: croco:604 ! Undirected
+
+[Term]
+id: croco:269
+name: SMARCC1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000772
+name: lymphoblast
+is_a: BTO:0000775 ! lymphocyte
+
+[Term]
+id: croco:111
+name: HEEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:672
+name: Adult-Male
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:642
+name: Jaspar 2014
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:581
+name: Kherapour conf. 0.00
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: BTO:0000574
+name: hematopoietic cell
+is_a: BTO:0000089 ! blood
+
+[Term]
+id: croco:511
+name: IRF3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:454
+name: TFAP2C
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:464
+name: NFKB1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:365
+name: BCLAF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:131
+name: HMVEC-LLy
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000255
+name: brain cell line
+is_a: BTO:0000142 ! brain
+
+[Term]
+id: croco:110
+name: Heart
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:376
+name: NFYB
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:357
+name: HTH
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:402
+name: CEH-26
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:558
+name: Experimental technique
+is_a: croco:root ! croco:root
+
+[Term]
+id: BTO:0000975
+name: ovary
+is_a: BTO:0000083 ! female reproductive system
+
+[Term]
+id: croco:742
+name: Genistein_100nM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:701
+name: Young-adult
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:203
+name: SkMuscle
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:423
+name: WRNIP1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:640
+name: Chen et al. 2008
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:245
+name: ATF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000081
+name: reproductive system
+is_a: BTO:0003091 ! urogenital system
+
+[Term]
+id: BTO:0000421
+name: connective tissue
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:248
+name: SPI1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:630
+name: Chen et al. 2008
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: croco:413
+name: CG8478
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0003122
+name: microvascular endothelium
+is_a: BTO:0000393 ! endothelium
+
+[Term]
+id: croco:714
+name: diffProtA_14d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:148
+name: Jurkat
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:407
+name: MAB-5
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000562
+name: heart
+is_a: BTO:0000088 ! cardiovascular system
+
+[Term]
+id: croco:218
+name: THelper-Activated
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:559
+name: Transcription Factor Binding Site (TFBS) prediction
+is_a: croco:558 ! Experimental technique
+
+[Term]
+id: croco:95
+name: H7-hESC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:591
+name: Kherapour conf. 0.50
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:274
+name: HCFC1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000356
+name: breast cancer cell line
+is_a: BTO:0000816 ! breast cell line
+
+[Term]
+id: croco:500
+name: BON
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:150
+name: Kidney
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:617
+name: Digital Genomic Footprinting (DGF)
+is_a: croco:616 ! Open Chromatin (TFBS)
+
+[Term]
+id: croco:183
+name: PANC-1
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:48
+name: Fibrobl
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:728
+name: DMSO_0.02pct
+is_a: croco:703 ! Treatment
+
+[Term]
+id: NCBITaxon:9606
+name: Homo sapiens
+is_a: NCBITaxon:117571 ! Euteleostomi
+
+[Term]
+id: croco:100
+name: HBMEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:280
+name: TGO
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:521
+name: NHR-77
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:415
+name: HP1B
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:238
+name: All species
+is_a: croco:233 ! Species
+
+[Term]
+id: croco:673
+name: Early-Embryos
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:184
+name: Pancreas_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000473
+name: fetal membrane
+is_a: BTO:0000449 ! fetus
+
+[Term]
+id: croco:289
+name: H
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:178
+name: NHEK
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:578
+name: Promoter 500.
+is_a: croco:577 ! Kherapour et al.
+
+[Term]
+id: croco:620
+name: High confidence
+is_a: croco:617 ! Digital Genomic Footprinting (DGF)
+
+[Term]
+id: croco:470
+name: SP2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:386
+name: NFIC
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:394
+name: MEP-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001613
+name: colorectum
+is_a: BTO:0000511 ! gastrointestinal tract
+
+[Term]
+id: croco:544
+name: USF2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:234
+name: C. elegans
+is_a: croco:238 ! All species
+
+[Term]
+id: croco:502
+name: MDL-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000452
+name: fibroblast
+is_a: BTO:0000421 ! connective tissue
+
+[Term]
+id: croco:347
+name: PSQ
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:31
+name: Colon_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:678
+name: Embryos-12-16-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:730
+name: EqS_2.0pct_24hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:724
+name: diffProtD_30hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:615
+name: Chromatin Immunoprecipitation (ChIP)
+is_a: croco:558 ! Experimental technique
+
+[Term]
+id: croco:359
+name: EGL-27
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:612
+name: ORegAnno
+is_a: croco:609 ! Database
+
+[Term]
+id: croco:301
+name: CTBP
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:601
+name: Kherapour conf. 1.00
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: NCBITaxon:7227
+name: Drosophila melanogaster
+is_a: NCBITaxon:1206794 ! Ecdysozoa
+
+[Term]
+id: BTO:0000146
+name: brain stem
+is_a: BTO:0000142 ! brain
+
+[Term]
+id: croco:122
+name: HMEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:232
+name: Tissue
+is_a: croco:0 ! Tissue/Cell-line
+
+[Term]
+id: croco:668
+name: Wei et al. 2010
+is_a: croco:655 ! Mid. confidence
+
+[Term]
+id: croco:522
+name: CEBPD
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:484
+name: TREM
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:322
+name: NANOG
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000553
+name: peripheral blood
+is_a: BTO:0000089 ! blood
+
+[Term]
+id: croco:696
+name: Late-Embryos
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:614
+name: Biocarta
+is_a: croco:609 ! Database
+
+[Term]
+id: croco:389
+name: FER3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001958
+name: embryonic fibroblast cell line
+is_a: BTO:0000669 ! embryonic cell line
+
+[Term]
+id: croco:422
+name: LIN-13
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:142
+name: HSMM
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:285
+name: CTBP2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001939
+name: MCF-10A cell
+is_a: BTO:0002768 ! mammary epithelial cell line
+
+[Term]
+id: croco:287
+name: CES-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:419
+name: BLMP-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000739
+name: lymphoblastic leukemia cell line
+is_a: BTO:0000772 ! lymphoblast
+
+[Term]
+id: BTO:0000889
+name: Burkitt lymphoma cell line
+is_a: BTO:0001586 ! lymphoid cell line
+
+[Term]
+id: croco:550
+name: REST
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:82
+name: GM15510
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:745
+name: IFNa4h
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:201
+name: SK-N-SH_RA
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:525
+name: HDAC8
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000511
+name: gastrointestinal tract
+is_a: BTO:0000058 ! alimentary canal
+
+[Term]
+id: BTO:0000142
+name: brain
+is_a: BTO:0000282 ! head
+
+[Term]
+id: croco:681
+name: Embryos-16-24-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:54
+name: G1E-ER4
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:650
+name: Transfac v9.3
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: BTO:0000846
+name: erythroleukemia cell line
+is_a: BTO:0001035 ! hematopoietic cell line
+
+[Term]
+id: NCBITaxon:117571
+name: Euteleostomi
+is_a: NCBITaxon:1 ! root
+is_a: croco:239 ! Bilateria
+
+[Term]
+id: croco:112
+name: HEK293
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:708
+name: androgen
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:41
+name: ES-CJ7
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:66
+name: GM12865
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:342
+name: SIRT6
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:719
+name: diffProtB_6hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:590
+name: Kherapour conf. 0.50
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: croco:91
+name: GM19240
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:461
+name: ESR1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:256
+name: MED-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001433
+name: mononuclear phagocyte
+is_a: BTO:0001441 ! marrow cell
+
+[Term]
+id: croco:420
+name: LIN-11
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:442
+name: MAZ
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:431
+name: MML-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0004475
+name: MEL cell
+is_a: BTO:0000846 ! erythroleukemia cell line
+
+[Term]
+id: croco:370
+name: ALR-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:5
+name: AG04449
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0002254
+name: vas efferens
+is_a: BTO:0000082 ! male reproductive system
+
+[Term]
+id: croco:538
+name: NHR-67
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:497
+name: SNR1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:665
+name: Transfac v9.3
+is_a: croco:655 ! Mid. confidence
+
+[Term]
+id: croco:343
+name: FOS
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:638
+name: Mid. confidence
+is_a: croco:618 ! DNase I hypersensitive sites (DNase)
+
+[Term]
+id: croco:231
+name: All tissue/cell-lines
+is_a: croco:0 ! Tissue/Cell-line
+
+[Term]
+id: BTO:0000088
+name: cardiovascular system
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:741
+name: forskolin
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:344
+name: PAX5
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:582
+name: Kherapour conf. 0.10
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: croco:626
+name: Transfac v9.3
+is_a: croco:620 ! High confidence
+
+[Term]
+id: croco:659
+name: Transfac v9.3
+is_a: croco:654 ! High confidence
+
+[Term]
+id: BTO:0000227
+name: central nervous system
+is_a: BTO:0001484 ! nervous system
+
+[Term]
+id: croco:147
+name: IMR90
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:748
+name: IFNg4h
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:534
+name: E2F4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:360
+name: DLL
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:504
+name: SMA-9
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:371
+name: SUZ12
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:179
+name: NHLF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:352
+name: ZAG-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:24
+name: CD34+_Mobilized
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0003741
+name: T-47 cell
+is_a: BTO:0000356 ! breast cancer cell line
+
+[Term]
+id: BTO:0000680
+name: kidney cancer cell
+is_a: BTO:0003092 ! urinary system
+
+[Term]
+id: croco:475
+name: BHLHE40
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:185
+name: PanIslets
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:754
+name: pravastatin
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:684
+name: Embryos-4-8-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:460
+name: POU2F2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:22
+name: CD20+
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:563
+name: Chen et al. 2008
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:720
+name: diffProtC_24hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:729
+name: DMSO_2.0pct
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:570
+name: Chen et al. 2008
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: BTO:0000449
+name: fetus
+is_a: BTO:0000174 ! embryonic structure
+
+[Term]
+id: croco:171
+name: MRT_TTC549
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:530
+name: POLR2A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000775
+name: lymphocyte
+is_a: BTO:0000753 ! lymphoid tissue
+
+[Term]
+id: croco:408
+name: F23B12.7
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:173
+name: NH-A
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:10
+name: AoAF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:282
+name: SAX-3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:192
+name: Raji
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:466
+name: ZIP-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000650
+name: endocrine pancreas
+is_a: BTO:0000988 ! pancreas
+
+[Term]
+id: croco:573
+name: Transfac v9.3
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: croco:426
+name: HR46
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:661
+name: Wang et al. 2012
+is_a: croco:654 ! High confidence
+
+[Term]
+id: croco:592
+name: Kherapour conf. 0.60
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: BTO:0000766
+name: blood vessel endothelium
+is_a: BTO:0001102 ! blood vessel
+
+[Term]
+id: croco:444
+name: HR78
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:270
+name: SMARCC2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:715
+name: diffProtA_2d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:634
+name: UniPROBE
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: BTO:0000379
+name: embryo
+is_a: BTO:0000174 ! embryonic structure
+
+[Term]
+id: BTO:0001422
+name: uterine endometrium
+is_a: BTO:0001424 ! uterus
+
+[Term]
+id: croco:9
+name: AG10803
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:90
+name: GM19239
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:316
+name: FLI1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:358
+name: TLP-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0002666
+name: adult stem cell
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:351
+name: TAL1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001242
+name: fetal cell line
+is_a: BTO:0000449 ! fetus
+
+[Term]
+id: NCBITaxon:10090
+name: Mus musculus
+is_a: NCBITaxon:117571 ! Euteleostomi
+
+[Term]
+id: croco:608
+name: Species unfiltered
+is_a: croco:604 ! Undirected
+
+[Term]
+id: croco:586
+name: Kherapour conf. 0.30
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: BTO:0002178
+name: HMEpC cell
+is_a: BTO:0002768 ! mammary epithelial cell line
+
+[Term]
+id: croco:181
+name: NT2-D1
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:738
+name: estrogen
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:734
+name: Estradiol_100nM_1hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0001263
+name: Friend erythroleukemia cell line
+is_a: BTO:0000846 ! erythroleukemia cell line
+
+[Term]
+id: croco:304
+name: NFE2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:265
+name: SUPT20H
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:564
+name: Combined set
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:695
+name: Late-Embryonic-stage-4.5-hrs-post-early-Embryos
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:71
+name: GM12870
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001539
+name: parenchyma
+is_a: BTO:0001491 ! viscus
+
+[Term]
+id: croco:496
+name: UNC-130
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:202
+name: SKMC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:186
+name: Patski
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:756
+name: serum_stimulated_media
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:138
+name: HRCEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001340
+name: bronchus
+is_a: BTO:0000136 ! bronchoalveolar system
+
+[Term]
+id: croco:569
+name: Wei et al. 2010
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:160
+name: MCF-7
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:451
+name: F16B12.6
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001519
+name: endothelial cell line
+is_a: BTO:0001120 ! epithelial cell line
+
+[Term]
+id: croco:27
+name: Cerebellum
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:164
+name: Megakaryo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:513
+name: IRF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:363
+name: STAT92E
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:209
+name: T-Naive
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:69
+name: GM12868
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000778
+name: pulmonary artery
+is_a: BTO:0000573 ! artery
+
+[Term]
+id: croco:759
+name: vehicle
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:374
+name: BRF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:509
+name: ELF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:79
+name: GM12892
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000524
+name: glia
+is_a: BTO:0000227 ! central nervous system
+
+[Term]
+id: croco:75
+name: GM12874
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:587
+name: Kherapour conf. 0.30
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:540
+name: ZTF-4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:406
+name: HAM-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:191
+name: ProgFib
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:519
+name: HDAC2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:647
+name: Chen et al. 2008
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: croco:495
+name: MYBL2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:14
+name: BJ
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000059
+name: renal epithelium
+is_a: BTO:0003092 ! urinary system
+
+[Term]
+id: croco:432
+name: TBL1XR1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:401
+name: FRU
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0002489
+name: promyelocytic leukemia cell line
+is_a: BTO:0001035 ! hematopoietic cell line
+
+[Term]
+id: croco:648
+name: Combined set
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: croco:405
+name: ETS1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:32
+name: Cortex
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:211
+name: Th1
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000690
+name: brain cancer cell line
+is_a: BTO:0000255 ! brain cell line
+
+[Term]
+id: croco:123
+name: HMF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:671
+name: Adult-Female-3-days
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:329
+name: HNF4G
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:318
+name: SMARCA4
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:284
+name: CEH-82
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:18
+name: bone_marrow_HS5
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:390
+name: FOXA1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:485
+name: SU(VAR)3-9
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:471
+name: SP1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000723
+name: lens
+is_a: BTO:0000439 ! eye
+
+[Term]
+id: BTO:0000149
+name: breast
+is_a: BTO:0001493 ! trunk
+
+[Term]
+id: croco:636
+name: Wei et al. 2010
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: BTO:0001492
+name: limb
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:193
+name: RCC_7860
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:600
+name: Kherapour conf. 1.00
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: BTO:0001120
+name: epithelial cell line
+is_a: BTO:0000416 ! epithelium
+
+[Term]
+id: BTO:0001175
+name: retina
+is_a: BTO:0000439 ! eye
+
+[Term]
+id: BTO:0001930
+name: A20 cell
+is_a: BTO:0001518 ! B-lymphoma cell line
+
+[Term]
+id: BTO:0001374
+name: thymus
+is_a: BTO:0001493 ! trunk
+
+[Term]
+id: croco:177
+name: NHDF-neo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:749
+name: IFNg6h
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:469
+name: USP
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:215
+name: Th2
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:501
+name: TBP
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:493
+name: SIX5
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:353
+name: DAF-16
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:477
+name: NFYA-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:163
+name: MEF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:703
+name: Treatment
+is_a: croco:root ! croco:root
+
+[Term]
+id: croco:61
+name: GM10248
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:58
+name: GM04504
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001253
+name: skin
+is_a: BTO:0000634 ! integument
+
+[Term]
+id: croco:396
+name: CCNT2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:346
+name: SREBF2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:473
+name: YKI
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:251
+name: IKZF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:589
+name: Kherapour conf. 0.40
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:723
+name: diffProtD_24hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:440
+name: MAX
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:547
+name: USF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:121
+name: HL-60
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:536
+name: MTA3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:114
+name: HeLa-S3
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:0
+name: Tissue/Cell-line
+is_a: croco:root ! croco:root
+
+[Term]
+id: croco:37
+name: EPC_(CD117+_CD71-_TER119-)
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:565
+name: Jaspar 2014
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:593
+name: Kherapour conf. 0.60
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:260
+name: ZMIZ1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:604
+name: Undirected
+is_a: croco:602 ! Text-Mining
+
+[Term]
+id: BTO:0000579
+name: eye cancer cell
+is_a: BTO:0000439 ! eye
+
+[Term]
+id: croco:508
+name: SENS
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:443
+name: EIP74EF
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:397
+name: ELT-3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:34
+name: Endometrium_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:266
+name: JUNB
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:56
+name: Gliobla
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:531
+name: PEB-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000269
+name: colon
+is_a: BTO:0001613 ! colorectum
+
+[Term]
+id: croco:33
+name: ECC-1
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:561
+name: Mid. confidence
+is_a: croco:559 ! Transcription Factor Binding Site (TFBS) prediction
+
+[Term]
+id: BTO:0000058
+name: alimentary canal
+is_a: BTO:0001491 ! viscus
+
+[Term]
+id: croco:574
+name: UniPROBE
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: croco:59
+name: GM06990
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:133
+name: HNPCEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:524
+name: TTK
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:97
+name: HA-sp
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:666
+name: UniPROBE
+is_a: croco:655 ! Mid. confidence
+
+[Term]
+id: croco:198
+name: SH-SY5Y
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:204
+name: Small_intestine_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:706
+name: 4OHTAM_1uM_4hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0001487
+name: adipose tissue
+is_a: BTO:0000421 ! connective tissue
+
+[Term]
+id: croco:199
+name: SK-N-MC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:450
+name: TFAP2A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:141
+name: HRPEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:263
+name: C34F6.9
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0002733
+name: embryonic kidney cell line
+is_a: BTO:0000669 ! embryonic cell line
+
+[Term]
+id: croco:189
+name: PFSK-1
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:398
+name: NHR-11
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:643
+name: Transfac v9.3
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:168
+name: Monocytes-CD14+_RO01746
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:429
+name: CEH-39
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000817
+name: mammary gland
+is_a: BTO:0000149 ! breast
+
+[Term]
+id: croco:514
+name: MYOD1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:321
+name: ZZZ3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:677
+name: Embryos-0-8-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:320
+name: HLH-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:680
+name: Embryos-16-20-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:96
+name: HA-h
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:456
+name: CBX3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:64
+name: GM12801
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:535
+name: E2F6
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:503
+name: PES-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:676
+name: Embryos-0-4-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:298
+name: PPARGC1A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:194
+name: Retina
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001973
+name: vascular endothelial cell line
+is_a: BTO:0001519 ! endothelial cell line
+
+[Term]
+id: croco:107
+name: HCPEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:17
+name: bone_marrow_HS27a
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:273
+name: RUNX3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001442
+name: brain ventricle
+is_a: BTO:0000142 ! brain
+
+[Term]
+id: croco:418
+name: HMGN3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:106
+name: HConF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:588
+name: Kherapour conf. 0.40
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: BTO:0003092
+name: urinary system
+is_a: BTO:0003091 ! urogenital system
+
+[Term]
+id: BTO:0000753
+name: lymphoid tissue
+is_a: BTO:0000570 ! hematopoietic system
+
+[Term]
+id: croco:55
+name: GenitalFatPad
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:2
+name: 416B
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:596
+name: Kherapour conf. 0.80
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: BTO:0001245
+name: bronchoalveolar stem cell
+is_a: BTO:0002666 ! adult stem cell
+
+[Term]
+id: croco:554
+name: TAF7
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:81
+name: GM13977
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000294
+name: dermis
+is_a: BTO:0001253 ! skin
+
+[Term]
+id: croco:458
+name: CEH-14
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:312
+name: PBX3
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:176
+name: NHDF-Ad
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:214
+name: Th1_Wb54553204
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:336
+name: MYOG
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:718
+name: diffProtB_24hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0000089
+name: blood
+is_a: BTO:0000570 ! hematopoietic system
+
+[Term]
+id: croco:606
+name: Species unfiltered
+is_a: croco:603 ! Directed
+
+[Term]
+id: croco:439
+name: SPTF-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:732
+name: EqS_2.0pct_60hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:255
+name: ELK1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001639
+name: bud
+is_a: BTO:0000379 ! embryo
+
+[Term]
+id: croco:254
+name: BACH1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:88
+name: GM19193
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000776
+name: B-lymphocyte
+is_a: BTO:0000775 ! lymphocyte
+
+[Term]
+id: croco:140
+name: HRGEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:210
+name: Testis
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:505
+name: CAD
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:628
+name: Wang et al. 2012
+is_a: croco:620 ! High confidence
+
+[Term]
+id: croco:8
+name: AG09319
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000083
+name: female reproductive system
+is_a: BTO:0000081 ! reproductive system
+
+[Term]
+id: croco:361
+name: GRO
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:23
+name: CD20+_RO01778
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:62
+name: GM10266
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:44
+name: ES-WW6_F1KO
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0005046
+name: LHCN-M2 cell
+is_a: BTO:0000256 ! myoblast cell line
+
+[Term]
+id: BTO:0001854
+name: vascular endothelial cell
+is_a: BTO:0000393 ! endothelium
+
+[Term]
+id: croco:29
+name: CH12
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0001678
+name: Th1 cell
+is_a: BTO:0002417 ! helper T-lymphocyte
+
+[Term]
+id: BTO:0002062
+name: B-lymphoblastoid cell line
+is_a: BTO:0000772 ! lymphoblast
+
+[Term]
+id: croco:339
+name: SEA-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:26
+name: CD4+_Naive_Wb78495824
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:242
+name: modENCODE
+is_a: croco:240 ! Compendium
+
+[Term]
+id: croco:448
+name: ESRRA
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:649
+name: Jaspar 2014
+is_a: croco:638 ! Mid. confidence
+
+[Term]
+id: croco:641
+name: Combined set
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:584
+name: Kherapour conf. 0.20
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: croco:379
+name: LIN-35
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000165
+name: C2C12 cell
+is_a: BTO:0000256 ! myoblast cell line
+
+[Term]
+id: croco:463
+name: CEH-16
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:751
+name: MNaseD
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:707
+name: 4OHTAM_20nM_72hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:73
+name: GM12872
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:70
+name: GM12869
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:611
+name: REDfly
+is_a: croco:609 ! Database
+
+[Term]
+id: croco:539
+name: TCF7L2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:332
+name: CTCF
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:449
+name: NHR-23
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0002398
+name: prostate epithelium cell line
+is_a: BTO:0001120 ! epithelial cell line
+
+[Term]
+id: croco:445
+name: NRF1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:594
+name: Kherapour conf. 0.70
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: croco:488
+name: CHD1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000653
+name: iris
+is_a: BTO:0000439 ! eye
+
+[Term]
+id: croco:436
+name: ZFH1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:85
+name: GM18526
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:57
+name: GM04503
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:373
+name: BRF2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:515
+name: BDP1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000959
+name: esophagus
+is_a: BTO:0000058 ! alimentary canal
+
+[Term]
+id: croco:153
+name: LHCN-M2
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:400
+name: DPL-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:221
+name: TReg-Activated
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:670
+name: Adult-Female
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:579
+name: Promoter 2000.
+is_a: croco:577 ! Kherapour et al.
+
+[Term]
+id: BTO:0001102
+name: blood vessel
+is_a: BTO:0001085 ! vascular system
+
+[Term]
+id: croco:635
+name: Wang et al. 2012
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: NCBITaxon:1206794
+name: Ecdysozoa
+is_a: NCBITaxon:1 ! root
+is_a: croco:239 ! Bilateria
+
+[Term]
+id: croco:217
+name: Th2_Wb54553204
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:631
+name: Combined set
+is_a: croco:621 ! Mid. confidence
+
+[Term]
+id: croco:136
+name: HPdLF
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:187
+name: PBDE
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000497
+name: ganglion
+is_a: BTO:0001484 ! nervous system
+
+[Term]
+id: croco:657
+name: Combined set
+is_a: croco:654 ! High confidence
+
+[Term]
+id: BTO:0000924
+name: nephron
+is_a: BTO:0003092 ! urinary system
+
+[Term]
+id: croco:327
+name: RPC-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:84
+name: GM18507
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:583
+name: Kherapour conf. 0.10
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: croco:537
+name: SU(H)
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:669
+name: Development stage
+is_a: croco:root ! croco:root
+
+[Term]
+id: croco:551
+name: UNC-55
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:438
+name: EFL-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0000141
+name: bone marrow
+is_a: BTO:0001486 ! skeletal system
+
+[Term]
+id: croco:130
+name: HMVEC-LBl
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:155
+name: Liver
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:430
+name: DVE-1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:546
+name: PML
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001571
+name: erythroblast
+is_a: BTO:0001441 ! marrow cell
+
+[Term]
+id: BTO:0000222
+name: myoblast
+is_a: BTO:0000379 ! embryo
+
+[Term]
+id: croco:411
+name: GEI-11
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:249
+name: ALY-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:711
+name: DEX_500pM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:384
+name: FKH-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:382
+name: BATF
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:702
+name: Young-adult-Day-4
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:487
+name: FOXM1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:455
+name: KN
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:330
+name: DM
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:689
+name: L4-Young-Adult-larvae
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:437
+name: UNC-39
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0002021
+name: prostate adenocarcinoma cell
+is_a: BTO:0000414 ! epithelial cell
+
+[Term]
+id: croco:599
+name: Kherapour conf. 0.90
+is_a: croco:579 ! Promoter 2000.
+
+[Term]
+id: BTO:0000478
+name: forebrain
+is_a: BTO:0000142 ! brain
+
+[Term]
+id: croco:65
+name: GM12864
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:713
+name: DEX_5nM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:326
+name: LSY-2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:333
+name: HNF4A
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:553
+name: POLR3G
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:113
+name: HEK293-T-REx
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000764
+name: lung fibroblast
+is_a: BTO:0000203 ! respiratory system
+
+[Term]
+id: croco:120
+name: HIPEpiC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0003248
+name: brain endothelium
+is_a: BTO:0000142 ! brain
+
+[Term]
+id: croco:208
+name: T-47D
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:334
+name: LIN-39
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:7
+name: AG09309
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:126
+name: HMVEC-dBl-Neo
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:42
+name: ES-E14
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:623
+name: Chen et al. 2008
+is_a: croco:620 ! High confidence
+
+[Term]
+id: BTO:0000393
+name: endothelium
+is_a: BTO:0000416 ! epithelium
+
+[Term]
+id: BTO:0002572
+name: MEF cell
+is_a: BTO:0001958 ! embryonic fibroblast cell line
+
+[Term]
+id: croco:568
+name: Wang et al. 2012
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:679
+name: Embryos-12-24-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:366
+name: RXRA
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:216
+name: Th2_Wb33676984
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:685
+name: Embryos-7-24-hr
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:610
+name: Transfac
+is_a: croco:609 ! Database
+
+[Term]
+id: croco:323
+name: PAN
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:435
+name: NHR-237
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:227
+name: WERI-Rb-1
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:303
+name: EGR1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:108
+name: HCT-116
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:613
+name: NCI-Pathway
+is_a: croco:609 ! Database
+
+[Term]
+id: croco:655
+name: Mid. confidence
+is_a: croco:619 ! Formaldehyde-Assisted Isolation of Regulatory Elements (FAIRE)
+
+[Term]
+id: croco:296
+name: RAD21
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:733
+name: EqS_2.0pct_7d
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:212
+name: Th17
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000556
+name: germ layer
+is_a: BTO:0000379 ! embryo
+
+[Term]
+id: BTO:0001531
+name: glial cell line
+is_a: BTO:0000255 ! brain cell line
+
+[Term]
+id: croco:156
+name: LNCaP
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:576
+name: Wei et al. 2010
+is_a: croco:561 ! Mid. confidence
+
+[Term]
+id: croco:354
+name: PCL
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:660
+name: UniPROBE
+is_a: croco:654 ! High confidence
+
+[Term]
+id: croco:291
+name: GATA2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:325
+name: RCOR1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:412
+name: ZTF-11
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:243
+name: mouseENCODE
+is_a: croco:240 ! Compendium
+
+[Term]
+id: croco:190
+name: PrEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000282
+name: head
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: BTO:0001493
+name: trunk
+is_a: BTO:0000000 ! tissues, cell types and enzyme sources
+is_a: croco:232 ! Tissue
+
+[Term]
+id: croco:134
+name: HPAEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:555
+name: CEBPZ
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:532
+name: MXI1
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:580
+name: Kherapour conf. 0.00
+is_a: croco:578 ! Promoter 500.
+
+[Term]
+id: croco:233
+name: Species
+is_a: croco:root ! croco:root
+
+[Term]
+id: croco:709
+name: BPA_100nM
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0002606
+name: glial cell
+is_a: BTO:0000227 ! central nervous system
+
+[Term]
+id: croco:744
+name: IFNa30
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:705
+name: 4OHTAM_1uM_36hr
+is_a: croco:703 ! Treatment
+
+[Term]
+id: BTO:0004520
+name: regulatory T-lymphocyte
+is_a: BTO:0000782 ! T-lymphocyte
+
+[Term]
+id: croco:264
+name: LOLA
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001581
+name: embryonic stem cell line
+is_a: BTO:0000669 ! embryonic cell line
+
+[Term]
+id: croco:288
+name: W03F9.2
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:388
+name: EGL-5
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: BTO:0001441
+name: marrow cell
+is_a: BTO:0000574 ! hematopoietic cell
+
+[Term]
+id: croco:698
+name: Starved-L1-stage-larvae
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:68
+name: GM12867
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:691
+name: Larvae-L2-stage
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:518
+name: CEBPB
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:566
+name: Transfac v9.3
+is_a: croco:560 ! High confidence
+
+[Term]
+id: croco:619
+name: Formaldehyde-Assisted Isolation of Regulatory Elements (FAIRE)
+is_a: croco:616 ! Open Chromatin (TFBS)
+
+[Term]
+id: croco:161
+name: MCF10A-Er-Src
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:12
+name: B-cell_(CD43-)
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:697
+name: Pupae
+is_a: croco:669 ! Development stage
+
+[Term]
+id: croco:646
+name: Wei et al. 2010
+is_a: croco:637 ! High confidence
+
+[Term]
+id: croco:102
+name: HBVSMC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:196
+name: RPTEC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:72
+name: GM12871
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: BTO:0000419
+name: respiratory epithelium
+is_a: BTO:0000136 ! bronchoalveolar system
+
+[Term]
+id: croco:169
+name: MRT_A204
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:93
+name: H1-hESC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:259
+name: TRIM28
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
+[Term]
+id: croco:52
+name: Frontal_cortex_OC
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:752
+name: NaBut
+is_a: croco:703 ! Treatment
+
+[Term]
+id: croco:13
+name: BE2_C
+is_a: croco:231 ! All tissue/cell-lines
+
+[Term]
+id: croco:577
+name: Kherapour et al.
+is_a: croco:559 ! Transcription Factor Binding Site (TFBS) prediction
+
+[Term]
+id: croco:335
+name: NELFE
+is_a: croco:244 ! ENCODE (ChIP)-Factor
+
