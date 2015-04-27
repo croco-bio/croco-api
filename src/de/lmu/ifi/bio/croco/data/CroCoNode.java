@@ -260,8 +260,12 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
                 if (! parents.contains(n.getId()) && !n.id.equals(this.getId()) )
                 {
                     Set<E> data = getRelevantData(this,n);
+                    
                     if ( data.size() < 2)
                         continue;
+                    if (!canBeSeperated(n,data) )
+                        continue;
+                    
                      nodeNetworks.removeAll(data);
                      CroCoNode<E> child = new CroCoNode<E>(n);
                        
@@ -282,6 +286,22 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
         }
         
         Collections.sort(getChildren());
+    }
+    private boolean canBeSeperated(CroCoNode<E> node, Set<E> data)
+    {
+        for ( CroCoNode<E> c: node.getAllChildren())
+        {
+            int overlap = 0;
+            for(E d : data)
+            {
+                if ( c.getData().contains(d))
+                    overlap++;
+            }
+            if (overlap > 0 &&  overlap != data.size()) return true;
+            
+            
+        }
+        return false;
     }
     private Set<E> getRelevantData(CroCoNode<E> parent, CroCoNode<E> child)
     {
@@ -327,7 +347,7 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
         this.setParent(parent);
         this.id = id;
         this.name = name;
-        if ( filter != null)
+        if ( filter == null)
         {
             this.data= data;
         }
@@ -336,7 +356,7 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
             this.data = new HashSet<E>();
             for(E nh : data)
             {
-                if (filter == null ||  filter.accept(nh))
+                if ( filter.accept(nh))
                     this.data.add(nh);
             }
         }
