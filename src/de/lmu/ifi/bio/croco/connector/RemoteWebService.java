@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -21,11 +20,11 @@ import javax.imageio.ImageIO;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.StreamException;
 
+import de.lmu.ifi.bio.croco.data.BindingEvidence;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
-import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
@@ -40,7 +39,6 @@ import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
-import de.lmu.ifi.bio.croco.util.Pair;
 
 /**
  * Uses a web services to query the network repository.
@@ -361,8 +359,8 @@ public class RemoteWebService implements QueryService{
 
 
 	@Override
-	public List<BindingEnrichedDirectedNetwork> getBindings(String factor,String target) throws Exception {
-		return (List<BindingEnrichedDirectedNetwork>)performeOperation(baseUrl,"getBindings",factor,target);
+	public List<BindingEvidence> getBindings(String factor,String target) throws Exception {
+		return (List<BindingEvidence>)performeOperation(baseUrl,"getBindings",factor,target);
 	}
 
 

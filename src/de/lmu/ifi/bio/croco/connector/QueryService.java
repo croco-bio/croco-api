@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.croco.connector;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import de.lmu.ifi.bio.croco.data.BindingEvidence;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
@@ -64,7 +65,7 @@ public interface QueryService {
 	public Integer getNumberOfEdges(Integer groupId) throws Exception;
 	
 	public BindingEnrichedDirectedNetwork readBindingEnrichedNetwork(Integer groupId, Integer contextId, Boolean gloablRepository ) throws Exception;
-	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception;
+	public List<BindingEvidence> getBindings(String factor, String target) throws Exception;
 	
 	//ortolog mapping
 	public List<OrthologMappingInformation> getTransferTargetSpecies(Integer taxId) throws Exception;

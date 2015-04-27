@@ -10,16 +10,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import de.lmu.ifi.bio.croco.data.BindingEvidence;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
+import de.lmu.ifi.bio.croco.data.NetworkMetaInformation.Restriction;
 import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.data.Species;
@@ -38,6 +39,7 @@ import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.CroCoProperties;
+import de.lmu.ifi.bio.croco.util.Pair;
 import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology;
 
 /**
@@ -64,20 +66,33 @@ public class LocalService implements QueryService{
 	    System.out.println("Print root info");
 	    System.out.println(node.getName());
 	}
-	private List<NetworkMetaInformation> getMetaInformation(Integer  gId,boolean onlyPublic) throws Exception
+	private List<NetworkMetaInformation> getMetaInformation(boolean onlyPublic,Integer ... gIds) throws Exception
 	{
-	    String sql = "SELECT nh.group_id ,  name,  tax_id,network_type FROM NetworkMetaInformation nh";
-	    boolean where=false;
+	    String sql = "SELECT nh.group_id ,  name,  tax_id,network_type,restricted FROM NetworkMetaInformation nh";
+	    String groupIdWhere = null;
 	    
-	    if ( gId != null)
+	    if ( gIds.length > 0)
 	    {
-	        sql += String.format(" where nh.group_id=%d",gId);
-	        where=true;
+	        if ( gIds.length == 1)
+	        {
+	            groupIdWhere = String.format(" where nh.group_id=%d",gIds[0]);
+	        }else{
+	            for(Integer gId : gIds)
+	            {
+	                groupIdWhere ="where ng.group_id IN (" +gIds[0] ;
+	                
+	                for(int i = 1; i< gIds.length;i++)
+	                {
+	                    groupIdWhere ="," + gIds[i] ;
+	                }
+	            }
+	        }
+	        sql+=groupIdWhere;  
 	    }
 	    
 	    if  (onlyPublic)
 	    {
-	        if( where)
+	        if( groupIdWhere!=null)
 	            sql +=" and restricted=0";
 	        else
 	            sql +=" where restricted=0";
@@ -101,13 +116,15 @@ public class LocalService implements QueryService{
             if ( res.wasNull())  taxId = null;
             NetworkType type = null;
             Integer networkTypeID = res.getInt(4);
+            
+            boolean restricted= res.getBoolean(5);
             if ( NetworkType.values().length >networkTypeID){
                 type = NetworkType.values()[networkTypeID];
             }else{
                 CroCoLogger.getLogger().error(String.format("Unknown network type %d",networkTypeID));
             }
 
-            NetworkMetaInformation nhn = new NetworkMetaInformation(groupId,name,taxId,type);
+            NetworkMetaInformation nhn = new NetworkMetaInformation(groupId,name,taxId,type,restricted?Restriction.WEB:Restriction.NONE);
             networks.add(nhn);
             groupIdToNH.put(groupId, nhn);
 
@@ -116,10 +133,10 @@ public class LocalService implements QueryService{
         stat.close();
 
 
-        sql = "SELECT group_id,option_id,value FROM NetworkOption";
-        if ( gId != null)
+        sql = "SELECT group_id,option_id,value FROM NetworkOption nh";
+        if ( groupIdWhere != null)
         {
-            sql+= String.format(" where group_id =%d",gId);
+            sql+= groupIdWhere;
         }
         CroCoLogger.getLogger().debug(sql);
         stat = DatabaseConnection.getConnection().prepareStatement(sql);
@@ -142,13 +159,13 @@ public class LocalService implements QueryService{
 	
 	@Override
 	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
-	    return getMetaInformation(null,false);
+	    return getMetaInformation(false);
 	}
 
 
 	@Override
 	public NetworkMetaInformation getNetworkMetaInformation(Integer groupId) throws Exception {
-	    List<NetworkMetaInformation> ret = getMetaInformation(groupId,false);
+	    List<NetworkMetaInformation> ret = getMetaInformation(false,groupId);
 	    
 	    if ( ret == null || ret.size() == 0)
 	        return null;
@@ -595,15 +612,12 @@ public class LocalService implements QueryService{
 	}
 
 	@Override
-	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception {
+	public List<BindingEvidence> getBindings(String factor, String target) throws Exception {
 		PreparedStatement stat = null;
 		if ( target != null && factor != null){
 			stat = DatabaseConnection.getConnection().prepareStatement(
-					"SELECT nh.group_id,nh.name,nh.network_type," +
-							"binding_start , binding_end, binding_p_value      , binding_motif ," +
-							"open_chrom_start , open_chrom_end " +
+					"SELECT group_id,binding_start , binding_end, binding_p_value, binding_motif, open_chrom_start , open_chrom_end " +
 					"FROM Network2Binding n " +
-					"JOIN NetworkMetaInformation nh on nh.group_id = n.group_id  " +
 					"where gene1 = ? and gene2 = ?"
 			);
 			stat.setString(1, factor);
@@ -616,45 +630,51 @@ public class LocalService implements QueryService{
 		CroCoLogger.getLogger().debug(stat);
 		stat.execute();
 		CroCoLogger.getLogger().debug("Time:" + (System.currentTimeMillis()-start)/1000 + " sec.");
+		
+		HashSet<Integer> groupIds = new HashSet<Integer> ();
+		List<Pair<Peak,Integer>> peaks = new ArrayList<Pair<Peak,Integer>>();
 		ResultSet res = stat.getResultSet();
 		while(res.next()){
 			Integer groupId = res.getInt(1);
-		
-			String name = res.getString(2);
-			NetworkType type = NetworkType.values()[res.getInt(3)];
-			
-			if (! groupIdToNetworkSummary.containsKey(groupId)){
-				NetworkMetaInformation nh = new NetworkMetaInformation(groupId,name,null,type);
-				BindingEnrichedDirectedNetwork network = new BindingEnrichedDirectedNetwork(name,null,EdgeRepositoryStrategy.LOCAL);
-				network.setHierachyNode(nh);
-				groupIdToNetworkSummary.put(groupId,network );
-			}
-			BindingEnrichedDirectedNetwork network = groupIdToNetworkSummary.get(groupId);
-			
 			
 			Entity tf = new Entity(factor);
 			Entity tg = new Entity(target);
 			
-			Integer bindingStart = res.getInt(4);
-			Integer bindingEnd = res.getInt(5);
-			Float bindingPValue = res.getFloat(6);
-			String motifId = res.getString(7);
+			Integer bindingStart = res.getInt(2);
+			Integer bindingEnd = res.getInt(3);
+			Float bindingPValue = res.getFloat(4);
+			String motifId = res.getString(5);
+			Peak peak = null;
+			
 			TFBSPeak tfbsPeak = new TFBSPeak(null,bindingStart,bindingEnd,motifId,bindingPValue,null);
 			
-			Integer openChromStart = res.getInt(8);
-			Integer openChromEnd = res.getInt(9);
+			Integer openChromStart = res.getInt(6);
+			Integer openChromEnd = res.getInt(7);
 			
-			if ( openChromStart != null){
-				DNaseTFBSPeak peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
-				network.addEdge(tf, tg, groupId, peak);
-				
-			}else{
-				network.addEdge(tf, tg, groupId, tfbsPeak);
-			}
+			if ( openChromStart != null)
+				peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
+			else
+			    peak = tfbsPeak;
+			
+			groupIds.add(groupId);
+			peaks.add(Pair.create(peak,groupId));
+		}
+		res.close();
+		List<NetworkMetaInformation> metaInformation = this.getMetaInformation(false,groupIds.toArray(new Integer[groupIds.size()]));
+		HashMap<Integer,NetworkMetaInformation> groupIdToNetwork = new HashMap<Integer,NetworkMetaInformation>();
+		
+		for(NetworkMetaInformation nmi: metaInformation){
+		    groupIdToNetwork.put(nmi.getGroupId(), nmi);
 		}
 		
-		res.close();
-		return new ArrayList<BindingEnrichedDirectedNetwork>(groupIdToNetworkSummary.values());
+		List<BindingEvidence> ret = new ArrayList<BindingEvidence>();
+		
+		for(Pair<Peak,Integer> peak : peaks)
+		{
+		    ret.add(new BindingEvidence(groupIdToNetwork.get(peak.getSecond()),peak.getFirst()));
+		}
+		
+		return ret;
 	}
 	@Override
 	public Long getVersion() {
@@ -666,9 +686,13 @@ public class LocalService implements QueryService{
         
         File oboFile =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntologyFile") );
         File oboMapping =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntoloyMappingFile") );
+        CroCoLogger.getLogger().debug(String.format("Read obo/mapping: %s/%s", oboFile.toString(),oboMapping.toString()));
         
-        CroCoNode<NetworkMetaInformation> root = new CroCoNode<NetworkMetaInformation>("Root","0",null, new HashSet<NetworkMetaInformation>(this.getMetaInformation(null, onlyPublic)));
-        NetworkOntology.readOntology(root, oboFile, oboMapping);
+        if ( !oboFile.exists() || !oboMapping.exists())
+            throw new Exception("CroCo ontology not found. Check configuration.");
+        
+        
+        CroCoNode<NetworkMetaInformation> root = NetworkOntology.readOntology(new HashSet<NetworkMetaInformation>(this.getMetaInformation(onlyPublic)), oboFile, oboMapping);
         
         return root;
     }

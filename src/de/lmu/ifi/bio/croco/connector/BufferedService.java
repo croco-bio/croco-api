@@ -22,6 +22,7 @@ import java.util.zip.GZIPOutputStream;
 
 import com.thoughtworks.xstream.XStream;
 
+import de.lmu.ifi.bio.croco.data.BindingEvidence;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Entity;
@@ -247,7 +248,7 @@ public class BufferedService implements QueryService {
 	}
 	
 	@Override
-	public List<BindingEnrichedDirectedNetwork> getBindings(String factor, String target) throws Exception {
+	public List<BindingEvidence> getBindings(String factor, String target) throws Exception {
 		return service.getBindings(factor, target);
 	}
 	@Override
