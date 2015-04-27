@@ -4,30 +4,37 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/**
+ * Meta-information, i.e. annotations, are assigned to networks.
+ * @author pesch
+ */
 public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformation>, Identifiable {
  
+    /**
+     * The restriction for a network.
+     * @author pesch
+     */
+    public enum Restriction{
+        NONE, WEB
+    }
+    
 	private Integer groupId;
 	private String name;
-	private boolean selected = false;
-	//private boolean hasNetwork = false;
 	private NetworkType type;
-	//private Integer numChildren = null;
-	//private Vector<NetworkHierachyNode> children;
 	private Integer taxId;
-	//private NetworkHierachyNode parent;
 	
 	private Set<String> factors = new HashSet<String>();
 	
+	private Restriction restriction =Restriction.NONE ;
 	private HashMap<Option,String> options = new HashMap<Option,String>();
 	
 	//added for xsteam
 	public NetworkMetaInformation(){}
 
-	public NetworkMetaInformation(Integer groupId, String name,  Integer taxId, NetworkType type)
+	public NetworkMetaInformation(Integer groupId, String name,  Integer taxId, NetworkType type,Restriction restriction)
 	{
 	    this.groupId = groupId;
-
+	    this.restriction =restriction;
 	    this.type = type;
 	    this.name = name;
 	    this.taxId = taxId;
@@ -49,8 +56,16 @@ public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformati
 	public NetworkType getType() {
 		return type;
 	}
+	
+	public Restriction getRestriction() {
+        return restriction;
+    }
 
-	public HashMap<Option,String> getOptions() {
+    public void setRestriction(Restriction restriction) {
+        this.restriction = restriction;
+    }
+
+    public HashMap<Option,String> getOptions() {
         return options;
     }
 
@@ -61,6 +76,11 @@ public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformati
     public void setOptions(HashMap<Option,String> options) {
         this.options = options;
     }
+    /**
+     * Adds an annotation.
+     * @param option -- the annotation 
+     * @param value -- the value
+     */
     public void addOption(Option option, String value)
     {
         if ( option == Option.FactorList){
@@ -78,10 +98,6 @@ public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformati
         return factors;
     }
 
-
-
-
-	 
 	 public Integer getGroupId() {
 		return groupId;
 	}
@@ -97,13 +113,6 @@ public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformati
 		this.name = name;
 	}
 
-	public boolean isSelected() {
-		return selected;
-	}
-
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-	}
 
 	public Integer getTaxId() {
 		return taxId;
@@ -113,19 +122,13 @@ public  class NetworkMetaInformation  implements Comparable<NetworkMetaInformati
 		this.taxId = taxId;
 		this.options.put(Option.TaxId,taxId+"");
 	}
-
-
-	private Integer parentGroupId;
-	public Integer getParentGroupdId(){
-		return parentGroupId;
-	}
-	
 	    
-	   
+	@Override 
 	public int compareTo(NetworkMetaInformation o) {
 		return name.toLowerCase().compareTo(o.getName().toLowerCase());
 	}
-	
+
+    @Override
 	public boolean equals(Object o){
 		if ( o instanceof NetworkMetaInformation && ((NetworkMetaInformation) o).getGroupId().equals(this.groupId))
 			return true;
