@@ -65,9 +65,11 @@ public class LocalServiceTest {
 	{
 	  
 	    LocalService service = new LocalService();
-        CroCoNode rootOrig = service.getNetworkOntology(false);
+        CroCoNode rootOrig = service.getNetworkOntology(true);
         
         assertTrue(rootOrig.getChildren().size()>0);
+        
+        System.out.println(rootOrig.getChildren());
       /*  
         System.out.println("WRITE");
         XStream xstream = new XStream();
