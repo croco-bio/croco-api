@@ -4,34 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.thoughtworks.xstream.XStream;
-
+import de.lmu.ifi.bio.croco.category.IntegrationTest;
+import de.lmu.ifi.bio.croco.data.BindingEvidence;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
+import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
-import de.lmu.ifi.bio.croco.test.IntegrationTest;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
 @Category(IntegrationTest.class)
@@ -163,19 +153,35 @@ public class LocalServiceTest {
 	}
 	*/
 	@Test
-	public void testGetNetworkHierachy() throws Exception{
+	public void getNetworkMetaInformation() throws Exception{
 		Logger logger = CroCoLogger.getLogger();
 		logger.setLevel(Level.DEBUG);
 		LocalService service = new LocalService(logger);
 		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformation();
+		assertTrue(nodes.size()>0);
 		
-
-		
-		for(NetworkMetaInformation child : nodes)
-		{
-		 //   if ( child.getFactors().size() > 1)
-		 //       System.out.println(child.getOptions().get(Option.TaxId) + "\t" + child.getFactors().size() + " " + child.getOptions());
-		}
+		NetworkMetaInformation single = service.getNetworkMetaInformation(32);
+	
+	}
+	
+	@Test
+	public void testGetBindings() throws Exception{
+	    LocalService service = new LocalService();
+        //loadData("ENSG00000068305","ENSG00000111046");
+        
+	    List<BindingEvidence> bindings = service.getBindings("ENSG00000068305", "ENSG00000111046");
+	    assertTrue(bindings.size()>0);
+        
+	    for(BindingEvidence b : bindings)
+	    {
+	        System.out.println(b.peak.getClass());
+	        if ( b.peak instanceof TFBSPeak)
+	        {
+	            TFBSPeak tfbs = (TFBSPeak)b.peak;
+	        }
+	        assertNotNull(b.peak.getChrom());
+	    }
+	    
 	}
 	
 

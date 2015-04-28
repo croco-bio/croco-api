@@ -14,6 +14,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.croco.category.IntegrationTest;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;
@@ -22,7 +23,6 @@ import de.lmu.ifi.bio.croco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.operation.GeneSetFilter.FilterType;
-import de.lmu.ifi.bio.croco.test.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class GeneSetFilterTest {

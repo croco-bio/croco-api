@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import de.lmu.ifi.bio.croco.test.UnitTest;
+import de.lmu.ifi.bio.croco.category.UnitTest;
 
 
 @Category(UnitTest.class)

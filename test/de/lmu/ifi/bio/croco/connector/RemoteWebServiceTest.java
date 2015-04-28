@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.croco.category.IntegrationTest;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
@@ -20,7 +21,6 @@ import de.lmu.ifi.bio.croco.operation.Transfer;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologRepository;
-import de.lmu.ifi.bio.croco.test.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class RemoteWebServiceTest {

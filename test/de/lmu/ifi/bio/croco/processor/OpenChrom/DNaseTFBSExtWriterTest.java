@@ -10,13 +10,13 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import de.lmu.ifi.bio.croco.category.IntegrationTest;
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.processor.TFBS.FIMOHandler;
-import de.lmu.ifi.bio.croco.test.IntegrationTest;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.FileUtil;
 import de.lmu.ifi.bio.croco.util.GenomeUtil;

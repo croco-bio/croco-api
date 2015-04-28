@@ -13,12 +13,12 @@ import java.util.Random;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.croco.category.IntegrationTest;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMapping;
-import de.lmu.ifi.bio.croco.test.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class BufferedLocalServiceTest {

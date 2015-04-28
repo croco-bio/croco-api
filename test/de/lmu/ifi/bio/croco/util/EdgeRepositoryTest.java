@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.croco.category.UnitTest;
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.EdgeRepository;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
-import de.lmu.ifi.bio.croco.test.UnitTest;
 
 @Category(UnitTest.class)
 public class EdgeRepositoryTest {

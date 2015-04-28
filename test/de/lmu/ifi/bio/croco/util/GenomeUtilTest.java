@@ -9,12 +9,12 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import de.lmu.ifi.bio.croco.category.UnitTest;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
 import de.lmu.ifi.bio.croco.intervaltree.Interval;
 import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
-import de.lmu.ifi.bio.croco.test.UnitTest;
 
 @Category(UnitTest.class)
 public class GenomeUtilTest {

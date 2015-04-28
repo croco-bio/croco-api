@@ -7,7 +7,7 @@ import java.io.File;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import de.lmu.ifi.bio.croco.test.IntegrationTest;
+import de.lmu.ifi.bio.croco.category.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class GenomeSequenceExtractorTest {
