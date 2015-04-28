@@ -9,17 +9,23 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
-import de.lmu.ifi.bio.croco.util.FileUtil;
 import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology.LeafNode;
 
 /**
  * Ontology node
  * @author pesch
  *
- * @param <E> -- elements assigend to ontology node
+ * @param <E> -- elements assigned to ontology node
  */
 public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E>>
 {
+    private String name;
+    private String id;
+    private Set<String> rootParentNames = null;
+    private List<CroCoNode<E>> parents;
+    private List<CroCoNode<E>> children = null;
+    private CroCoNode<E> fromCloned;
+    
     public interface Filter<E>
     {
         public boolean accept(E nh);
@@ -181,14 +187,6 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
         this.data = data;
     }
 
-    private String name;
-    private String id;
-    private Set<String> rootParentNames = null;
-    private List<CroCoNode<E>> parents;
-    private List<CroCoNode<E>> children = null;
-    private CroCoNode<E> fromCloned;
-   
-    
     public Set<E> getData(String id, Filter<E> ... filters) throws Exception{
         return CroCoNode.getData(id,this, filters);
     } 
@@ -430,6 +428,57 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
                 }    
             }
             pw.print("\n");
+        }
+        
+    }
+    public void clearChildren() {
+        if ( this.getChildren() != null)
+        {
+            for(CroCoNode<E> c : this.getChildren())
+            {
+                if ( c.getParent() != null)
+                    c.getParent().remove(this);
+                
+                this.getChildren().remove(c);
+            }
+        }
+    }
+
+    public static<E extends Identifiable>  void  addOntologyNodes(CroCoNode<E> root, String id,String name,List<CroCoNode<E>> children )
+    {
+        
+        Set<E> data = new HashSet<E>();
+
+        CroCoNode<E> node = root;
+
+        if ( name != null)
+            node = new  CroCoNode<E>(id,name,root,null);
+
+        for(CroCoNode<E> c : children)
+        {
+            if ( c.getData().size() > 0)
+            {
+                data.addAll(c.getData());
+                c.setParent(node);
+            }
+        }
+        node.setData(data);
+
+        if ( node.getChildren().size() == 1)
+        {
+            CroCoNode<E> firstChild = node.getChildren().get(0);
+            for(CroCoNode<E> c : firstChild.getChildren())
+            {
+                c.setParent(node);
+            }
+            node.getChildren().remove(firstChild);
+        }
+        if ( root.getData() == null )
+        {
+            root.setData(data);
+        }else
+        {
+            root.getData().addAll(data);
         }
         
     }
