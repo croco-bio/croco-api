@@ -4,12 +4,16 @@ import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 
 public class BindingEvidence {
     public NetworkMetaInformation networkMetaInformation;
-    public Peak pean;
+    public Peak peak;
     
-    public BindingEvidence(NetworkMetaInformation networkMetaInformation,
-            Peak pean) {
+    public BindingEvidence(NetworkMetaInformation networkMetaInformation, Peak peak) {
         super();
         this.networkMetaInformation = networkMetaInformation;
-        this.pean = pean;
+        this.peak = peak;
+    }
+    
+    public String getName()
+    {
+        return networkMetaInformation.getName();
     }
 }
