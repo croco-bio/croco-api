@@ -39,6 +39,7 @@ import de.lmu.ifi.bio.croco.util.ConsoleParameter.CroCoOption;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.Tuple;
 import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology;
+import de.lmu.ifi.bio.croco.util.ontology.Obo;
 
 /**
  * Processes the file based network hierarchy.
@@ -128,7 +129,7 @@ public class NetworkOntologyWriter  {
         NetworkOntology onto = new NetworkOntology();
         
         CroCoNode<NetworkMetaInformation> root = onto.createNetworkOntology();
-        onto.writeNetworkOntology(root,ONTOLOGY_OUT.getValue(cmdLine),ONTOLOGY_MAPPING_OUT.getValue(cmdLine));
+        Obo.writeOntology(root,ONTOLOGY_OUT.getValue(cmdLine),ONTOLOGY_MAPPING_OUT.getValue(cmdLine));
 	}
 	
 	private static int getNextId(AtomicInteger nextId)

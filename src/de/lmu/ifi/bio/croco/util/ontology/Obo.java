@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.croco.util.ontology;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +13,11 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Joiner;
+
+import de.lmu.ifi.bio.croco.data.CroCoNode;
+import de.lmu.ifi.bio.croco.data.Identifiable;
+import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.FileUtil;
 
 
@@ -44,6 +50,150 @@ public class Obo {
             return name;
         }
         
+    }
+
+    /**
+     * Reads an ontology with data mapping
+     * @param ontology -- the obo  
+     * @param idMapping -- the id mapping file
+     * @param allData -- data assigned to the nodes in the ontology
+     * @return the root node
+     * @throws IOException
+     */
+    public static<E extends Identifiable>  CroCoNode<E> readOntology(File ontology, File idMapping, Set<E> allData ) throws Exception
+    {
+        
+        //read the obo
+        Obo obo = new Obo(ontology);
+        
+        HashMap<String,CroCoNode<E>> idToCroCoNode = new HashMap<String,CroCoNode<E>>();
+        HashMap<String,List<String>> idToParents = new HashMap<String,List<String>>();
+        
+        int k = 0;
+        for(OboElement el : obo.elements.values())
+        {
+            CroCoNode<E> node = new CroCoNode<E>(el.id,el.name);
+            
+            if ( idToCroCoNode.containsKey(el.id))
+            {
+                throw new RuntimeException(el.id + " not unique!");
+            }
+            
+            idToCroCoNode.put(el.id, node);
+            
+            idToParents.put(el.id, new ArrayList<String>());
+            for(OboElement parent : el.getParents() )
+            {
+                idToParents.get(el.id).add(parent.id);
+            }
+            k++;
+        }
+        CroCoLogger.debug("Found %d ontology nodes.",k);
+
+        List<OboElement> roots = obo.getRoots(false);
+        if ( roots.size() != 1) 
+            throw new IOException("Invalid obo. Expect only one root.");
+        
+        String rootId  = roots.get(0).id;
+        
+        CroCoNode<E> root = idToCroCoNode.get(rootId);
+        if ( root == null)
+            throw new RuntimeException("Cannot find root!");
+        
+        root.setData(allData);
+        
+        //set parent-children relations
+        for(String id : idToParents.keySet())
+        {
+            CroCoNode<E> node = idToCroCoNode.get(id);
+            List<String> parents = idToParents.get(id);
+            
+            if ( parents.size() == 0 && !id.equals(rootId))
+            {
+                node.setParent(root);
+                continue;
+            }
+            
+            for(String parentId : parents)
+            {
+                CroCoNode<E> parent = idToCroCoNode.get(parentId);
+                if ( parent.getChildren() == null)
+                {
+                    node.setParent(parent);
+                } else
+                {
+                    node.setParent(parent);
+                }    
+            }
+        }
+        
+        //assign data points
+        HashMap<String,E> idToDataPoint = new HashMap<String,E>();
+        
+        for(E dataPoint : root.getData() )
+        {
+            idToDataPoint.put(dataPoint.getId(), dataPoint);
+        }
+        Iterator<String> it = FileUtil.getLineIterator(idMapping);
+        while(it.hasNext())
+        {
+            String line = it.next();
+            String tokens[] = line.split("\\s+");
+            
+            String id = tokens[0];
+            CroCoNode<E> node = idToCroCoNode.get(id);
+           
+            if ( node == null)
+                throw new Exception("Unknown ontology node:" + id + "(invalid obo mapping)");
+            
+            HashSet<E> data  = new HashSet<E>();
+            for(int i = 1 ; i< tokens.length; i++)
+            {
+               data.add(idToDataPoint.get(tokens[i]));
+            }
+            node.setData(data);
+        }
+        return root;
+    }
+    
+    /**
+     * Writes the ontology to file
+     * @param root -- the root node
+     * @param oboOut -- obo out file 
+     * @param oboMapping -- entity to obo mapping
+     * @throws IOException
+     */
+    public static<E extends Identifiable>  void writeOntology(CroCoNode<E> root, File oboOut, File oboMapping ) throws IOException
+    {
+        CroCoLogger.getLogger().debug("Write obo:" + oboOut);
+        
+        PrintWriter pw = FileUtil.getPrintWriter(oboOut);
+        CroCoNode.printAsObo(pw, root);
+        pw.close();
+        
+
+        CroCoLogger.getLogger().debug("Write mapping:" + oboMapping);
+        
+        pw = FileUtil.getPrintWriter(oboMapping);
+        List<CroCoNode<E>> elements = new ArrayList<CroCoNode<E>>();
+        
+        elements.addAll(root.getAllChildren());
+        
+        for(CroCoNode<E> el : elements)
+        {
+            List<String> ids = new ArrayList<String>();
+            for(Identifiable node : el.getData())
+            {
+                ids.add(node.getId());
+            }
+            
+            if ( el.getId().contains(" "))
+                throw new RuntimeException("Ontology ids with ' ' not permitted." + el.getId());
+            
+            pw.printf("%s %s\n",el.getId(),Joiner.on(" ").join(ids));
+        }
+        pw.close();
+       
     }
     
     public class OboElement
@@ -159,14 +309,13 @@ public class Obo {
         List<String> additionalReferences = new ArrayList<String>();
         
         List<OboElement> el = new ArrayList<OboElement>();
-        
         String type = null;
         while(it.hasNext())
         {
             String line = it.next();
+            
             if ( line.trim().length() ==0)
                 continue;
-            
             
             java.util.regex.Matcher matcher = TERM.matcher(line);
             if (matcher.matches())
@@ -187,6 +336,8 @@ public class Obo {
                             
                         }
                     }
+                    if ( current.id.contains(","))
+                        throw new RuntimeException("Not possible:");
                     el.add(current);
                     elements.put(current.id,current);
                     for(String altId : current.altIds)
@@ -203,6 +354,7 @@ public class Obo {
             {
                 String[] tokens = SEP.split(line,2);
                 String key = tokens[0];
+               
                 String value = tokens[1].trim();
                 if ( OboField.alt_id.name.equals(key))
                 {
@@ -246,6 +398,8 @@ public class Obo {
         }
         if ( current.id != null)
         {
+            if ( current.id.contains(","))
+                throw new RuntimeException("Not possible:");
             el.add(current);
             elements.put(current.id,current);
         }
@@ -266,15 +420,13 @@ public class Obo {
     }
     public static void main(String[] args) throws Exception
     {
-         Obo reader = new Obo(new File("/home/users/pesch/workspace/EWMS/taxIds.obo"));
+         Obo reader = new Obo(new File("/home/proj/pesch/SFB/taxIds.obo"));
       //  OboReader reader = new OboReader(new File("/mnt/biostor1/Data/PubMed/Synonyms/obo/BrendaTissueOBO_web.obo"));
         
-        OboElement element =reader.getElement("NCBITaxon:10090");
-        System.out.println(element );
-        
-        System.out.println(element.getParents());
-        
-        System.out.println(element.getRoot());
+         for(OboElement e : reader.getElements())
+         {
+             System.out.println(e.id);
+         }
     }
     
   

@@ -44,7 +44,7 @@ import de.lmu.ifi.bio.croco.util.Pair;
 import de.lmu.ifi.bio.croco.util.ontology.Obo.OboElement;
 
 public class NetworkOntology {
-    private static String KHERAPOUR ="Kherapour et al., Reliable prediction of regulator targets using 12 Drosophila genomes, Genome Res., 2007";
+    private static String KHERADPOUR ="Kheradpour et al., Reliable prediction of regulator targets using 12 Drosophila genomes, Genome Res., 2007";
     private static String NEPH ="Neph et al., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012";
     private static File taxObo= new File("data/obo/croco-sp.obo");
     private static File brendaOBO = new File("data/obo/BrendaTissue.obo");
@@ -88,44 +88,6 @@ public class NetworkOntology {
             return data;
         }
     }
-    public void  addOntologyNodes(CroCoNode<NetworkMetaInformation> root, String name,List<CroCoNode<NetworkMetaInformation>> children )
-    {
-        Set<NetworkMetaInformation> data = new HashSet<NetworkMetaInformation>();
-        
-        
-        CroCoNode<NetworkMetaInformation> node = root;
-        
-        if ( name != null)
-            node = new  CroCoNode<NetworkMetaInformation>(getId(),name,root,null);
-        
-        for(CroCoNode<NetworkMetaInformation> c : children)
-        {
-            if ( c.getData().size() > 0)
-            {
-                data.addAll(c.getData());
-                c.setParent(node);
-            }
-        }
-        node.setData(data);
-        
-        if ( node.getChildren().size() == 1)
-        {
-            CroCoNode<NetworkMetaInformation> firstChild = node.getChildren().get(0);
-            for(CroCoNode<NetworkMetaInformation> c : firstChild.getChildren())
-            {
-                c.setParent(node);
-            }
-            node.getChildren().remove(firstChild);
-        }
-        
-        if ( root.getData() == null)
-        {
-            root.setData(data);
-        }else
-        {
-            root.getData().addAll(data);
-        }
-     }
 
     public  List<CroCoNode<NetworkMetaInformation>> getFlatNodes(Option option,Set<NetworkMetaInformation> data)  throws Exception
     {
@@ -181,8 +143,8 @@ public class NetworkOntology {
                 for(CroCoNode<NetworkMetaInformation> d : new CroCoNode[]{directed,undirected})
                 {
                     d.setChildren( new ArrayList<CroCoNode<NetworkMetaInformation>>());
-                    CroCoNode<NetworkMetaInformation> context = new CroCoNode<NetworkMetaInformation>(getId(),"Species filtered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"Yes"),d.getData());
-                    CroCoNode<NetworkMetaInformation> nocontext = new CroCoNode<NetworkMetaInformation>(getId(),"Species unfiltered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"No"),d.getData());
+                    CroCoNode<NetworkMetaInformation> context = new CroCoNode<NetworkMetaInformation>(getId(),"Filtered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"Yes"),d.getData());
+                    CroCoNode<NetworkMetaInformation> nocontext = new CroCoNode<NetworkMetaInformation>(getId(),"Unfiltered",d,new GeneralFilter(Option.TextMiningSpeciesContext,"No"),d.getData());
                     
                     
                 }
@@ -208,15 +170,15 @@ public class NetworkOntology {
                     
                 }   
                 
-                CroCoNode<NetworkMetaInformation> kherapour = new CroCoNode<NetworkMetaInformation>(getId(),"Kherapour et al.",node,new GeneralFilter(Option.reference,KHERAPOUR),node.getData());
+                CroCoNode<NetworkMetaInformation> kherapour = new CroCoNode<NetworkMetaInformation>(getId(),"Kheradpour et al.",node,new GeneralFilter(Option.reference,KHERADPOUR),node.getData());
                 CroCoNode<NetworkMetaInformation> kherapour_500 = new CroCoNode<NetworkMetaInformation>(getId(),"Promoter 500.",kherapour,new GeneralFilter(Option.Upstream,"500"),kherapour.getData());
                 CroCoNode<NetworkMetaInformation> kherapour_2000 = new CroCoNode<NetworkMetaInformation>(getId(),"Promoter 2000.",kherapour,new GeneralFilter(Option.Downstream,"2000"),kherapour.getData());
                 
                 for(int i = 0 ; i<= 10 ; i++)
                 {
                     float c = (float)i/(float)10;
-                    CroCoNode<NetworkMetaInformation> conf_1 = new CroCoNode<NetworkMetaInformation>(getId(),String.format("Kherapour conf. %.2f",c),kherapour_500,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),kherapour_500.getData());
-                    CroCoNode<NetworkMetaInformation> conf_2 = new CroCoNode<NetworkMetaInformation>(getId(),String.format("Kherapour conf. %.2f",c),kherapour_2000,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),kherapour_2000.getData());
+                    CroCoNode<NetworkMetaInformation> conf_1 = new CroCoNode<NetworkMetaInformation>(getId(),String.format("Confidence %.2f",c),kherapour_500,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),kherapour_500.getData());
+                    CroCoNode<NetworkMetaInformation> conf_2 = new CroCoNode<NetworkMetaInformation>(getId(),String.format("Confidence %.2f",c),kherapour_2000,new GeneralFilter(Option.ConfidenceThreshold,String.format("%.1f",c)),kherapour_2000.getData());
                     
                 }
                 
@@ -291,138 +253,8 @@ public class NetworkOntology {
         }
         return factors;
     }
-    /**
-     * Writes the ontology to file
-     * @param root -- the root node
-     * @param oboOut -- obo out file 
-     * @param oboMapping -- entity to obo mapping
-     * @throws IOException
-     */
-    public static<E extends Identifiable>  void writeNetworkOntology(CroCoNode<E> root, File oboOut, File oboMapping ) throws IOException
-    {
-        CroCoLogger.getLogger().debug("Write obo:" + oboOut);
-        
-        PrintWriter pw = FileUtil.getPrintWriter(oboOut);
-        CroCoNode.printAsObo(pw, root);
-        pw.close();
-        
 
-        CroCoLogger.getLogger().debug("Write mapping:" + oboMapping);
-        
-        pw = FileUtil.getPrintWriter(oboMapping);
-        List<CroCoNode<E>> elements = new ArrayList<CroCoNode<E>>();
-        
-        elements.addAll(root.getAllChildren());
-        
-        for(CroCoNode<E> el : elements)
-        {
-            List<String> ids = new ArrayList<String>();
-            for(Identifiable node : el.getData())
-            {
-                ids.add(node.getId());
-            }
-            
-            if ( el.getId().contains(" "))
-                throw new RuntimeException("Ontology ids with ' ' not permitted.");
-            
-            pw.printf("%s %s\n",el.getId(),el.getData().size()==root.getData().size()?all:Joiner.on(" ").join(ids));
-        }
-        pw.close();
-       
-    }
-    
-    public static<E extends Identifiable> CroCoNode<E> readOntology(Set<E> allData, File oboFile, File oboMapping) throws Exception
-    {
-        Obo obo = new Obo(oboFile);
-        
-        HashMap<String,CroCoNode<E>> idToCroCoNode = new HashMap<String,CroCoNode<E>>();
-        HashMap<String,List<String>> idToParents = new HashMap<String,List<String>>();
-        
-        int k = 0;
-        for(OboElement el : obo.elements.values())
-        {
-            
-            CroCoNode<E> node = new CroCoNode<E>(el.id,el.name);
-            
-            if ( idToCroCoNode.containsKey(el.id))
-            {
-                throw new RuntimeException(el.id + " not unique!");
-            }
-            
-            idToCroCoNode.put(el.id, node);
-            
-            idToParents.put(el.id, new ArrayList<String>());
-            for(OboElement parent : el.getParents() )
-            {
-                idToParents.get(el.id).add(parent.id);
-            }
-            k++;
-        }
-        CroCoLogger.debug("Found %d ontology nodes.",k);
-
-        CroCoNode<E> root = idToCroCoNode.get(NetworkOntology.root);
-        if ( root == null)
-            throw new RuntimeException("Cannot find root!");
-        
-        root.setData(allData);
-        for(String id : idToParents.keySet())
-        {
-            CroCoNode<E> node = idToCroCoNode.get(id);
-            List<String> parents = idToParents.get(id);
-            
-            if ( parents.size() == 0 && !id.equals(NetworkOntology.root))
-            {
-                node.setParent(root);
-                continue;
-            }
-            
-            for(String parentId : parents)
-            {
-                CroCoNode<E> parent = idToCroCoNode.get(parentId);
-                if ( parent.getChildren() == null)
-                {
-                    node.setParent(parent);
-                } else
-                {
-                    node.setParent(parent);
-                }    
-            }
-        }
-        
-        HashMap<String,E> idToDataPoint = new HashMap<String,E>();
-        
-        for(E dataPoint : root.getData() )
-        {
-            idToDataPoint.put(dataPoint.getId(), dataPoint);
-        }
-        Iterator<String> it = FileUtil.getLineIterator(oboMapping);
-        while(it.hasNext())
-        {
-            String line = it.next();
-            String tokens[] = line.split("\\s+");
-            
-            String id = tokens[0];
-            CroCoNode<E> node = idToCroCoNode.get(id);
-           
-            if ( node == null)
-                throw new Exception("Unknown ontology node:" + id + "(invalid obo mapping)");
-            
-            HashSet<E> data  = new HashSet<E>();
-            for(int i = 1 ; i< tokens.length; i++)
-            {
-                if ( tokens[i].equals(NetworkOntology.all))
-                {
-                    data = new HashSet<E>(root.getData());
-                }
-                else
-                    data.add(idToDataPoint.get(tokens[i]));
-            }
-            node.setData(data);
-        }
-        return root;
-        
-    }
-   
+ 
     
     private List<CroCoNode<NetworkMetaInformation>> factoraddOntologyNodes(Set<NetworkMetaInformation> data) throws Exception
     {
@@ -534,28 +366,28 @@ public class NetworkOntology {
         CroCoNode<NetworkMetaInformation> root = new CroCoNode<NetworkMetaInformation>(NetworkOntology.root,NetworkOntology.root,null,new HashSet<NetworkMetaInformation>(networks));
     
         CroCoNode<NetworkMetaInformation> cellLine = new CroCoNode<NetworkMetaInformation>(getId(),"Tissue/Cell-line",root,null);
-        addOntologyNodes(cellLine, "All tissue/cell-lines", getFlatNodes(Option.cellLine, root.getData()));
-        addOntologyNodes(cellLine, "Tissue", getBrendaOntology(root.getData()));
+        CroCoNode.addOntologyNodes(cellLine, "Tissue/cell-lines list",getId(), getFlatNodes(Option.cellLine, root.getData()));
+        CroCoNode.addOntologyNodes(cellLine, "Tissue ontology",getId(), getBrendaOntology(root.getData()));
     
         CroCoNode<NetworkMetaInformation> specie = new CroCoNode<NetworkMetaInformation>(getId(),"Species",root,null);
-        addOntologyNodes(specie, "All species", getFlatNodes(Option.TaxId, root.getData()));
-        addOntologyNodes(specie, "Bilateria", getSpeciesObo(root.getData()));
+        CroCoNode.addOntologyNodes(specie, "Species list",getId(), getFlatNodes(Option.TaxId, root.getData()));
+        CroCoNode.addOntologyNodes(specie, "Species taxonomy",getId(), getSpeciesObo(root.getData()));
         
         CroCoNode<NetworkMetaInformation> compendium = new CroCoNode<NetworkMetaInformation>(getId(),"Compendium",root, null);
-        addOntologyNodes(compendium,null,  getFlatNodes(Option.Compendium,root.getData()));
+        CroCoNode.addOntologyNodes(compendium,null,getId(),  getFlatNodes(Option.Compendium,root.getData()));
         
-        CroCoNode<NetworkMetaInformation> factor = new CroCoNode<NetworkMetaInformation>(getId(),"ENCODE (ChIP)-Factor",root,null);
-        addOntologyNodes(factor,null,  getFlatNodes(Option.AntibodyTargetMapped,root.getData()));
+        CroCoNode<NetworkMetaInformation> factor = new CroCoNode<NetworkMetaInformation>(getId(),"ENCODE Gene name",root,null);
+        CroCoNode.addOntologyNodes(factor,null,getId(),  getFlatNodes(Option.AntibodyTargetMapped,root.getData()));
         
         CroCoNode<NetworkMetaInformation> technique = new CroCoNode<NetworkMetaInformation>(getId(),"Experimental technique",root, new GeneralFilter(Option.NetworkType),root.getData());
-        addOntologyNodes(technique,null,  getFlatNodes(Option.NetworkType,root.getData()));
+        CroCoNode.addOntologyNodes(technique,null, getId(), getFlatNodes(Option.NetworkType,root.getData()));
         Ontology.makeSlim(technique);
         
         CroCoNode<NetworkMetaInformation> devstage = new CroCoNode<NetworkMetaInformation>(getId(),"Development stage",root, new GeneralFilter(Option.developmentStage),root.getData());
-        addOntologyNodes(devstage,null,  getFlatNodes(Option.developmentStage,root.getData()));
+        CroCoNode.addOntologyNodes(devstage,null,getId(),  getFlatNodes(Option.developmentStage,root.getData()));
         
         CroCoNode<NetworkMetaInformation> treatment = new CroCoNode<NetworkMetaInformation>(getId(),"Treatment",root, new GeneralFilter(Option.treatment),root.getData());
-        addOntologyNodes(treatment,null,  getFlatNodes(Option.treatment,root.getData()));
+        CroCoNode.addOntologyNodes(treatment,null, getId(), getFlatNodes(Option.treatment,root.getData()));
         
         //this.printOntology(new PrintWriter(System.out), root);
         //System.exit(1);
@@ -665,12 +497,18 @@ public class NetworkOntology {
         if ( !file.exists())
             throw new IOException("Cannot find factor file:" + file);
 
+        
         Iterator<String> it = FileUtil.getLineIterator(file);
 
         while(it.hasNext())
         {
             String[] tokens = it.next().split("\t");
             Integer groupId = Integer.valueOf(tokens[0]);
+            if (! groupIdToNetwork.containsKey(groupId))
+            {
+                CroCoLogger.getLogger().warn("Cannot find network with id:" + groupId );
+                continue;
+            }
             groupIdToNetwork.get(groupId).addOption(Option.FactorList, tokens[1]);
         }
 
@@ -690,7 +528,7 @@ public class NetworkOntology {
         CroCoNode<NetworkMetaInformation> root = onto.createNetworkOntology();
         
         CroCoLogger.getLogger().info("Write ontology");
-        writeNetworkOntology(root,NetworkOntologyWriter.ONTOLOGY_OUT.getValue(cmdLine),NetworkOntologyWriter.ONTOLOGY_MAPPING_OUT.getValue(cmdLine));
+        Obo.writeOntology(root,NetworkOntologyWriter.ONTOLOGY_OUT.getValue(cmdLine),NetworkOntologyWriter.ONTOLOGY_MAPPING_OUT.getValue(cmdLine));
         
         LocalService service = new LocalService();
         
