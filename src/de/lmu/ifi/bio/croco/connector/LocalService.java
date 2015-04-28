@@ -27,6 +27,7 @@ import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Strand;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
+import de.lmu.ifi.bio.croco.intervaltree.peaks.ChIP;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.DNaseTFBSPeak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
@@ -41,6 +42,7 @@ import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.CroCoProperties;
 import de.lmu.ifi.bio.croco.util.Pair;
 import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology;
+import de.lmu.ifi.bio.croco.util.ontology.Obo;
 
 /**
  * Uses a direct database connection to query the database.
@@ -77,15 +79,13 @@ public class LocalService implements QueryService{
 	        {
 	            groupIdWhere = String.format(" where nh.group_id=%d",gIds[0]);
 	        }else{
-	            for(Integer gId : gIds)
+	            groupIdWhere =" where nh.group_id IN (" +gIds[0] ;
+
+	            for(int i = 1; i< gIds.length;i++)
 	            {
-	                groupIdWhere ="where ng.group_id IN (" +gIds[0] ;
-	                
-	                for(int i = 1; i< gIds.length;i++)
-	                {
-	                    groupIdWhere ="," + gIds[i] ;
-	                }
+	                groupIdWhere +="," + gIds[i] ;
 	            }
+	            groupIdWhere +=")";
 	        }
 	        sql+=groupIdWhere;  
 	    }
@@ -616,8 +616,9 @@ public class LocalService implements QueryService{
 		PreparedStatement stat = null;
 		if ( target != null && factor != null){
 			stat = DatabaseConnection.getConnection().prepareStatement(
-					"SELECT group_id,binding_start , binding_end, binding_p_value, binding_motif, open_chrom_start , open_chrom_end " +
+					"SELECT n.group_id,nm.network_type,binding_chr,binding_start , binding_end, binding_p_value, binding_motif, open_chrom_start , open_chrom_end " +
 					"FROM Network2Binding n " +
+					"JOIN NetworkMetaInformation nm on nm.group_id = n.group_id " +
 					"where gene1 = ? and gene2 = ?"
 			);
 			stat.setString(1, factor);
@@ -637,24 +638,39 @@ public class LocalService implements QueryService{
 		while(res.next()){
 			Integer groupId = res.getInt(1);
 			
+			NetworkType type = NetworkType.values()[res.getInt(2)];
+			
+			String chr = res.getString(3);
 			Entity tf = new Entity(factor);
 			Entity tg = new Entity(target);
 			
-			Integer bindingStart = res.getInt(2);
-			Integer bindingEnd = res.getInt(3);
-			Float bindingPValue = res.getFloat(4);
-			String motifId = res.getString(5);
+			Integer bindingStart = res.getInt(4);
+			Integer bindingEnd = res.getInt(5);
+
+			Float bindingPValue = res.getFloat(6);
+			if ( res.wasNull())
+			    bindingPValue = null;
+			String motifId = res.getString(7);
+			if ( res.wasNull())
+			    motifId = null;
+			
 			Peak peak = null;
 			
-			TFBSPeak tfbsPeak = new TFBSPeak(null,bindingStart,bindingEnd,motifId,bindingPValue,null);
+			TFBSPeak tfbsPeak = new TFBSPeak(chr,bindingStart,bindingEnd,motifId,bindingPValue,null);
 			
-			Integer openChromStart = res.getInt(6);
-			Integer openChromEnd = res.getInt(7);
+			Integer openChromStart = res.getInt(8);
+			if ( res.wasNull())
+			    openChromStart = null;
+			Integer openChromEnd = res.getInt(9);
+			if ( res.wasNull())
+			    openChromEnd = null;
 			
-			if ( openChromStart != null)
+			if ( type.equals(NetworkType.OpenChrom))
 				peak = new  DNaseTFBSPeak(tfbsPeak, new Peak(openChromStart,openChromEnd));
-			else
+			else if (type.equals(NetworkType.TFBS) )
 			    peak = tfbsPeak;
+			else if (type.equals(NetworkType.ChIP) )
+	            peak = new ChIP(chr,bindingStart,bindingEnd,bindingPValue);
 			
 			groupIds.add(groupId);
 			peaks.add(Pair.create(peak,groupId));
@@ -686,13 +702,14 @@ public class LocalService implements QueryService{
         
         File oboFile =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntologyFile") );
         File oboMapping =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntoloyMappingFile") );
+        
         CroCoLogger.getLogger().debug(String.format("Read obo/mapping: %s/%s", oboFile.toString(),oboMapping.toString()));
         
         if ( !oboFile.exists() || !oboMapping.exists())
             throw new Exception("CroCo ontology not found. Check configuration.");
         
         
-        CroCoNode<NetworkMetaInformation> root = NetworkOntology.readOntology(new HashSet<NetworkMetaInformation>(this.getMetaInformation(onlyPublic)), oboFile, oboMapping);
+        CroCoNode<NetworkMetaInformation> root = Obo.readOntology(oboFile,oboMapping,new HashSet<NetworkMetaInformation>(this.getMetaInformation(onlyPublic)));
         
         return root;
     }
