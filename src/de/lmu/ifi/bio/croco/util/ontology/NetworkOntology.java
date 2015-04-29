@@ -366,28 +366,28 @@ public class NetworkOntology {
         CroCoNode<NetworkMetaInformation> root = new CroCoNode<NetworkMetaInformation>(NetworkOntology.root,NetworkOntology.root,null,new HashSet<NetworkMetaInformation>(networks));
     
         CroCoNode<NetworkMetaInformation> cellLine = new CroCoNode<NetworkMetaInformation>(getId(),"Tissue/Cell-line",root,null);
-        CroCoNode.addOntologyNodes(cellLine, "Tissue/cell-lines list",getId(), getFlatNodes(Option.cellLine, root.getData()));
-        CroCoNode.addOntologyNodes(cellLine, "Tissue ontology",getId(), getBrendaOntology(root.getData()));
+        CroCoNode.addOntologyNodes(cellLine, getId(),"Tissue/cell-lines list", getFlatNodes(Option.cellLine, root.getData()));
+        CroCoNode.addOntologyNodes(cellLine, getId(),"Tissue ontology", getBrendaOntology(root.getData()));
     
         CroCoNode<NetworkMetaInformation> specie = new CroCoNode<NetworkMetaInformation>(getId(),"Species",root,null);
-        CroCoNode.addOntologyNodes(specie, "Species list",getId(), getFlatNodes(Option.TaxId, root.getData()));
-        CroCoNode.addOntologyNodes(specie, "Species taxonomy",getId(), getSpeciesObo(root.getData()));
+        CroCoNode.addOntologyNodes(specie,getId(),"Species list", getFlatNodes(Option.TaxId, root.getData()));
+        CroCoNode.addOntologyNodes(specie,getId(),"Species taxonomy", getSpeciesObo(root.getData()));
         
         CroCoNode<NetworkMetaInformation> compendium = new CroCoNode<NetworkMetaInformation>(getId(),"Compendium",root, null);
-        CroCoNode.addOntologyNodes(compendium,null,getId(),  getFlatNodes(Option.Compendium,root.getData()));
+        CroCoNode.addOntologyNodes(compendium,null,null,  getFlatNodes(Option.Compendium,root.getData()));
         
         CroCoNode<NetworkMetaInformation> factor = new CroCoNode<NetworkMetaInformation>(getId(),"ENCODE Gene name",root,null);
-        CroCoNode.addOntologyNodes(factor,null,getId(),  getFlatNodes(Option.AntibodyTargetMapped,root.getData()));
+        CroCoNode.addOntologyNodes(factor,null,null,  getFlatNodes(Option.AntibodyTargetMapped,root.getData()));
         
         CroCoNode<NetworkMetaInformation> technique = new CroCoNode<NetworkMetaInformation>(getId(),"Experimental technique",root, new GeneralFilter(Option.NetworkType),root.getData());
-        CroCoNode.addOntologyNodes(technique,null, getId(), getFlatNodes(Option.NetworkType,root.getData()));
+        CroCoNode.addOntologyNodes(technique,null, null, getFlatNodes(Option.NetworkType,root.getData()));
         Ontology.makeSlim(technique);
         
         CroCoNode<NetworkMetaInformation> devstage = new CroCoNode<NetworkMetaInformation>(getId(),"Development stage",root, new GeneralFilter(Option.developmentStage),root.getData());
-        CroCoNode.addOntologyNodes(devstage,null,getId(),  getFlatNodes(Option.developmentStage,root.getData()));
+        CroCoNode.addOntologyNodes(devstage,null,null,  getFlatNodes(Option.developmentStage,root.getData()));
         
         CroCoNode<NetworkMetaInformation> treatment = new CroCoNode<NetworkMetaInformation>(getId(),"Treatment",root, new GeneralFilter(Option.treatment),root.getData());
-        CroCoNode.addOntologyNodes(treatment,null, getId(), getFlatNodes(Option.treatment,root.getData()));
+        CroCoNode.addOntologyNodes(treatment,null, null, getFlatNodes(Option.treatment,root.getData()));
         
         //this.printOntology(new PrintWriter(System.out), root);
         //System.exit(1);
@@ -481,7 +481,6 @@ public class NetworkOntology {
         return ret;
     }
 
-    private static String FACTOR_FILE="factors.gz";
     
     private void readFactors(List<NetworkMetaInformation> nodes) throws IOException
     {
@@ -491,7 +490,7 @@ public class NetworkOntology {
             groupIdToNetwork.put(nh.getGroupId(), nh);
         }
         
-        File file = new File(String.format("%s/%s",CroCoProperties.getInstance().getValue("service.Networks"),FACTOR_FILE));
+        File file = new File(String.format("%s",CroCoProperties.getInstance().getValue("service.FactorFile").trim()));
         CroCoLogger.debug("Read: %s", file);
         
         if ( !file.exists())
