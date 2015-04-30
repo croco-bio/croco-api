@@ -93,9 +93,9 @@ curl -d "<object-stream/>" http://services.bio.ifi.lmu.de/croco-web/services/pla
 List the networks:
 
 ```Shell
-curl -d "<object-stream><string>/</string></object-stream>" http://141.84.2.12/croco-web/services/plain/getNetworkHierachy
+curl -d "<object-stream> <boolean>true</boolean></object-stream>" http://141.84.2.12/croco-web/services/plain/getNetworkOntology
 GZIP compressed response:
-curl -d "<object-stream><string>/</string></object-stream>" http://141.84.2.12/croco-web/services/getNetworkHierachy
+curl -d "<object-stream> <boolean>true</boolean></object-stream>" http://141.84.2.12/croco-web/services/getNetworkOntology
 ```
 
 
