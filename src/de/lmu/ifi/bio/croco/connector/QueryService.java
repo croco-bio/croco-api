@@ -21,7 +21,7 @@ import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
  *
  */
 public interface QueryService {
-	final static long version = 11l;
+	final static long version = 111;
 	
 	/**
 	 * The current QueryService version
