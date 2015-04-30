@@ -81,7 +81,7 @@ public class BufferedService implements QueryService {
 	
 	@Override
 	public CroCoNode<NetworkMetaInformation> getNetworkOntology(Boolean resricted) throws Exception {
-	    File ontologyFile = new File(String.format("%s/ontology.croco%s.gz",baseDir.toString(),resricted?".restricted.":""));
+	    File ontologyFile = new File(String.format("%s/ontology.croco.%d.%s.gz",baseDir.toString(),this.getVersion(),resricted?".restricted.":""));
 	    CroCoNode<NetworkMetaInformation> rootNode = null;
 	    if (! ontologyFile.exists())
 	    {
@@ -108,11 +108,8 @@ public class BufferedService implements QueryService {
         Object obj = in.readObject();
         in.close();
         
-        if ( obj instanceof CroCoNode)
-        {
-            return (CroCoNode<NetworkMetaInformation>) obj;
-        }
-        throw new Exception("Cannot read ontology");
+        return (CroCoNode<NetworkMetaInformation>) obj;
+        
     }
 	private void writeOntology(File file, CroCoNode<NetworkMetaInformation> node) throws Exception
 	{
@@ -131,7 +128,15 @@ public class BufferedService implements QueryService {
 	
 	@Override
 	public OrthologMapping getOrthologMapping(OrthologMappingInformation orthologMappingInformation) throws Exception{
-		File orthologMappingFile = new File(baseDir + "/ortholog-" + orthologMappingInformation.getDatabase().ordinal() + "-" + orthologMappingInformation.getSpecies1().getTaxId() +"-" + orthologMappingInformation.getSpecies2().getTaxId() + ".croco.gz" );
+		File orthologMappingFile = new File (
+		        String.format("%s/orthologs.croco.%d.%d.%d.%d.gz",
+		                baseDir , 
+		                this.getVersion(), 
+		                orthologMappingInformation.getDatabase().ordinal() ,
+		                orthologMappingInformation.getSpecies1().getTaxId() ,
+		                orthologMappingInformation.getSpecies2().getTaxId() )
+		         );
+		
 		if ( !orthologMappingFile.exists()){
 			OrthologMapping mapping = service.getOrthologMapping(orthologMappingInformation);
 			writeOrthologMapping(orthologMappingFile, orthologMappingInformation,mapping);
