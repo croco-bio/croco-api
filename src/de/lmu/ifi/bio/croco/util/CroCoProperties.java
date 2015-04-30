@@ -57,7 +57,18 @@ public class CroCoProperties {
 	public String getValue(String option){
 		return props.getProperty(option);
 	}
-
+	
+	public File getAsFile(String option) throws IOException{
+	    if ( props.getProperty(option) == null)
+	        throw new IOException(option + " not found in config");
+	    String value = props.getProperty(option);
+	    File f = new File(value);
+	    if ( !f.exists())
+	        throw new IOException(value + " is not a valid file");
+	    
+	    return f;
+	}
+	
 	public Set<String> getProperties(String prefix) {
 		HashSet<String> ret = new HashSet<String>();
 		for(Object o : props.keySet()){

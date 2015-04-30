@@ -1,13 +1,11 @@
 package de.lmu.ifi.bio.croco.operation;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.lmu.ifi.bio.croco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.network.Network.EdgeOption;
-import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
 /**
  * Filters edges based on the number of times they have been observed

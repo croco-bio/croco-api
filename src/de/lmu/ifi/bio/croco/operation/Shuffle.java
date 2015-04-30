@@ -1,10 +1,6 @@
 package de.lmu.ifi.bio.croco.operation;
 
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;

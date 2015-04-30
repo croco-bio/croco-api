@@ -2,7 +2,6 @@ package de.lmu.ifi.bio.croco.network;
 
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
-import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.OrderedPair;
 import de.lmu.ifi.bio.croco.util.Tuple;
 

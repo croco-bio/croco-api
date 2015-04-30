@@ -7,9 +7,7 @@ import java.util.List;
 
 import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
-import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
-import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 
 
 public class BindingEnrichedDirectedNetwork extends DirectedNetwork{

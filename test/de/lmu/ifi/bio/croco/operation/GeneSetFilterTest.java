@@ -5,9 +5,7 @@ import static org.junit.Assert.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,8 +16,6 @@ import de.lmu.ifi.bio.croco.category.IntegrationTest;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
-import de.lmu.ifi.bio.croco.data.exceptions.CroCoException;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.operation.GeneSetFilter.FilterType;

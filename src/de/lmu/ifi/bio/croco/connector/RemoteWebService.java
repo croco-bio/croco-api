@@ -364,20 +364,27 @@ public class RemoteWebService implements QueryService{
 	}
 
 
+    @Override
+    public Long getVersion() {
+        return version;
+    }
 
-	@Override
-	public Long getVersion() {
-		return version;
+    
+	public Long getRemoteVersion() throws Exception{
+	    Long version= (Long)performeOperation(baseUrl,"getVersion");
+	    return version;
+	    
+	      
 	}
 	@Override
 	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {
 		return (List<Gene>)performeOperation(baseUrl,"getGenes",species,onlyCoding,context);
 	}
     @Override
-    public CroCoNode getNetworkOntology(boolean restricted) throws Exception {
-        if ( restricted == false) throw new Exception("Only restricted access is possible for remote access.");
+    public CroCoNode getNetworkOntology(Boolean restricted) throws Exception {
+        if ( restricted.equals(false) ) throw new Exception("Only restricted access is possible for remote access.");
         
-        return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology");
+        return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology",Boolean.TRUE);
     }
     @Override
     public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {

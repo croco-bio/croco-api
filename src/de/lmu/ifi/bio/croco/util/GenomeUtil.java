@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Strand;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;

@@ -1,7 +1,6 @@
 package de.lmu.ifi.bio.croco.processor.ortholog;
 
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,13 +11,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
-
 import org.apache.commons.cli.CommandLine;
 
 import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
-import de.lmu.ifi.bio.croco.connector.LocalService;
-import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.IdentifierType;
 import de.lmu.ifi.bio.croco.data.Species;
 import de.lmu.ifi.bio.croco.operation.ortholog.OrthologDatabaseType;
@@ -35,7 +30,7 @@ public class EnsemblCompara {
 		CommandLine cmdLine = parameter.parseCommandLine(args, EnsemblCompara.class);
 		
 		
-		File tmpFile = File.createTempFile("croco.", ".orthologs",tmpDir.getValue(cmdLine));
+	//	File tmpFile = File.createTempFile("croco.", ".orthologs",tmpDir.getValue(cmdLine));
 		Set<Integer> taxIdSpecialSet = new HashSet<Integer>();
 		for(Species species : Species.knownSpecies){
 			taxIdSpecialSet.add(species.getTaxId());
@@ -188,6 +183,7 @@ public class EnsemblCompara {
 				stat.execute();
 			}
 		}	
+		br.close();
 		
 	}
 

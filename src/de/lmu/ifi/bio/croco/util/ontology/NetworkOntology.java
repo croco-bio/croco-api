@@ -17,8 +17,6 @@ import java.util.Stack;
 
 import org.apache.commons.cli.CommandLine;
 
-import com.google.common.base.Joiner;
-
 import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.data.CroCoNode;
@@ -490,7 +488,7 @@ public class NetworkOntology {
             groupIdToNetwork.put(nh.getGroupId(), nh);
         }
         
-        File file = new File(String.format("%s",CroCoProperties.getInstance().getValue("service.FactorFile").trim()));
+        File file = CroCoProperties.getInstance().getAsFile("service.FactorFile");
         CroCoLogger.debug("Read: %s", file);
         
         if ( !file.exists())

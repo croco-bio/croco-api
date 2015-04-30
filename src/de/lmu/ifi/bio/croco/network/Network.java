@@ -24,7 +24,6 @@ import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.Option;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TransferredPeak;
-import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.FileUtil;
 import de.lmu.ifi.bio.croco.util.TIntHashSetInteratorableWrapper;

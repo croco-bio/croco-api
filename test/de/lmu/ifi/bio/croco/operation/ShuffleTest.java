@@ -10,7 +10,6 @@ import java.util.Random;
 import org.junit.Test;
 
 import de.lmu.ifi.bio.croco.connector.BufferedService;
-import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;

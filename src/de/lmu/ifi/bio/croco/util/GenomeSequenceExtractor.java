@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 
 public class GenomeSequenceExtractor {
 	class FastaInfo{
-		private File file;
-		private String chrom;
+	    public File file;
+		public String chrom;
 		private Integer headerOffset;
 		private Integer lineWidth;
 		private RandomAccessFile reader;

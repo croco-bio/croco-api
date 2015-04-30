@@ -10,6 +10,8 @@ public class CroCoPropertiesTest {
 	public void test() throws Exception {
 		CroCoProperties props = CroCoProperties.getInstance();
 	
+		assertNotNull(props.getProperties());
+		
 	}
 
 }

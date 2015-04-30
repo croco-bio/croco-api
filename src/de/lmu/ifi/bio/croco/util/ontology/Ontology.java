@@ -9,7 +9,6 @@ import java.util.Stack;
 
 import de.lmu.ifi.bio.croco.data.CroCoNode;
 import de.lmu.ifi.bio.croco.data.Identifiable;
-import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.util.ontology.Obo.OboElement;
 
 public class Ontology {

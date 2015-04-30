@@ -5,9 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import de.lmu.ifi.bio.croco.category.IntegrationTest;
 import de.lmu.ifi.bio.croco.category.UnitTest;
-import de.lmu.ifi.bio.croco.data.IdentifierType;
 import de.lmu.ifi.bio.croco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.croco.data.exceptions.ParameterNotWellDefinedException;
 import de.lmu.ifi.bio.croco.data.genome.Gene;

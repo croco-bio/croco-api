@@ -2,25 +2,16 @@ package de.lmu.ifi.bio.croco.operation;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.util.List;
-
 import org.junit.Test;
 
-import de.lmu.ifi.bio.croco.connector.BufferedService;
-import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
-import de.lmu.ifi.bio.croco.connector.RemoteWebService;
-import de.lmu.ifi.bio.croco.data.IdentifierType;
-import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.network.Network.EdgeRepositoryStrategy;
 import de.lmu.ifi.bio.croco.operation.intersect.BindingSiteOverlapCheck;
-import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
 public class IntersectTest {
     /*

@@ -7,7 +7,6 @@ import org.junit.Test;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.ContextTreeNode;
-import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 

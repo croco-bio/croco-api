@@ -11,7 +11,6 @@ import java.util.Set;
 import org.junit.Test;
 
 import de.lmu.ifi.bio.croco.category.IntegrationTest;
-import de.lmu.ifi.bio.croco.data.Entity;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
@@ -56,12 +55,8 @@ public class DNaseTFBSExtWriterTest {
 			for(Peak openChromPeak :openChromPeaks.getObjects() ){
 				if ( openChromPeak == null) continue;
 				List<TFBSPeak> openChromChipEnriched = tfbsPeaks.searchAll(openChromPeak);
-				
-				
-				
+				assertNotNull(openChromChipEnriched);
 			}
-
-		
 		}
 	}
 

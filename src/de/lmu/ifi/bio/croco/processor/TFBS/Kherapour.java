@@ -24,12 +24,9 @@ import org.apache.commons.cli.Options;
 
 import de.lmu.ifi.bio.croco.data.NetworkType;
 import de.lmu.ifi.bio.croco.data.Option;
-import de.lmu.ifi.bio.croco.data.genome.Strand;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
 import de.lmu.ifi.bio.croco.intervaltree.Interval;
 import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
-import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
-import de.lmu.ifi.bio.croco.util.CroCoLogger;
 
 public class Kherapour {
 	public static class KherapourPromoter extends Interval{

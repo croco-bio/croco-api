@@ -102,5 +102,5 @@ public interface QueryService {
 	 * @return --
 	 * @throws Exception
 	 */
-	public CroCoNode<NetworkMetaInformation> getNetworkOntology(boolean onlyPublic) throws Exception;
+	public CroCoNode<NetworkMetaInformation> getNetworkOntology(Boolean onlyPublic) throws Exception;
 }

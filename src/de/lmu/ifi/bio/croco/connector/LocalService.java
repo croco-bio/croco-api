@@ -41,7 +41,6 @@ import de.lmu.ifi.bio.croco.operation.ortholog.OrthologMappingInformation;
 import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.CroCoProperties;
 import de.lmu.ifi.bio.croco.util.Pair;
-import de.lmu.ifi.bio.croco.util.ontology.NetworkOntology;
 import de.lmu.ifi.bio.croco.util.ontology.Obo;
 
 /**
@@ -598,7 +597,7 @@ public class LocalService implements QueryService{
 			Integer taxID = Integer.valueOf(res.getInt(9));
 			if( gene == null || !gene.getIdentifier().equals(geneId)){
 				if( gene != null) genes.add(gene);
-				gene = new Gene(chrom,geneId,geneName,strand,null,null);
+				gene = new Gene(chrom,geneId,geneName,strand);
 				gene.setTaxId(taxID);
 			}
 			
@@ -698,7 +697,7 @@ public class LocalService implements QueryService{
 	}
 
     @Override
-    public CroCoNode<NetworkMetaInformation> getNetworkOntology(boolean onlyPublic) throws Exception{
+    public CroCoNode<NetworkMetaInformation> getNetworkOntology(Boolean onlyPublic) throws Exception{
         
         File oboFile =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntologyFile") );
         File oboMapping =  new File( CroCoProperties.getInstance().getValue("service.CroCoOntoloyMappingFile") );

@@ -37,8 +37,8 @@ public class GenomeCoordinationMapper {
 			return chrom +":" +(int)super.getLow()+"-"+(int)super.getHigh();
 	 	}
 	}
-	public static void main(String[] args) throws IOException, InterruptedException{
-		CommandLine lvCmd = null;
+	@SuppressWarnings("static-access")
+    public static void main(String[] args) throws IOException, InterruptedException{
 		HelpFormatter lvFormater = new HelpFormatter();
 		CommandLineParser parser = new BasicParser();
 	

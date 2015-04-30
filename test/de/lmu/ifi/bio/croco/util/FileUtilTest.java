@@ -17,9 +17,6 @@ import org.junit.Test;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Strand;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
-import de.lmu.ifi.bio.croco.intervaltree.Interval;
-import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
-import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
 
 public class FileUtilTest {
 

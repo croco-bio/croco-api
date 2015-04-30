@@ -6,10 +6,8 @@ import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -112,7 +110,8 @@ public class GeneAnnotation {
 		transcriptStat.close();
 	}
 	
-	public static void main(String[] args) throws Exception{
+	@SuppressWarnings("static-access")
+    public static void main(String[] args) throws Exception{
 		HelpFormatter lvFormater = new HelpFormatter();
 		CommandLineParser parser = new BasicParser();
 		

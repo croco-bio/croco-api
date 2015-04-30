@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -21,7 +19,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import de.lmu.ifi.bio.croco.data.genome.Gene;
-import de.lmu.ifi.bio.croco.data.genome.Strand;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
 import de.lmu.ifi.bio.croco.intervaltree.IntervalTree;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Promoter;
@@ -87,7 +84,8 @@ public class FIMOInputGenerator {
 	}
 
 	
-	public static void main(String[] args) throws Exception{
+	@SuppressWarnings("static-access")
+    public static void main(String[] args) throws Exception{
 		HelpFormatter lvFormater = new HelpFormatter();
 		CommandLineParser parser = new BasicParser();
 	

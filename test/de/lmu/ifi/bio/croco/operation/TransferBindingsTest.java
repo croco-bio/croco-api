@@ -8,11 +8,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.NetworkMetaInformation;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TransferredPeak;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;

@@ -10,11 +10,9 @@ import de.lmu.ifi.bio.croco.data.exceptions.OperationNotPossibleException;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.data.genome.Transcript;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
-import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
 import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;
 import de.lmu.ifi.bio.croco.network.Network.EdgeOption;
-import de.lmu.ifi.bio.croco.util.CroCoLogger;
 import de.lmu.ifi.bio.croco.util.Tuple;
 
 public class BindingFilter extends GeneralOperation{

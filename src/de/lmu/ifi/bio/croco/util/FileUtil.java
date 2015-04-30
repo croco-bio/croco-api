@@ -106,7 +106,7 @@ public class FileUtil {
 			}
 			if ( currentGene == null || !currentGene.getIdentifier().equals(geneId)){
 				if (currentGene != null ) genes.add(currentGene);
-				currentGene = new Gene(chrom,geneId,geneName,strand,start,end);
+				currentGene = new Gene(chrom,geneId,geneName,strand);
 			}
 			if ( currentTranscript == null || !currentTranscript.equals(transcriptId)){
 				currentTranscript = new Transcript(currentGene,transcriptId,transcriptName,tType);

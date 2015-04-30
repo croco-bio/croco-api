@@ -24,8 +24,8 @@ import de.lmu.ifi.bio.croco.operation.ortholog.OrthologRepository;
 
 @Category(IntegrationTest.class)
 public class RemoteWebServiceTest {
-	public static String url="http://services.bio.ifi.lmu.de/croco-web/services";
-	//public static String url="http://localhost:8080/croco-web/services/";
+	//public static String url="http://services.bio.ifi.lmu.de/croco-web/services";
+	public static String url="http://localhost:8080/croco-web/services/";
 	//public static String url_local2="http://tomcluster64:1046/croco-web/services";
 	
 	
@@ -54,7 +54,7 @@ public class RemoteWebServiceTest {
 	{
 	    RemoteWebService service = new RemoteWebService(url);
         
-        CroCoNode ontology = service.getNetworkOntology(false);
+        CroCoNode ontology = service.getNetworkOntology(true);
         System.out.println(ontology);
 	}
 	@Test

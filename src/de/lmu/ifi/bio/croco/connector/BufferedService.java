@@ -80,7 +80,7 @@ public class BufferedService implements QueryService {
 	*/
 	
 	@Override
-	public CroCoNode<NetworkMetaInformation> getNetworkOntology(boolean resricted) throws Exception {
+	public CroCoNode<NetworkMetaInformation> getNetworkOntology(Boolean resricted) throws Exception {
 	    File ontologyFile = new File(String.format("%s/ontology.croco%s.gz",baseDir.toString(),resricted?".restricted.":""));
 	    CroCoNode<NetworkMetaInformation> rootNode = null;
 	    if (! ontologyFile.exists())
@@ -95,7 +95,8 @@ public class BufferedService implements QueryService {
 	    return rootNode;
 	}
 	
-	private CroCoNode<NetworkMetaInformation> readOntology(File file) throws Exception
+	@SuppressWarnings("unchecked")
+    private CroCoNode<NetworkMetaInformation> readOntology(File file) throws Exception
 	{
 	    CroCoLogger.getLogger().info("Write ontology file:" + file);
 	    XStream xstream = new XStream();
@@ -104,11 +105,15 @@ public class BufferedService implements QueryService {
         
         ObjectInputStream in = xstream.createObjectInputStream(new InputStreamReader( new GZIPInputStream(new FileInputStream(file))));
         
-        CroCoNode<NetworkMetaInformation> obj = (CroCoNode<NetworkMetaInformation>)  in.readObject();
-	
+        Object obj = in.readObject();
         in.close();
-        return obj;
-	}
+        
+        if ( obj instanceof CroCoNode)
+        {
+            return (CroCoNode<NetworkMetaInformation>) obj;
+        }
+        throw new Exception("Cannot read ontology");
+    }
 	private void writeOntology(File file, CroCoNode<NetworkMetaInformation> node) throws Exception
 	{
 	    CroCoLogger.getLogger().info("Read ontology from file:" + file);
@@ -257,7 +262,7 @@ public class BufferedService implements QueryService {
 	}
 	@Override
 	public Long getVersion() {
-		return version;
+		return service.getVersion();
 	}
 	@Override
 	public List<Gene> getGenes(Species species, Boolean onlyCoding, ContextTreeNode context) throws Exception {

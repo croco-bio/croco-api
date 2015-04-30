@@ -9,8 +9,6 @@ public class Gene extends Entity {
 
 	private Strand strand;
 	private List<Transcript> transcripts;
-	private Integer start;
-	private Integer end;
 	private String chr;
 
 	
@@ -23,10 +21,8 @@ public class Gene extends Entity {
 	public Gene(){
 		
 	}
-	public Gene( String chr, String geneId, String geneName,Strand strand, Integer start, Integer end) {
+	public Gene( String chr, String geneId, String geneName,Strand strand) {
 		super(geneId,geneName);
-		this.start = start;
-		this.end = end;
 		this.chr = chr;
 		this.strand = strand;
 		this.transcripts = new ArrayList<Transcript>();

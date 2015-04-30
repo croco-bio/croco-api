@@ -3,11 +3,8 @@ package de.lmu.ifi.bio.croco.operation.intersect;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.List;
-import java.util.Set;
-
 import de.lmu.ifi.bio.croco.intervaltree.peaks.Peak;
 import de.lmu.ifi.bio.croco.intervaltree.peaks.TFBSPeak;
-import de.lmu.ifi.bio.croco.network.BindingEnrichedDirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network.EdgeOption;
 
 

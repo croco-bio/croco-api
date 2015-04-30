@@ -4,10 +4,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import de.lmu.ifi.bio.croco.category.IntegrationTest;
-import de.lmu.ifi.bio.croco.connector.DatabaseConnection;
 import de.lmu.ifi.bio.croco.connector.LocalService;
 import de.lmu.ifi.bio.croco.data.Entity;
-import de.lmu.ifi.bio.croco.data.IdentifierType;
 import de.lmu.ifi.bio.croco.data.genome.Gene;
 import de.lmu.ifi.bio.croco.network.DirectedNetwork;
 import de.lmu.ifi.bio.croco.network.Network;

@@ -1,7 +1,5 @@
 package de.lmu.ifi.bio.croco.data.exceptions;
 
-import de.lmu.ifi.bio.croco.util.Tuple;
-
 public class EdgeNotFoundException extends CroCoException {
 	/**
 	 * 

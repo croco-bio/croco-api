@@ -22,9 +22,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.reflections.Reflections;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import de.lmu.ifi.bio.croco.connector.BufferedService;
 import de.lmu.ifi.bio.croco.connector.QueryService;
@@ -112,7 +109,8 @@ public class Engine {
 		OperationUtil.process(service, rootNode);
 	}
 
-	public NetworkOperationNode processOperation(Element operation) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,  SQLException, IOException{
+	@SuppressWarnings("unchecked")
+    public NetworkOperationNode processOperation(Element operation) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,  SQLException, IOException{
 		Attribute operationName = operation.attribute("name");
 		CroCoLogger.getLogger().debug(String.format("Init %s",operationName.getValue()));
 		
@@ -177,7 +175,8 @@ public class Engine {
 		return node;
 	}
 	
-	public static void main(String[] args) throws Exception{
+	@SuppressWarnings("static-access")
+    public static void main(String[] args) throws Exception{
 		HelpFormatter lvFormater = new HelpFormatter();
 		CommandLineParser parser = new BasicParser();
 	
