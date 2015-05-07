@@ -81,7 +81,7 @@ public class BufferedService implements QueryService {
 	
 	@Override
 	public CroCoNode<NetworkMetaInformation> getNetworkOntology(Boolean resricted) throws Exception {
-	    File ontologyFile = new File(String.format("%s/ontology.croco.%d.%s.gz",baseDir.toString(),this.getVersion(),resricted?".restricted.":""));
+	    File ontologyFile = new File(String.format("%s/ontology.croco.%d.%s.gz",baseDir.toString(),this.getVersion(),resricted?"1":"0"));
 	    CroCoNode<NetworkMetaInformation> rootNode = null;
 	    if (! ontologyFile.exists())
 	    {
