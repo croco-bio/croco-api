@@ -61,7 +61,7 @@ public class CroCoProperties {
 	public File getAsFile(String option) throws IOException{
 	    if ( props.getProperty(option) == null)
 	        throw new IOException(option + " not found in config");
-	    String value = props.getProperty(option);
+	    String value = props.getProperty(option).trim();
 	    File f = new File(value);
 	    if ( !f.exists())
 	        throw new IOException(value + " is not a valid file");
