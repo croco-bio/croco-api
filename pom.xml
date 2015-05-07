@@ -41,9 +41,9 @@
 							<goal>shade</goal>
 						</goals>
  						<configuration>
- 						<!--  remove not used libs -->
+ 						<!--  remove not used libs 
     			            <finalName>${project.artifactId}-${project.version}-SHADED</finalName>
-   
+    			            -->
             			</configuration>
 					</execution>
 				</executions>
