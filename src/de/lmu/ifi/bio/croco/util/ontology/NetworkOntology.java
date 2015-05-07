@@ -41,7 +41,7 @@ import de.lmu.ifi.bio.croco.util.FileUtil;
 import de.lmu.ifi.bio.croco.util.Pair;
 import de.lmu.ifi.bio.croco.util.ontology.Obo.OboElement;
 
-public class NetworkOntology {
+public class NetworkOntology {         
     private static String KHERADPOUR ="Kheradpour et al., Reliable prediction of regulator targets using 12 Drosophila genomes, Genome Res., 2007";
     private static String NEPH ="Neph et al., Circuitry and Dynamics of Human Transcription Factor Regulatory Networks, Cell, 2012";
     private static File taxObo= new File("data/obo/croco-sp.obo");

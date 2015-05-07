@@ -102,31 +102,6 @@ public class Obo {
         
         root.setData(allData);
         
-        //set parent-children relations
-        for(String id : idToParents.keySet())
-        {
-            CroCoNode<E> node = idToCroCoNode.get(id);
-            List<String> parents = idToParents.get(id);
-            
-            if ( parents.size() == 0 && !id.equals(rootId))
-            {
-                node.setParent(root);
-                continue;
-            }
-            
-            for(String parentId : parents)
-            {
-                CroCoNode<E> parent = idToCroCoNode.get(parentId);
-                if ( parent.getChildren() == null)
-                {
-                    node.setParent(parent);
-                } else
-                {
-                    node.setParent(parent);
-                }    
-            }
-        }
-        
         //assign data points
         HashMap<String,E> idToDataPoint = new HashMap<String,E>();
         
@@ -149,10 +124,44 @@ public class Obo {
             HashSet<E> data  = new HashSet<E>();
             for(int i = 1 ; i< tokens.length; i++)
             {
-               data.add(idToDataPoint.get(tokens[i]));
+                E dataPoint = idToDataPoint.get(tokens[i]);
+                if ( dataPoint != null)
+                    data.add(dataPoint);
             }
+            
             node.setData(data);
         }
+        
+        //set parent-children relations
+        for(String id : idToParents.keySet())
+        {
+            CroCoNode<E> node = idToCroCoNode.get(id);
+            
+            if ( node.getData().size() == 0)
+                continue;
+            
+            List<String> parents = idToParents.get(id);
+            
+            if ( parents.size() == 0 && !id.equals(rootId))
+            {
+                node.setParent(root);
+                continue;
+            }
+            
+            for(String parentId : parents)
+            {
+                CroCoNode<E> parent = idToCroCoNode.get(parentId);
+                if ( parent.getChildren() == null)
+                {
+                    node.setParent(parent);
+                } else
+                {
+                    node.setParent(parent);
+                }    
+            }
+        }
+        
+        
         return root;
     }
     
