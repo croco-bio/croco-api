@@ -259,9 +259,12 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
                 {
                     Set<E> data = getRelevantData(this,n);
                     
-                    if ( data.size() < 2)
+                    //at least one data point
+                    if ( data.size() == 0)
                         continue;
-                    if (!canBeSeperated(n,data) )
+                    
+                    //dimension separates the data
+                    if (!canBeSeperated(n,this.getData()) )
                         continue;
                     
                      nodeNetworks.removeAll(data);
@@ -295,6 +298,7 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
                 if ( c.getData().contains(d))
                     overlap++;
             }
+            //at least one node exists, which is not empty, and does not include all data points.
             if (overlap > 0 &&  overlap != data.size()) return true;
             
             
