@@ -98,7 +98,7 @@ public class BufferedService implements QueryService {
 	@SuppressWarnings("unchecked")
     private CroCoNode<NetworkMetaInformation> readOntology(File file) throws Exception
 	{
-	    CroCoLogger.getLogger().info("Write ontology file:" + file);
+	    CroCoLogger.getLogger().info("Read ontology file:" + file);
 	    XStream xstream = new XStream();
         xstream.setMode(XStream.ID_REFERENCES);
         
