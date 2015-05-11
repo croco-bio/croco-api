@@ -1,6 +1,6 @@
 General
 =========
-CroCo provides a new view on regulatory networks (transcription factor-target networks) for many species derived from context-specific ENCODE projects, the scientific literature and structured databases. Networks can be easily retrieved from a remote network repository (croco-repo) and combined via many networks operations.
+CroCo provides a network-oriented view on regulatory data for many context-specific ENCODE projects, the scientific literature and structured databases. Networks can be easily retrieved from a remote network repository (croco-repo) and combined via many networks operations.
 
 CroCo consists of five components:
 
