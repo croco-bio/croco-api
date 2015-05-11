@@ -157,7 +157,7 @@ public class LocalService implements QueryService{
 	}
 	
 	@Override
-	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
+	public List<NetworkMetaInformation> getNetworkMetaInformations() throws Exception {
 	    return getMetaInformation(false);
 	}
 

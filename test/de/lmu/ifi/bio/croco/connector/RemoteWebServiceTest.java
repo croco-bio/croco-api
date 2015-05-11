@@ -46,7 +46,7 @@ public class RemoteWebServiceTest {
 	public void testGetNetworkHierachy() throws Exception{
 		RemoteWebService service = new RemoteWebService(url);
 		
-		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformation();
+		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformations();
 		
 	}
 	@Test
@@ -97,7 +97,7 @@ public class RemoteWebServiceTest {
 	@Test
 	public void testListNetwork() throws Exception {
 		RemoteWebService service = new RemoteWebService(url);
-		List<NetworkMetaInformation> networks = service.getNetworkMetaInformation();
+		List<NetworkMetaInformation> networks = service.getNetworkMetaInformations();
 
 		assertTrue(networks != null);
 		assertTrue(networks.size()>0);

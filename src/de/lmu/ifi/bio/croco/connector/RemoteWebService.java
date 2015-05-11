@@ -387,7 +387,7 @@ public class RemoteWebService implements QueryService{
         return (CroCoNode)performeOperation(baseUrl,"getNetworkOntology",Boolean.TRUE);
     }
     @Override
-    public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
+    public List<NetworkMetaInformation> getNetworkMetaInformations() throws Exception {
         return (List<NetworkMetaInformation>)performeOperation(baseUrl,"getNetworkMetaInformation");
     }
 

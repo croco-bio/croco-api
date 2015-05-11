@@ -211,8 +211,8 @@ public class BufferedService implements QueryService {
 	}
 	*/
 	@Override
-	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception {
-		return service.getNetworkMetaInformation();
+	public List<NetworkMetaInformation> getNetworkMetaInformations() throws Exception {
+		return service.getNetworkMetaInformations();
 	}
 
 

@@ -358,7 +358,7 @@ public class NetworkOntology {
             OrthologRepository.getInstance(service).getOrthologMapping(mapping);
         }
         
-        List<NetworkMetaInformation> networks = service.getNetworkMetaInformation();
+        List<NetworkMetaInformation> networks = service.getNetworkMetaInformations();
         readFactors(networks);
         
         CroCoNode<NetworkMetaInformation> root = new CroCoNode<NetworkMetaInformation>(NetworkOntology.root,NetworkOntology.root,null,new HashSet<NetworkMetaInformation>(networks));

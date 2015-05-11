@@ -157,7 +157,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		logger.setLevel(Level.DEBUG);
 		LocalService service = new LocalService(logger);
-		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformation();
+		List<NetworkMetaInformation> nodes = service.getNetworkMetaInformations();
 		assertTrue(nodes.size()>0);
 		
 		NetworkMetaInformation single = service.getNetworkMetaInformation(32);
@@ -190,7 +190,7 @@ public class LocalServiceTest {
 		Logger logger = CroCoLogger.getLogger();
 		
 		QueryService service = new LocalService(logger);
-		List<NetworkMetaInformation> root = service.getNetworkMetaInformation();
+		List<NetworkMetaInformation> root = service.getNetworkMetaInformations();
 		System.out.println(root.size());
 	}
 

@@ -33,7 +33,7 @@ public class GenerateFactorList {
         PrintWriter pw = new PrintWriter(outFile);
         
         LocalService service = new LocalService();
-        List<NetworkMetaInformation> networks = service.getNetworkMetaInformation();
+        List<NetworkMetaInformation> networks = service.getNetworkMetaInformations();
         CroCoLogger.info("Generate factor stat for: %d networks",networks.size());
         PreparedStatement stat = DatabaseConnection.getConnection().prepareStatement("SELECT distinct(gene1) FROM Network where group_id= ?");
         

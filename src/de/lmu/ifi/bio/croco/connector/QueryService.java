@@ -35,7 +35,7 @@ public interface QueryService {
 	*/
 	
 	public NetworkMetaInformation getNetworkMetaInformation(Integer groupId) throws Exception;
-	public List<NetworkMetaInformation> getNetworkMetaInformation() throws Exception;
+	public List<NetworkMetaInformation> getNetworkMetaInformations() throws Exception;
 	
 	/**
 	 * Returns network annotations for a specific network id

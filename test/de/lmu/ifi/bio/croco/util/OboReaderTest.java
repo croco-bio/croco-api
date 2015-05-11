@@ -44,7 +44,7 @@ public class OboReaderTest {
         
         HashMap<String, String> mapping = FileUtil.mappingFileReader(0, 1, mappingFile).readMappingFile();
         
-        List<NetworkMetaInformation> nhs = service.getNetworkMetaInformation();
+        List<NetworkMetaInformation> nhs = service.getNetworkMetaInformations();
         HashSet<String> notFound = new HashSet<String>();
         for(NetworkMetaInformation nh : nhs)
         {
