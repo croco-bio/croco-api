@@ -202,7 +202,7 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
                 if ( filter.accept(nh) ) 
                     filtered.add(nh);
             }
-            ret.addAll(filtered);
+            ret = filtered;
         }
         
         return ret;
