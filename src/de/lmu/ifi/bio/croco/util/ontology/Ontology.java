@@ -104,7 +104,6 @@ public class Ontology {
     public static<E extends Identifiable> void makeSlim(CroCoNode<E> node)
     {
       //  CroCoLogger.getLogger().debug("Make slim");
-    
         HashSet<CroCoNode<E>> p = new HashSet<CroCoNode<E>>();
         Stack<CroCoNode<E>> stack = new Stack<CroCoNode<E>>();
         stack.add(node);

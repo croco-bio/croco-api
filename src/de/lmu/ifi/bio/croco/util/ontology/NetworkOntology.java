@@ -470,12 +470,10 @@ public class NetworkOntology {
            // CroCoNode<NetworkMetaInformation> rootNode = new CroCoNode<NetworkMetaInformation>(root.id,root.name,null, data);
             
             CroCoNode<NetworkMetaInformation> node = Ontology.toOntology(elementsToNetwork,root,obo,true);
-            
             if ( node.getData().size() >0)
                 ret.add(node);
             
         }
-        
         return ret;
     }
 
