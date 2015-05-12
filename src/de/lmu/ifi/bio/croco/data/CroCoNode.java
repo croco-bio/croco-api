@@ -202,7 +202,7 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
                 if ( filter.accept(nh) ) 
                     filtered.add(nh);
             }
-            ret = filtered;
+            ret.addAll(filtered);
         }
         
         return ret;
@@ -473,10 +473,13 @@ public class CroCoNode<E extends Identifiable> implements Comparable<CroCoNode<E
             CroCoNode<E> firstChild = node.getChildren().get(0);
             for(CroCoNode<E> c : firstChild.getChildren())
             {
+                c.getParent().clear();
                 c.setParent(node);
             }
             node.getChildren().remove(firstChild);
+            firstChild.getParent().clear();
         }
+        
         if ( root.getData() == null )
         {
             root.setData(data);
